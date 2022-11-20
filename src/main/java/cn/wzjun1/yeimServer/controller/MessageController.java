@@ -29,7 +29,7 @@ public class MessageController {
     public Result save(@RequestBody @Validated MessageSavePojo params, HttpServletRequest request) {
         try {
             User user = (User) request.getAttribute(UserAuthorizationInterceptor.REQUEST_TOKEN_USER);
-            if (!user.getUserId().equals(params.getFrom())){
+            if (!user.getUserId().equals(params.getFrom()) || user.getUserId().equals(params.getTo())){
                 throw new Exception("from error");
             }
             Message message = messageService.insertMessage(user, params);

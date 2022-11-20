@@ -26,8 +26,8 @@ public class WebsocketServiceImpl implements WebSocketService {
             throw new Exception("messageId 参数错误");
         }
         String messageId = messageObj.getString("messageId");
-        Message exist = messageService.getOne(new QueryWrapper<Message>().eq("message_id", messageId).eq("`to`", userId).eq("receive", 0));
-        if (exist != null) {
+        long exist = messageService.count(new QueryWrapper<Message>().eq("message_id", messageId).eq("`to`", userId).eq("receive", 0));
+        if (exist > 0) {
             Message update = new Message();
             update.setReceive(1);
             messageService.update(update, new QueryWrapper<Message>().eq("message_id", messageId));

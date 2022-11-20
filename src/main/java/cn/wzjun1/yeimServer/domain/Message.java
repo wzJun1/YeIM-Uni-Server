@@ -16,7 +16,7 @@ import java.io.Serializable;
 @TableName(value = "message")
 public class Message implements Serializable {
 
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.AUTO,value = "id")
     private Long sequence;
 
     /**

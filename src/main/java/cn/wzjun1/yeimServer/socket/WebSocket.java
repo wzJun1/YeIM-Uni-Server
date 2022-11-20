@@ -54,6 +54,7 @@ public class WebSocket {
     @OnOpen
     public void onOpen(Session _session, @PathParam(value = "userId") String _userId, @PathParam(value = "token") String _token) {
         try {
+            _token = "token:" + _token;
             if (!redisUtil.hasKey(_token)) {
                 //token不存在，验证失败
                 sendMessage(_session, Result.error(SocketStatusCode.TOKEN_ERROR.getCode(), SocketStatusCode.TOKEN_ERROR.getDesc()).toJSONString());
@@ -96,8 +97,10 @@ public class WebSocket {
     public void onClose() {
         try {
             webSockets.remove(this);
-            sessionPool.remove(userId);
-            log.info("【YeIMServer】用户：" + userId + "连接断开，总数为:" + webSockets.size());
+            if (userId != null){
+                sessionPool.remove(userId);
+                log.info("【YeIMServer】用户：" + userId + "连接断开，总数为:" + webSockets.size());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -139,6 +142,7 @@ public class WebSocket {
         } else if (type.equals("received_call")) {
             //用户接收到socket消息回调
             try {
+                //TODO 更新消息接收状态，暂时没有其他作用，后续有空构建可靠投递机制再用
                 webSocketService.receivedCallMessage(userId, data);
             } catch (Exception e) {
                 e.printStackTrace();
