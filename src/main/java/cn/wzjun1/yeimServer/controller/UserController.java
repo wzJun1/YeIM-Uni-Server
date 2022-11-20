@@ -40,7 +40,7 @@ public class UserController {
      * 用户注册
      *
      * @param user
-     * @description 使用YeIMUniSDK的用户必须注册才能使用
+     * @description 使用YeIMUniSDK的用户必须注册才能使用（请使用自己的服务端请求此接口或者根据自身项目自行实现相关代码）
      */
     @PostMapping(path = "/user/register")
     public Result register(@RequestBody @Validated UserRegisterPojo user) {
@@ -57,7 +57,7 @@ public class UserController {
      *
      * @param params
      * @return
-     * @description 用户登陆YeIMUniSDK使用的token，在此换取。或者开发者可自行打通系统，推荐开发者自行打通生成token，避免安全问题。
+     * @description 用户使用YeIMUniSDK登陆YeImUniServer使用的token，在此换取。或者开发者可自行打通系统，推荐开发者自行打通生成token，避免安全问题。
      */
     @PostMapping(path = "/user/token/get")
     public Result<Map<String, String>> getToken(@RequestBody @Validated UserTokenPojo params) {
