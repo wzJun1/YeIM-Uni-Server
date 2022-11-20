@@ -1,0 +1,115 @@
+package cn.wzjun1.yeimServer.controller;
+
+import cn.wzjun1.yeimServer.annotation.UserAuthorization;
+import cn.wzjun1.yeimServer.domain.User;
+import cn.wzjun1.yeimServer.interceptor.UserAuthorizationInterceptor;
+import cn.wzjun1.yeimServer.pojo.user.UserRegisterPojo;
+import cn.wzjun1.yeimServer.pojo.user.UserTokenPojo;
+import cn.wzjun1.yeimServer.pojo.user.UserUpdatePojo;
+import cn.wzjun1.yeimServer.service.UserService;
+import cn.wzjun1.yeimServer.utils.MD5Util;
+import cn.wzjun1.yeimServer.utils.RedisUtil;
+import cn.wzjun1.yeimServer.utils.Result;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+@Slf4j
+@RestController
+public class UserController {
+
+    @Value("${yeim.secret.key}")
+    private String secretKey;
+
+    @Autowired
+    RedisUtil redisUtil;
+
+    @Autowired
+    UserService userService;
+
+    /**
+     * 用户注册
+     *
+     * @param user
+     * @description 使用YeIMUniSDK的用户必须注册才能使用
+     */
+    @PostMapping(path = "/user/register")
+    public Result register(@RequestBody @Validated UserRegisterPojo user) {
+        try {
+            userService.register(user);
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
+        return Result.success();
+    }
+
+    /**
+     * 换取token
+     *
+     * @param params
+     * @return
+     * @description 用户登陆YeIMUniSDK使用的token，在此换取。或者开发者可自行打通系统，推荐开发者自行打通生成token，避免安全问题。
+     */
+    @PostMapping(path = "/user/token/get")
+    public Result<Map<String, String>> getToken(@RequestBody @Validated UserTokenPojo params) {
+
+        try {
+            if (params.getTimestamp() < System.currentTimeMillis()) {
+                throw new Exception("过期时间设置错误");
+            }
+            //sign = md5(userId+timestamp+secretKey)
+            //secretKey在application.properties 可自行替换想要的字符串
+            String str = params.getUserId() + params.getTimestamp() + secretKey;
+            String secret = MD5Util.encode(str);
+            if (!secret.equals(params.getSign())) {
+                throw new Exception("签名校验错误");
+            }
+
+            User user = userService.getUserById(params.getUserId());
+            if (Objects.isNull(user)) {
+                throw new Exception("用户不存在，请先注册");
+            }
+
+            //过期时间
+            int expire = (int) ((params.getTimestamp() - System.currentTimeMillis()) / 1000);
+            //token
+            String token = MD5Util.encode(params.getUserId() + System.currentTimeMillis() + secretKey);
+            //用户数据放入缓存
+            redisUtil.setWithExpire("token:" + token, user, expire);
+
+            return Result.success(new HashMap<String, String>() {{
+                put("token", token);
+            }});
+
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
+    }
+
+    /**
+     * 用户更新资料
+     *
+     * @param user
+     * @description 更新用户昵称和头像地址
+     */
+    @UserAuthorization
+    @PostMapping(path = "/user/update")
+    public Result update(@RequestBody @Validated UserUpdatePojo user, HttpServletRequest request) {
+        try {
+            userService.updateUser(request.getAttribute(UserAuthorizationInterceptor.REQUEST_TOKEN_USER_ID).toString(),user);
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
+        return Result.success();
+    }
+
+}

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.wzjun1.yeimServer.mapper.ConversationMapper">
+
+    <resultMap id="ConversationV0" type="cn.wzjun1.yeimServer.domain.ConversationV0">
+        <result property="conversationId" column="conversation_id" jdbcType="VARCHAR"/>
+        <result property="type" column="conversation_type" jdbcType="VARCHAR"/>
+        <result property="unread" column="unread" jdbcType="INTEGER"/>
+        <result property="updatedAt" column="updated_at" jdbcType="BIGINT"/>
+        <result property="createdAt" column="created_at" jdbcType="BIGINT"/>
+
+        <association property="userInfo" javaType="cn.wzjun1.yeimServer.domain.User">
+            <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+            <result property="avatarUrl" column="avatar_url" jdbcType="VARCHAR"/>
+        </association>
+
+        <association property="lastMessage" javaType="cn.wzjun1.yeimServer.domain.Message">
+
+            <id property="sequence" column="sequence" jdbcType="BIGINT"/>
+            <result property="messageId" column="message_id" jdbcType="VARCHAR"/>
+            <result property="conversationId" column="message_conversation_id" jdbcType="VARCHAR"/>
+            <result property="from" column="from" jdbcType="VARCHAR"/>
+            <result property="to" column="to" jdbcType="VARCHAR"/>
+            <result property="type" column="message_type" jdbcType="VARCHAR"/>
+            <result property="body" column="body" jdbcType="OTHER" javaType="com.alibaba.fastjson.JSONObject"
+                    typeHandler="com.baomidou.mybatisplus.extension.handlers.FastjsonTypeHandler"/>
+            <result property="isRead" column="is_read" jdbcType="TINYINT"/>
+            <result property="isRecall" column="is_recall" jdbcType="TINYINT"/>
+            <result property="receive" column="receive" jdbcType="INTEGER"/>
+            <result property="status" column="message_status" jdbcType="VARCHAR"/>
+            <result property="time" column="time" jdbcType="BIGINT"/>
+
+            <association property="fromUserInfo" javaType="cn.wzjun1.yeimServer.domain.User">
+                <result property="nickname" column="mu_nickname" jdbcType="VARCHAR"/>
+                <result property="avatarUrl" column="mu_avatar_url" jdbcType="VARCHAR"/>
+            </association>
+
+        </association>
+
+    </resultMap>
+
+    <select id="listConversationV0" resultMap="ConversationV0">
+        SELECT c.`conversation_id`,
+               c.`type`            as conversation_type,
+               c.`unread`,
+               c.`updated_at`,
+               c.`created_at`,
+               u.nickname,
+               u.avatar_url,
+               m.`id`              as sequence,
+               m.`message_id`,
+               m.`conversation_id` as message_conversation_id,
+               m.`from`,
+               m.`to`,
+               m.`type`            as message_type,
+               m.`body`,
+               m.`is_read`,
+               m.`is_recall`,
+               m.`status`          as message_status,
+               m.`receive`,
+               m.`time`,
+               mu.nickname         as mu_nickname,
+               mu.avatar_url       as mu_avatar_url
+        FROM `conversation` as c
+                 LEFT JOIN `user` as u ON u.`user_id` = c.`conversation_id`
+                 LEFT JOIN `message` as m ON m.`message_id` = c.`last_message_id`
+                 LEFT JOIN `user` as mu ON mu.`user_id` = m.`from`
+        WHERE c.`user_id` = #{userId}
+        ORDER BY c.`updated_at` desc
+    </select>
+
+    <select id="getConversationV0" resultMap="ConversationV0">
+        SELECT c.`conversation_id`,
+               c.`type`            as conversation_type,
+               c.`unread`,
+               c.`updated_at`,
+               c.`created_at`,
+               u.nickname,
+               u.avatar_url,
+               m.`id`              as sequence,
+               m.`message_id`,
+               m.`conversation_id` as message_conversation_id,
+               m.`from`,
+               m.`to`,
+               m.`type`            as message_type,
+               m.`body`,
+               m.`is_read`,
+               m.`is_recall`,
+               m.`status`          as message_status,
+               m.`receive`,
+               m.`time`,
+               mu.nickname         as mu_nickname,
+               mu.avatar_url       as mu_avatar_url
+        FROM `conversation` as c
+                 LEFT JOIN `user` as u ON u.`user_id` = c.`conversation_id`
+                 LEFT JOIN `message` as m ON m.`message_id` = c.`last_message_id`
+                 LEFT JOIN `user` as mu ON mu.`user_id` = m.`from`
+        WHERE c.`conversation_id` = #{conversationId}
+          and c.`user_id` = #{userId}
+        ORDER BY c.`updated_at` desc limit 1
+    </select>
+
+</mapper>
