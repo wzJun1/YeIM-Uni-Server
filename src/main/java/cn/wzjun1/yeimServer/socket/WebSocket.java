@@ -156,7 +156,7 @@ public class WebSocket {
                 Session online = sessionPool.get(to);
                 if (online != null) {
                     messageObj.setConversationId(messageObj.getFrom());
-                    online.getAsyncRemote().sendText(Result.success(messageObj).toJSONString());
+                    sendMessage(session, Result.success(messageObj).toJSONString());
                 }
             } catch (Exception e) {
                 e.printStackTrace();

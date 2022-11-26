@@ -42,7 +42,7 @@ public class UserAuthorizationInterceptor extends HandlerInterceptorAdapter {
         Method method = handlerMethod.getMethod();
         String token = request.getHeader(httpHeaderName);
         if (token != null && token.length() > 0) {
-            log.info("token" + token);
+            log.info("token:" + token);
             String key = "token:" + token;
             if (redisUtil.hasKey(key)) {
                 User user = (User) redisUtil.get("token:" + token);
