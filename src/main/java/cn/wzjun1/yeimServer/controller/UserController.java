@@ -67,7 +67,7 @@ public class UserController {
                 throw new Exception("过期时间设置错误");
             }
             //sign = md5(userId+timestamp+secretKey)
-            //secretKey在application.properties 可自行替换想要的字符串
+            //secretKey(yeim.secret.key)在application.properties 可自行替换想要的字符串
             String str = params.getUserId() + params.getTimestamp() + secretKey;
             String secret = MD5Util.encode(str);
             if (!secret.equals(params.getSign())) {
