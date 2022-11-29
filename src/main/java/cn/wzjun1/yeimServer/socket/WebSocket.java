@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
+import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -179,29 +180,37 @@ public class WebSocket {
     //通过userId发送消息
     public static void sendMessage(String userId, String message) {
         Session session = sessionPool.get(userId);
-        if (session != null && session.isOpen()) {
-            try {
-                log.info("【YeIMServer】通过userId发送消息(userId: " + userId + ")：" + message);
-                session.getAsyncRemote().sendText(message);
-            } catch (Exception e) {
-                e.printStackTrace();
+        if (session != null){
+            synchronized(session){
+                if (session.isOpen()) {
+                    try {
+                        log.info("【YeIMServer】通过userId发送消息(userId: " + userId + ")：" + message);
+                        session.getBasicRemote().sendText(message);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    log.info("【YeIMServer】userId:" + userId + "不在线，无法通过socket发送");
+                }
             }
-        } else {
-            log.info("【YeIMServer】userId:" + userId + "不在线，无法通过socket发送");
         }
     }
 
     //通过session发送消息
     public void sendMessage(Session session, String message) {
-        if (session != null && session.isOpen()) {
-            try {
-                log.info("【YeIMServer】通过session发送消息(sessionId: " + session.getId() + ")：" + message);
-                session.getAsyncRemote().sendText(message);
-            } catch (Exception e) {
-                e.printStackTrace();
+        if (session != null){
+            synchronized(session){
+                if (session.isOpen()) {
+                    try {
+                        log.info("【YeIMServer】通过session发送消息(sessionId: " + session.getId() + ")：" + message);
+                        session.getBasicRemote().sendText(message);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    log.info("【YeIMServer】session:" + session.getId() + "不在线，无法通过socket发送");
+                }
             }
-        } else {
-            log.info("【YeIMServer】session:" + session.getId() + "不在线，无法通过socket发送");
         }
     }
 

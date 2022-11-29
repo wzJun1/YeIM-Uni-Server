@@ -14,16 +14,16 @@ public class UserTokenPojo {
     /**
      * 用户ID
      */
-    @NotNull(message = "userId must be not null")
-    @Length(message = "userId length is between 1~32", min = 1, max = 32)
+    @NotNull(message = "用户ID不能为空")
+    @Length(message = "用户ID的长度应在1-32位之间", min = 1, max = 32)
     @JsonProperty("userId")
     private String userId;
 
     /**
      * 过期时间
      */
-    @NotNull(message = "timestamp must be not null")
-    @Min(message = "timestamp length is 13",value = 1000000000000L)
+    @NotNull(message = "过期时间不能为空")
+    @Min(message = "过期时间应为毫秒级时间戳",value = 1000000000000L)
     @JsonProperty("timestamp")
     private Long timestamp;
 
@@ -31,8 +31,8 @@ public class UserTokenPojo {
      * sign
      *
      */
-    @NotNull(message = "sign must be not null")
-    @Length(message = "sign length is 32", min = 32, max = 32)
+    @NotNull(message = "签名不能为空")
+    @Length(message = "签名长度应为32字节", min = 32, max = 32)
     @JsonProperty("sign")
     private String sign;
 
