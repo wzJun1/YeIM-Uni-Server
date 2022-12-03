@@ -30,7 +30,8 @@ public class WebsocketServiceImpl implements WebSocketService {
         if (exist > 0) {
             Message update = new Message();
             update.setReceive(1);
-            messageService.update(update, new QueryWrapper<Message>().eq("message_id", messageId));
+            //根据消息ID更新消息（两条）
+            messageService.updatePrivateMessageById(update, messageId);
         }
     }
 }

@@ -3,13 +3,14 @@ package cn.wzjun1.yeimServer.controller;
 import cn.wzjun1.yeimServer.annotation.UserAuthorization;
 import cn.wzjun1.yeimServer.domain.User;
 import cn.wzjun1.yeimServer.interceptor.UserAuthorizationInterceptor;
-import cn.wzjun1.yeimServer.pojo.user.UserRegisterPojo;
-import cn.wzjun1.yeimServer.pojo.user.UserTokenPojo;
-import cn.wzjun1.yeimServer.pojo.user.UserUpdatePojo;
+import cn.wzjun1.yeimServer.dto.user.UserRegisterDTO;
+import cn.wzjun1.yeimServer.dto.user.UserTokenDTO;
+import cn.wzjun1.yeimServer.dto.user.UserUpdateDTO;
 import cn.wzjun1.yeimServer.service.UserService;
 import cn.wzjun1.yeimServer.utils.MD5Util;
 import cn.wzjun1.yeimServer.utils.RedisUtil;
 import cn.wzjun1.yeimServer.utils.Result;
+import com.github.yitter.idgen.YitIdHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,6 +36,13 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    @GetMapping(path = "/aa")
+    public void sss(){
+        long newId = YitIdHelper.nextId();
+        System.out.println("生成一个id：" + newId);
+    }
+
+
     /**
      * 用户注册
      *
@@ -42,7 +50,7 @@ public class UserController {
      * @description 使用YeIMUniSDK的用户必须注册才能使用（请使用自己的服务端请求此接口或者根据自身项目自行实现相关代码）
      */
     @PostMapping(path = "/user/register")
-    public Result register(@RequestBody @Validated UserRegisterPojo user) {
+    public Result register(@RequestBody @Validated UserRegisterDTO user) {
         try {
             userService.register(user);
         } catch (Exception e) {
@@ -59,7 +67,7 @@ public class UserController {
      * @description 用户使用YeIMUniSDK登陆YeImUniServer使用的token，在此换取。或者开发者可自行打通系统，推荐开发者自行打通生成token，避免安全问题。
      */
     @PostMapping(path = "/user/token/get")
-    public Result<Map<String, String>> getToken(@RequestBody @Validated UserTokenPojo params) {
+    public Result<Map<String, String>> getToken(@RequestBody @Validated UserTokenDTO params) {
 
         try {
             if (params.getTimestamp() < System.currentTimeMillis()) {
@@ -102,7 +110,7 @@ public class UserController {
      */
     @UserAuthorization
     @PostMapping(path = "/user/update")
-    public Result update(@RequestBody @Validated UserUpdatePojo user, HttpServletRequest request) {
+    public Result update(@RequestBody @Validated UserUpdateDTO user, HttpServletRequest request) {
         try {
             userService.updateUser(request.getAttribute(UserAuthorizationInterceptor.REQUEST_TOKEN_USER_ID).toString(),user);
         } catch (Exception e) {

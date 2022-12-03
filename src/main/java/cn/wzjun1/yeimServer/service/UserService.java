@@ -1,8 +1,8 @@
 package cn.wzjun1.yeimServer.service;
 
 import cn.wzjun1.yeimServer.domain.User;
-import cn.wzjun1.yeimServer.pojo.user.UserRegisterPojo;
-import cn.wzjun1.yeimServer.pojo.user.UserUpdatePojo;
+import cn.wzjun1.yeimServer.dto.user.UserRegisterDTO;
+import cn.wzjun1.yeimServer.dto.user.UserUpdateDTO;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -13,7 +13,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface UserService extends IService<User> {
 
     User getUserById(String userId);
-    void register(UserRegisterPojo user) throws Exception;
+    void register(UserRegisterDTO user) throws Exception;
 
-    void updateUser(String userId, UserUpdatePojo user) throws Exception;
+    void updateUser(String userId, UserUpdateDTO user) throws Exception;
 }

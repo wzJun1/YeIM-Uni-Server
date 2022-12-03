@@ -2,8 +2,7 @@ package cn.wzjun1.yeimServer.service;
 
 import cn.wzjun1.yeimServer.domain.Message;
 import cn.wzjun1.yeimServer.domain.User;
-import cn.wzjun1.yeimServer.entity.SocketMessage;
-import cn.wzjun1.yeimServer.pojo.message.MessageSavePojo;
+import cn.wzjun1.yeimServer.dto.message.MessageSaveDTO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -13,11 +12,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2022-11-16 23:29:12
 */
 public interface MessageService extends IService<Message> {
-    Message formatMessage(SocketMessage message);
-    int insertMessage(SocketMessage message);
-    Message insertMessage(User user, MessageSavePojo params);
 
+    Message insertMessage(User user, MessageSaveDTO params);
 
+    void updatePrivateMessageById(Message update,String messageId) throws Exception;
 
     IPage<Message> listMessage(IPage<Message> page, String userId, String conversationId);
 }

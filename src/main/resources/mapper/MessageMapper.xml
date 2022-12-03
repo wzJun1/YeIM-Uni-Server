@@ -8,13 +8,17 @@
         <id property="sequence" column="sequence" jdbcType="BIGINT"/>
         <result property="messageId" column="message_id" jdbcType="VARCHAR"/>
         <result property="conversationId" column="message_conversation_id" jdbcType="VARCHAR"/>
+        <result property="direction" column="direction" jdbcType="VARCHAR"/>
+        <result property="userId" column="user_id" jdbcType="VARCHAR"/>
         <result property="from" column="from" jdbcType="VARCHAR"/>
         <result property="to" column="to" jdbcType="VARCHAR"/>
         <result property="type" column="message_type" jdbcType="VARCHAR"/>
         <result property="body" column="body" jdbcType="OTHER" javaType="com.alibaba.fastjson.JSONObject"
                 typeHandler="com.baomidou.mybatisplus.extension.handlers.FastjsonTypeHandler"/>
-        <result property="isRead" column="is_read" jdbcType="TINYINT"/>
-        <result property="isRecall" column="is_recall" jdbcType="TINYINT"/>
+        <result property="extra" column="extra" jdbcType="LONGVARCHAR"/>
+        <result property="isRead" column="is_read" jdbcType="INTEGER"/>
+        <result property="isRevoke" column="is_revoke" jdbcType="INTEGER"/>
+        <result property="isDeleted" column="is_deleted" jdbcType="INTEGER"/>
         <result property="receive" column="receive" jdbcType="INTEGER"/>
         <result property="status" column="message_status" jdbcType="VARCHAR"/>
         <result property="time" column="time" jdbcType="BIGINT"/>
@@ -27,43 +31,50 @@
     <select id="getMessageById" resultMap="MessageMap">
         SELECT u.nickname,
                u.avatar_url,
-               m.`id`              as sequence,
+               m.`sequence`,
+               m.`user_id`,
+               m.`direction`,
                m.`message_id`,
                m.`conversation_id` as message_conversation_id,
                m.`from`,
                m.`to`,
                m.`type`            as message_type,
                m.`body`,
+               m.`extra`,
                m.`is_read`,
-               m.`is_recall`,
+               m.`is_revoke`,
+               m.`is_deleted`,
                m.`status`          as message_status,
                m.`receive`,
                m.`time`
         FROM `message` as m
                  LEFT JOIN `user` as u ON u.`user_id` = m.`from`
-        WHERE m.`message_id` = #{messageId}
-        ORDER BY m.`id` desc
+        WHERE m.`is_deleted` = 0 and m.`message_id` = #{messageId} and m.`user_id` = #{userId}
     </select>
+
 
     <select id="listMessage" resultMap="MessageMap">
         SELECT u.nickname,
                u.avatar_url,
-               m.`id`              as sequence,
+               m.`sequence`,
                m.`message_id`,
+               m.`user_id`,
+               m.`direction`,
                m.`conversation_id` as message_conversation_id,
                m.`from`,
                m.`to`,
                m.`type`            as message_type,
                m.`body`,
+               m.`extra`,
                m.`is_read`,
-               m.`is_recall`,
+               m.`is_revoke`,
+               m.`is_deleted`,
                m.`status`          as message_status,
                m.`receive`,
                m.`time`
         FROM `message` as m
                  LEFT JOIN `user` as u ON u.`user_id` = m.`from`
-        WHERE (m.`conversation_id` = #{conversationId} and m.`from` = #{userId})
-           or (m.`conversation_id` = #{userId} and m.`from` = #{conversationId})
-        ORDER BY m.`id` desc
+        WHERE m.`is_deleted` = 0 and m.`conversation_id` = #{conversationId} and m.`user_id` = #{userId}
+        ORDER BY m.`sequence` desc
     </select>
 </mapper>

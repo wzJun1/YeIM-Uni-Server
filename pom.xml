@@ -101,6 +101,13 @@
             <version>1.10</version>
         </dependency>
 
+        <!-- 分布式ID生成器： https://github.com/yitter/IdGenerator -->
+        <dependency>
+            <groupId>com.github.yitter</groupId>
+            <artifactId>yitter-idgenerator</artifactId>
+            <version>1.0.6</version>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>

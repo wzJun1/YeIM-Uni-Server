@@ -2,8 +2,8 @@ package cn.wzjun1.yeimServer.service.impl;
 
 import cn.wzjun1.yeimServer.domain.User;
 import cn.wzjun1.yeimServer.mapper.UserMapper;
-import cn.wzjun1.yeimServer.pojo.user.UserRegisterPojo;
-import cn.wzjun1.yeimServer.pojo.user.UserUpdatePojo;
+import cn.wzjun1.yeimServer.dto.user.UserRegisterDTO;
+import cn.wzjun1.yeimServer.dto.user.UserUpdateDTO;
 import cn.wzjun1.yeimServer.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -30,7 +30,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     }
 
     @Override
-    public void register(UserRegisterPojo user) throws Exception {
+    public void register(UserRegisterDTO user) throws Exception {
         User exist = userMapper.selectOne(new QueryWrapper<User>().eq("user_id",user.getUserId()));
         if (!Objects.isNull(exist)){
             throw new Exception("用户已存在，请勿重复注册");
@@ -47,7 +47,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     }
 
     @Override
-    public void updateUser(String userId, UserUpdatePojo user) throws Exception {
+    public void updateUser(String userId, UserUpdateDTO user) throws Exception {
         User entity = new User();
         entity.setNickname(user.getNickname());
         entity.setAvatarUrl(user.getAvatarUrl());

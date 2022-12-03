@@ -1,4 +1,4 @@
-package cn.wzjun1.yeimServer.pojo.user;
+package cn.wzjun1.yeimServer.dto.user;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,7 +9,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class UserTokenPojo {
+public class UserTokenDTO {
 
     /**
      * 用户ID

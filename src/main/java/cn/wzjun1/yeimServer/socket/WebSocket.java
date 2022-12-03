@@ -9,6 +9,7 @@ import cn.wzjun1.yeimServer.utils.Result;
 import cn.wzjun1.yeimServer.utils.SpringUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.github.yitter.idgen.YitIdHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -77,7 +79,9 @@ public class WebSocket {
                 userId = _userId;
                 webSockets.add(this);
                 sessionPool.put(userId, session);
-                sendMessage(_session, Result.info(SocketStatusCode.LOGIN_SUCCESS.getCode(), SocketStatusCode.LOGIN_SUCCESS.getDesc(), user).toJSONString());
+                sendMessage(_session, Result.info(SocketStatusCode.LOGIN_SUCCESS.getCode(), SocketStatusCode.LOGIN_SUCCESS.getDesc(), new HashMap<String,Object>(){{
+                    put("user",user);
+                }}).toJSONString());
                 log.info("【YeIMServer】有新用户：" + user.getNickname() + "_" + _userId + "的连接，现存总数为:" + webSockets.size());
             }
         } catch (Exception e) {

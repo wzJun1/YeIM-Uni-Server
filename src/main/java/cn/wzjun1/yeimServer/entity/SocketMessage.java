@@ -47,7 +47,7 @@ public class SocketMessage implements Serializable {
     /**
      * 是否被撤回的消息
      */
-    private boolean isRecall;
+    private boolean isRevoke;
 
     /**
      * 消息状态：

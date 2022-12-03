@@ -11,4 +11,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface ConversationService extends IService<Conversation> {
     ConversationV0 getConversation(String conversationId, String userId);
+
+    void clearConversationUnread(String conversationId) throws Exception;
 }

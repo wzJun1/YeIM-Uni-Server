@@ -1,4 +1,4 @@
-package cn.wzjun1.yeimServer.pojo.user;
+package cn.wzjun1.yeimServer.dto.user;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,7 +8,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class UserUpdatePojo {
+public class UserUpdateDTO {
 
     /**
      * 用户昵称

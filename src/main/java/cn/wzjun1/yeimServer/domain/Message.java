@@ -16,18 +16,30 @@ import java.io.Serializable;
 @TableName(value = "message")
 public class Message implements Serializable {
 
-    @TableId(type = IdType.AUTO,value = "id")
+    @TableId(type = IdType.AUTO)
     private Long sequence;
 
     /**
      * 消息ID
+     * 私聊消息ID组成：分布式唯一ID-毫秒级时间戳-发送端1（接收端2）
      */
     private String messageId;
+
+    /**
+     * 消息所属用户
+     */
+    private String userId;
+
 
     /**
      * 消息所属会话ID
      */
     private String conversationId;
+
+    /**
+     * 消息方向：in=接收 out等于发出
+     */
+    private String direction;
 
     /**
      * 消息发送方
@@ -57,6 +69,11 @@ public class Message implements Serializable {
     private Object body;
 
     /**
+     * 扩展的自定义数据(字符串类型)
+     */
+    private String extra;
+
+    /**
      * 对方是否已读
      */
     private Integer isRead;
@@ -64,7 +81,12 @@ public class Message implements Serializable {
     /**
      * 是否被撤回的消息
      */
-    private Integer isRecall;
+    private Integer isRevoke;
+
+    /**
+     * 是否被删除的消息
+     */
+    private Integer isDeleted;
 
     /**
      * 消息状态：
@@ -84,7 +106,7 @@ public class Message implements Serializable {
     private Integer receive;
 
     /**
-     * 消息时间，毫秒
+     * 消息时间，毫秒级时间戳
      */
     @TableField(value = "`time`")
     private Long time;

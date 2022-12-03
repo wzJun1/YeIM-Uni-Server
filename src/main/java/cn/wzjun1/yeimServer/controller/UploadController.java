@@ -1,29 +1,12 @@
 package cn.wzjun1.yeimServer.controller;
 
 import cn.wzjun1.yeimServer.annotation.UserAuthorization;
-import cn.wzjun1.yeimServer.domain.User;
-import cn.wzjun1.yeimServer.interceptor.UserAuthorizationInterceptor;
-import cn.wzjun1.yeimServer.pojo.user.UserRegisterPojo;
-import cn.wzjun1.yeimServer.pojo.user.UserTokenPojo;
-import cn.wzjun1.yeimServer.pojo.user.UserUpdatePojo;
 import cn.wzjun1.yeimServer.service.UploadService;
-import cn.wzjun1.yeimServer.service.UserService;
-import cn.wzjun1.yeimServer.utils.MD5Util;
-import cn.wzjun1.yeimServer.utils.RedisUtil;
 import cn.wzjun1.yeimServer.utils.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
 @Slf4j
 @RestController
