@@ -3,6 +3,7 @@ package cn.wzjun1.yeimServer.service.impl;
 import cn.wzjun1.yeimServer.domain.Conversation;
 import cn.wzjun1.yeimServer.domain.Message;
 import cn.wzjun1.yeimServer.domain.User;
+import cn.wzjun1.yeimServer.interceptor.LoginUserContext;
 import cn.wzjun1.yeimServer.mapper.MessageMapper;
 import cn.wzjun1.yeimServer.mapper.UserMapper;
 import cn.wzjun1.yeimServer.dto.message.MessageSaveDTO;
@@ -11,7 +12,6 @@ import cn.wzjun1.yeimServer.service.MessageService;
 import cn.wzjun1.yeimServer.socket.WebSocket;
 import cn.wzjun1.yeimServer.socket.cons.MessageStatus;
 import cn.wzjun1.yeimServer.socket.cons.SocketStatusCode;
-import cn.wzjun1.yeimServer.utils.RequestUtils;
 import cn.wzjun1.yeimServer.utils.Result;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -162,9 +162,10 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
      * @return
      */
     @Override
-    public void updatePrivateMessageById(Message update, String messageId) throws Exception {
-        String userId = RequestUtils.getUserId();
+    public void updatePrivateMessageById(Message update, String userId, String messageId) throws Exception {
+
         Message exist = messageMapper.getMessageById(messageId, userId);
+
         if (exist == null) {
             throw new Exception("messageId 错误");
         }

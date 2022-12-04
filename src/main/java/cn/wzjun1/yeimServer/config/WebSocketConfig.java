@@ -65,6 +65,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
                     }
                 })
-                .setAllowedOrigins("*"); // 解决跨域问题 [4]
+                .setAllowedOriginPatterns("*");
     }
 }

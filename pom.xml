@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cn.wzjun1</groupId>
     <artifactId>yeimServer</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.6</version>
     <name>yeimServer</name>
     <description>YeIM for Spring Boot</description>
 
@@ -12,7 +12,7 @@
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <spring-boot.version>2.3.7.RELEASE</spring-boot.version>
+        <spring-boot.version>2.7.6</spring-boot.version>
     </properties>
 
     <dependencies>

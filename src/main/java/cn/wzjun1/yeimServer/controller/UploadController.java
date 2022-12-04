@@ -25,7 +25,7 @@ public class UploadController {
     @GetMapping (path = "/upload/sign")
     public Result update() {
         try {
-            Object params = uploadService.getOSSParams();
+            Object params = uploadService.getStorageParams();
             return Result.success(params);
         } catch (Exception e) {
             return Result.error(e.getMessage());

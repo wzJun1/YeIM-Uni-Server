@@ -7,15 +7,15 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
-* @author wzjun1
-* @description 针对表【message】的数据库操作Service
-* @createDate 2022-11-16 23:29:12
-*/
+ * @author wzjun1
+ * @description 针对表【message】的数据库操作Service
+ * @createDate 2022-11-16 23:29:12
+ */
 public interface MessageService extends IService<Message> {
 
     Message insertMessage(User user, MessageSaveDTO params);
 
-    void updatePrivateMessageById(Message update,String messageId) throws Exception;
+    void updatePrivateMessageById(Message update, String userId, String messageId) throws Exception;
 
     IPage<Message> listMessage(IPage<Message> page, String userId, String conversationId);
 }

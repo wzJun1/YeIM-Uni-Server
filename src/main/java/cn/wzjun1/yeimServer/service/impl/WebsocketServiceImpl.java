@@ -31,7 +31,7 @@ public class WebsocketServiceImpl implements WebSocketService {
             Message update = new Message();
             update.setReceive(1);
             //根据消息ID更新消息（两条）
-            messageService.updatePrivateMessageById(update, messageId);
+            messageService.updatePrivateMessageById(update, userId, messageId);
         }
     }
 }

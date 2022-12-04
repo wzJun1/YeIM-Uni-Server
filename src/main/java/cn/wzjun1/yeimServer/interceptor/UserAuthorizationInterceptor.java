@@ -20,15 +20,10 @@ public class UserAuthorizationInterceptor extends HandlerInterceptorAdapter {
         this.redisUtil = redisUtil;
     }
 
-
-    public static final String REQUEST_TOKEN_USER = "REQUEST_TOKEN_USER";
-
-    public static final String REQUEST_TOKEN_USER_ID = "REQUEST_TOKEN_USER_ID";
     /**
      * 存放鉴权信息的Header名称
      */
     private String httpHeaderName = "token";
-
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -42,12 +37,10 @@ public class UserAuthorizationInterceptor extends HandlerInterceptorAdapter {
         Method method = handlerMethod.getMethod();
         String token = request.getHeader(httpHeaderName);
         if (token != null && token.length() > 0) {
-            log.info("token:" + token);
             String key = "token:" + token;
             if (redisUtil.hasKey(key)) {
-                User user = (User) redisUtil.get("token:" + token);
-                request.setAttribute(REQUEST_TOKEN_USER, user);
-                request.setAttribute(REQUEST_TOKEN_USER_ID, user.getUserId());
+                User user = (User) redisUtil.get(key);
+                LoginUserContext.setUser(user);
                 return true;
             }
         }
@@ -57,7 +50,6 @@ public class UserAuthorizationInterceptor extends HandlerInterceptorAdapter {
         if (method.getAnnotation(UserAuthorization.class) != null || handlerMethod.getBeanType().getAnnotation(UserAuthorization.class) != null) {
             throw new Exception("用户权限验证错误");
         }
-        request.setAttribute(REQUEST_TOKEN_USER, null);
         return true;
     }
 

@@ -82,7 +82,7 @@ public class WebSocket {
                 sendMessage(_session, Result.info(SocketStatusCode.LOGIN_SUCCESS.getCode(), SocketStatusCode.LOGIN_SUCCESS.getDesc(), new HashMap<String,Object>(){{
                     put("user",user);
                 }}).toJSONString());
-                log.info("【YeIMServer】有新用户：" + user.getNickname() + "_" + _userId + "的连接，现存总数为:" + webSockets.size());
+                log.info("【YeIMUniServer】有新用户：" + user.getNickname() + "_" + _userId + "的连接，现存总数为:" + webSockets.size());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -104,7 +104,7 @@ public class WebSocket {
             webSockets.remove(this);
             if (userId != null){
                 sessionPool.remove(userId);
-                log.info("【YeIMServer】用户：" + userId + "连接断开，总数为:" + webSockets.size());
+                log.info("【YeIMUniServer】用户：" + userId + "连接断开，总数为:" + webSockets.size());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -130,12 +130,12 @@ public class WebSocket {
         JSONObject msgObj = JSONObject.parseObject(msgStr);
 
         if (!msgObj.containsKey("type")) {
-            log.info("【YeIMServer】消息缺失：type");
+            log.info("【YeIMUniServer】消息缺失：type");
             return;
         }
 
         if (!msgObj.containsKey("data")) {
-            log.info("【YeIMServer】消息缺失：data");
+            log.info("【YeIMUniServer】消息缺失：data");
             return;
         }
         String type = msgObj.getString("type");
@@ -153,7 +153,7 @@ public class WebSocket {
                 e.printStackTrace();
             }
         } else if (type.equals("message")) {
-            log.info("【YeIMServer】收到一条IM消息：" + data);
+            log.info("【YeIMUniServer】收到一条IM消息：" + data);
             //消息
             try {
                 Message messageObj = JSONObject.parseObject(data, Message.class);
@@ -177,7 +177,7 @@ public class WebSocket {
      */
     @OnError
     public void onError(Session session, Throwable error) {
-        log.info("【YeIMServer】发生错误：" + error.getMessage());
+        log.info("【YeIMUniServer】发生错误：" + error.getMessage());
         error.printStackTrace();
     }
 
@@ -188,13 +188,13 @@ public class WebSocket {
             synchronized(session){
                 if (session.isOpen()) {
                     try {
-                        log.info("【YeIMServer】通过userId发送消息(userId: " + userId + ")：" + message);
+                        log.info("【YeIMUniServer】通过userId发送消息(userId: " + userId + ")：" + message);
                         session.getBasicRemote().sendText(message);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 } else {
-                    log.info("【YeIMServer】userId:" + userId + "不在线，无法通过socket发送");
+                    log.info("【YeIMUniServer】userId:" + userId + "不在线，无法通过socket发送");
                 }
             }
         }
@@ -206,13 +206,13 @@ public class WebSocket {
             synchronized(session){
                 if (session.isOpen()) {
                     try {
-                        log.info("【YeIMServer】通过session发送消息(sessionId: " + session.getId() + ")：" + message);
+                        log.info("【YeIMUniServer】通过session发送消息(sessionId: " + session.getId() + ")：" + message);
                         session.getBasicRemote().sendText(message);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 } else {
-                    log.info("【YeIMServer】session:" + session.getId() + "不在线，无法通过socket发送");
+                    log.info("【YeIMUniServer】session:" + session.getId() + "不在线，无法通过socket发送");
                 }
             }
         }

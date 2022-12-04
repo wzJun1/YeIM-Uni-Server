@@ -3,6 +3,7 @@ package cn.wzjun1.yeimServer.controller;
 import cn.wzjun1.yeimServer.annotation.UserAuthorization;
 import cn.wzjun1.yeimServer.domain.Message;
 import cn.wzjun1.yeimServer.domain.User;
+import cn.wzjun1.yeimServer.interceptor.LoginUserContext;
 import cn.wzjun1.yeimServer.interceptor.UserAuthorizationInterceptor;
 import cn.wzjun1.yeimServer.dto.message.MessageSaveDTO;
 import cn.wzjun1.yeimServer.service.MessageService;
@@ -35,7 +36,7 @@ public class MessageController {
     @PostMapping(path = "/message/save")
     public Result save(@RequestBody @Validated MessageSaveDTO params, HttpServletRequest request) {
         try {
-            User user = (User) request.getAttribute(UserAuthorizationInterceptor.REQUEST_TOKEN_USER);
+            User user = LoginUserContext.getUser();
             if (!user.getUserId().equals(params.getFrom()) || user.getUserId().equals(params.getTo())) {
                 throw new Exception("发送者/接收者ID错误");
             }
@@ -64,7 +65,7 @@ public class MessageController {
             Message update = new Message();
             update.setIsRevoke(1);
             //根据消息ID更新消息（两条）
-            messageService.updatePrivateMessageById(update, messageId);
+            messageService.updatePrivateMessageById(update, LoginUserContext.getUser().getUserId(), messageId);
             return Result.success();
         } catch (Exception e) {
             return Result.error(e.getMessage());
@@ -76,15 +77,14 @@ public class MessageController {
      *
      * @param page           页码
      * @param conversationId 会话ID
-     * @param request        HttpServletRequest
      * @return IPage<Message>
      */
     @UserAuthorization
     @GetMapping(path = "/message/list")
     @Validated
-    public Result list(@RequestParam(defaultValue = "1") Integer page, @RequestParam @NotNull(message = "conversationId must be not null") String conversationId, HttpServletRequest request) {
+    public Result list(@RequestParam(defaultValue = "1") Integer page, @RequestParam @NotNull(message = "conversationId must be not null") String conversationId) {
         try {
-            IPage<Message> messages = messageService.listMessage(Page.of(page, 20), request.getAttribute(UserAuthorizationInterceptor.REQUEST_TOKEN_USER_ID).toString(), conversationId);
+            IPage<Message> messages = messageService.listMessage(Page.of(page, 20), LoginUserContext.getUser().getUserId(), conversationId);
             return Result.success(messages);
         } catch (Exception e) {
             return Result.error(e.getMessage());

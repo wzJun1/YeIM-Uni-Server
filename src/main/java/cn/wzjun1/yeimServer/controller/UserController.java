@@ -2,6 +2,7 @@ package cn.wzjun1.yeimServer.controller;
 
 import cn.wzjun1.yeimServer.annotation.UserAuthorization;
 import cn.wzjun1.yeimServer.domain.User;
+import cn.wzjun1.yeimServer.interceptor.LoginUserContext;
 import cn.wzjun1.yeimServer.interceptor.UserAuthorizationInterceptor;
 import cn.wzjun1.yeimServer.dto.user.UserRegisterDTO;
 import cn.wzjun1.yeimServer.dto.user.UserTokenDTO;
@@ -37,7 +38,7 @@ public class UserController {
     UserService userService;
 
     @GetMapping(path = "/aa")
-    public void sss(){
+    public void sss() {
         long newId = YitIdHelper.nextId();
         System.out.println("生成一个id：" + newId);
     }
@@ -110,9 +111,9 @@ public class UserController {
      */
     @UserAuthorization
     @PostMapping(path = "/user/update")
-    public Result update(@RequestBody @Validated UserUpdateDTO user, HttpServletRequest request) {
+    public Result update(@RequestBody @Validated UserUpdateDTO user) {
         try {
-            userService.updateUser(request.getAttribute(UserAuthorizationInterceptor.REQUEST_TOKEN_USER_ID).toString(),user);
+            userService.updateUser(LoginUserContext.getUser().getUserId(), user);
         } catch (Exception e) {
             return Result.error(e.getMessage());
         }
@@ -121,12 +122,13 @@ public class UserController {
 
     /**
      * 根据userId获取用户资料
+     *
      * @param userId
      * @return
      */
     @UserAuthorization
     @GetMapping(path = "/user/info")
-    public Result getUserInfo(@RequestParam @NotNull(message = "用户ID不能为空") String userId){
+    public Result getUserInfo(@RequestParam @NotNull(message = "用户ID不能为空") String userId) {
         return Result.success(userService.getUserById(userId));
     }
 
