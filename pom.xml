@@ -108,6 +108,33 @@
             <version>1.0.6</version>
         </dependency>
 
+        <!-- 图片处理 -->
+        <dependency>
+            <groupId>net.coobird</groupId>
+            <artifactId>thumbnailator</artifactId>
+            <version>0.4.18</version>
+        </dependency>
+
+        <!-- 防止部分机型tiff无法读取 -->
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-tiff</artifactId>
+            <version>3.9.3</version>
+        </dependency>
+
+        <!-- 防止部分机型webp无法读取 -->
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-webp</artifactId>
+            <version>3.9.3</version>
+        </dependency>
+
+        <!-- 多媒体处理 -->
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>javacv-platform</artifactId>
+            <version>1.5.8</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>

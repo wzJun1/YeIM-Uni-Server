@@ -15,7 +15,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.io.File;
 
 
 @Configuration
@@ -23,6 +26,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Value("${yeim.generator.workId}")
     short idGenWorkId;
+
+    @Value("${yeim.file.storage.baseDir}")
+    String baseDir;
 
     @Autowired
     RedisUtil redisUtil;
@@ -34,6 +40,11 @@ public class WebConfig implements WebMvcConfigurer {
          */
         registry.addInterceptor(new UserAuthorizationInterceptor(redisUtil))
                 .addPathPatterns("/**");
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/**").addResourceLocations("file:" + baseDir + File.separator);
     }
 
     /**
@@ -62,7 +73,7 @@ public class WebConfig implements WebMvcConfigurer {
      * 初始化ID生成器
      */
     @Bean
-    public void yitIdHelper(){
+    public void yitIdHelper() {
         // 创建 IdGeneratorOptions 对象，可在构造函数中输入 WorkerId：
         IdGeneratorOptions options = new IdGeneratorOptions(idGenWorkId);
         options.SeqBitLength = 6; // 默认值6，限制每毫秒生成的ID个数。若生成速度超过5万个/秒，建议加大 SeqBitLength 到 10。

@@ -72,15 +72,15 @@ public class WebSocket {
                 //检测是否在线,踢掉
                 Session online = sessionPool.get(_userId);
                 if (online != null) {
-                    sendMessage(_session, Result.error(SocketStatusCode.KICKED_OUT.getCode(), SocketStatusCode.KICKED_OUT.getDesc()).toJSONString());
+                    sendMessage(online, Result.error(SocketStatusCode.KICKED_OUT.getCode(), SocketStatusCode.KICKED_OUT.getDesc()).toJSONString());
                     online.close();
                 }
                 session = _session;
                 userId = _userId;
                 webSockets.add(this);
                 sessionPool.put(userId, session);
-                sendMessage(_session, Result.info(SocketStatusCode.LOGIN_SUCCESS.getCode(), SocketStatusCode.LOGIN_SUCCESS.getDesc(), new HashMap<String,Object>(){{
-                    put("user",user);
+                sendMessage(_session, Result.info(SocketStatusCode.LOGIN_SUCCESS.getCode(), SocketStatusCode.LOGIN_SUCCESS.getDesc(), new HashMap<String, Object>() {{
+                    put("user", user);
                 }}).toJSONString());
                 log.info("【YeIMUniServer】有新用户：" + user.getNickname() + "_" + _userId + "的连接，现存总数为:" + webSockets.size());
             }
@@ -102,7 +102,7 @@ public class WebSocket {
     public void onClose() {
         try {
             webSockets.remove(this);
-            if (userId != null){
+            if (userId != null) {
                 sessionPool.remove(userId);
                 log.info("【YeIMUniServer】用户：" + userId + "连接断开，总数为:" + webSockets.size());
             }
@@ -184,8 +184,8 @@ public class WebSocket {
     //通过userId发送消息
     public static void sendMessage(String userId, String message) {
         Session session = sessionPool.get(userId);
-        if (session != null){
-            synchronized(session){
+        if (session != null) {
+            synchronized (session) {
                 if (session.isOpen()) {
                     try {
                         log.info("【YeIMUniServer】通过userId发送消息(userId: " + userId + ")：" + message);
@@ -202,8 +202,8 @@ public class WebSocket {
 
     //通过session发送消息
     public void sendMessage(Session session, String message) {
-        if (session != null){
-            synchronized(session){
+        if (session != null) {
+            synchronized (session) {
                 if (session.isOpen()) {
                     try {
                         log.info("【YeIMUniServer】通过session发送消息(sessionId: " + session.getId() + ")：" + message);
@@ -217,6 +217,7 @@ public class WebSocket {
             }
         }
     }
+
 
     /**
      * 检测字符串是否是json对象
