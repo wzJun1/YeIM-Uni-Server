@@ -4,12 +4,9 @@ import net.coobird.thumbnailator.Thumbnails;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameConverter;
-import org.springframework.beans.factory.annotation.Value;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.security.MessageDigest;
 
 public class JavaCvUtil {
 

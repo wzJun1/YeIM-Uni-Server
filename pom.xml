@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cn.wzjun1</groupId>
     <artifactId>yeimServer</artifactId>
-    <version>1.0.7</version>
+    <version>1.0.8</version>
     <name>yeimServer</name>
     <description>YeIM for Spring Boot</description>
 
@@ -132,8 +132,23 @@
         <!-- 多媒体处理 -->
         <dependency>
             <groupId>org.bytedeco</groupId>
-            <artifactId>javacv-platform</artifactId>
+            <artifactId>javacv</artifactId>
             <version>1.5.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>ffmpeg</artifactId>
+            <version>5.1.2-1.5.8</version>
+
+            <!-- Windows系统上运行使用此包 -->
+            <!-- <classifier>windows-x86_64</classifier> -->
+
+            <!-- Linux系统上运行使用此包 -->
+            <!-- <classifier>linux-x86_64</classifier>-->
+
+            <!-- MacOS系统上运行使用此包 -->
+            <classifier>macosx-x86_64</classifier>
+
         </dependency>
     </dependencies>
 
@@ -164,7 +179,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>2.3.7.RELEASE</version>
+                <version>2.7.6</version>
                 <configuration>
                     <mainClass>cn.wzjun1.yeimServer.YeimServerApplication</mainClass>
                 </configuration>
