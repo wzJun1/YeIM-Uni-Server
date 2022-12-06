@@ -4,6 +4,7 @@ import net.coobird.thumbnailator.Thumbnails;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameConverter;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -14,6 +15,7 @@ public class JavaCvUtil {
      * 获取视频缩略图
      *
      * @param videoPath：视频路径
+     * @param baseDir：保存目录
      * @throws Exception
      */
     public static String getVideoCover(String videoPath, String baseDir) throws Exception {
@@ -41,16 +43,15 @@ public class JavaCvUtil {
             i++;
         }
         ff.stop();
-        if (bufferedImage == null){
+        if (bufferedImage == null) {
             throw new Exception("截取视频封面异常");
         }
-        String thumbFileName = MD5Util.encode(videoPath) + "_videoThumb.jpg";
+        String thumbFileName = MD5Util.encode(videoPath) + "_video_thumb.jpg";
         File thumb = new File(baseDir + File.separator + thumbFileName);
         Thumbnails.of(bufferedImage)
                 .scale(1f)
                 .outputQuality(0.8f)
                 .toFile(thumb);
-
         return thumbFileName;
     }
 

@@ -139,16 +139,12 @@
             <groupId>org.bytedeco</groupId>
             <artifactId>ffmpeg</artifactId>
             <version>5.1.2-1.5.8</version>
-
             <!-- Windows系统上运行使用此包 -->
-            <!-- <classifier>windows-x86_64</classifier> -->
-
+             <classifier>windows-x86_64</classifier>
             <!-- Linux系统上运行使用此包 -->
-            <!-- <classifier>linux-x86_64</classifier>-->
-
+<!--             <classifier>linux-x86_64</classifier>-->
             <!-- MacOS系统上运行使用此包 -->
-            <classifier>macosx-x86_64</classifier>
-
+<!--            <classifier>macosx-x86_64</classifier>-->
         </dependency>
     </dependencies>
 

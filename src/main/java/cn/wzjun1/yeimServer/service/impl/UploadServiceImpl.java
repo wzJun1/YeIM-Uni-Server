@@ -5,6 +5,7 @@ import cn.wzjun1.yeimServer.service.UploadService;
 import cn.wzjun1.yeimServer.utils.JavaCvUtil;
 import cn.wzjun1.yeimServer.utils.MD5Util;
 import com.alibaba.fastjson.JSONObject;
+import com.sun.org.apache.bcel.internal.generic.RETURN;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.codec.binary.Base64;
@@ -12,6 +13,7 @@ import org.apache.commons.codec.digest.HmacUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -76,6 +78,7 @@ public class UploadServiceImpl implements UploadService {
         return new HashMap<String, Object>() {{
             put("storage", "cos");
             put("customDomain", customDomain);
+            put("baseDir", baseDir);
             put("bucket", bucket);
             put("region", region);
             put("nowTime", nowTime);
@@ -106,6 +109,7 @@ public class UploadServiceImpl implements UploadService {
             put("storage", "oss");
             put("accessKeyId", secretId);
             put("customDomain", customDomain);
+            put("baseDir", baseDir);
             put("bucket", bucket);
             put("region", region);
             put("policyBase64", policyBase64);
@@ -143,6 +147,9 @@ public class UploadServiceImpl implements UploadService {
             // "文件格式错误"
             throw new Exception("当前类型文件不允许上传");
         }
+        //创建保存目录
+        mkFileDirs(filename);
+
         File desc = new File(baseDir + File.separator + filename);
         file.transferTo(desc);
         return new HashMap<String, Object>() {{
@@ -167,6 +174,11 @@ public class UploadServiceImpl implements UploadService {
             // "文件格式错误"
             throw new Exception("当前类型文件不允许上传");
         }
+
+        //图片保存绝对路径
+        String fileAbsoluteDir = mkFileDirs(filename);
+        //图片保存相对路径
+        String fileRelativeDir = filename.substring(0, filename.lastIndexOf("/"));
 
         BufferedImage originalImage = ImageIO.read(file.getInputStream());
 
@@ -201,17 +213,25 @@ public class UploadServiceImpl implements UploadService {
         int finalThumbnailWidth = (int) thumbnailWidth;
         int finalThumbnailHeight = (int) thumbnailHeight;
 
+        //缩略图文件相对路径
+        String thumbFileName = fileRelativeDir + "_thumb." + extName;
+
         //保存缩略图
-        String thumbFileName = MD5Util.encode(filename) + "_thumb." + extName;
         File thumb = new File(baseDir + File.separator + thumbFileName);
         Thumbnails.of(desc.getAbsolutePath())
                 .size(finalThumbnailWidth, finalThumbnailHeight)
                 .outputQuality(0.8f)
                 .toFile(thumb.getAbsolutePath());
 
+        //可访问图片相对路径URL
+        String imageRelativeUrl = "/" + filename;
+
+        //可访问缩略图相对路径URL
+        String thumbnailRelativeUrl = "/" + thumbFileName;
+
         return new HashMap<String, Object>() {{
-            put("url", "/" + filename);
-            put("thumbnailUrl", "/" + thumbFileName);
+            put("url", imageRelativeUrl);
+            put("thumbnailUrl", thumbnailRelativeUrl);
             put("thumbnailWidth", finalThumbnailWidth);
             put("thumbnailHeight", finalThumbnailHeight);
         }};
@@ -231,20 +251,60 @@ public class UploadServiceImpl implements UploadService {
         String extName = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
         // 判断是不是图片文件后缀
         if (!extName.matches("(mp4|mov|avi|flv|3gp|rmvb)")) {
-            // "文件格式错误"
+            //文件格式错误
             throw new Exception("当前类型文件不允许上传");
         }
-        String savename = MD5Util.encode(filename + System.currentTimeMillis() + LoginUserContext.getUser().getUserId()) + "." + extName;
-        File desc = new File(baseDir + File.separator + savename);
+
+        //视频保存绝对路径
+        String fileAbsoluteDir = mkFileDirs(filename);
+        //视频保存相对路径
+        String fileRelativeDir = filename.substring(0, filename.lastIndexOf("/"));
+
+        //随机文件名
+        String videoName = MD5Util.encode(filename + System.currentTimeMillis() + LoginUserContext.getUser().getUserId()) + "." + extName;
+
+        //保存视频文件
+        File desc = new File(fileAbsoluteDir + File.separator + videoName);
         file.transferTo(desc);
 
+        //可访问视频文件相对路径
+        String videoRelativeUrl = "/" + fileRelativeDir + "/" + videoName;
+
+        //创建视频封面
+        String thumbnail = JavaCvUtil.getVideoCover(desc.getAbsolutePath(), fileAbsoluteDir);
+        //可访问视频封面图片相对路径
+        String thumbnailUrl = "/" + fileRelativeDir + "/" + thumbnail;
+
         return new HashMap<String, Object>() {{
-            put("url", "/" + savename);
-            put("thumbnailUrl", "/" + JavaCvUtil.getVideoCover(desc.getAbsolutePath(), baseDir));
+            put("url", videoRelativeUrl);
+            put("thumbnailUrl", thumbnailUrl);
         }};
     }
 
 
+    /**
+     * 根据文件名称路径创建目录
+     *
+     * @param filename 文件名称
+     * @return path
+     */
+    private String mkFileDirs(String filename) throws Exception {
+        String[] path = filename.split("/");
+        if (path.length > 0) {
+            StringBuilder dirStr = new StringBuilder();
+            for (int i = 0; i < path.length; i++) {
+                if (i != path.length - 1) {
+                    dirStr.append(path[i] + File.separator);
+                }
+            }
+            File dir = new File(baseDir + File.separator + dirStr);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            return dir.getAbsolutePath();
+        }
+        throw new Exception("创建目录失败");
+    }
 }
 
 
