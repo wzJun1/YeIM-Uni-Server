@@ -3,6 +3,8 @@ package cn.wzjun1.yeimServer.mapper;
 import cn.wzjun1.yeimServer.domain.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 /**
 * @author wzjun1
@@ -13,6 +15,8 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface UserMapper extends BaseMapper<User> {
 
+    @Select("select * from user where user_id = #{userId}")
+    User findByUserId(@Param("userId") String userId);
 }
 
 

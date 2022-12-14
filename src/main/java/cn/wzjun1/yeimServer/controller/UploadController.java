@@ -2,12 +2,13 @@ package cn.wzjun1.yeimServer.controller;
 
 import cn.wzjun1.yeimServer.annotation.UserAuthorization;
 import cn.wzjun1.yeimServer.service.UploadService;
-import cn.wzjun1.yeimServer.utils.Result;
+import cn.wzjun1.yeimServer.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Map;
 
@@ -44,7 +45,7 @@ public class UploadController {
      */
     @UserAuthorization
     @PostMapping(path = "/upload")
-    public Result<Map<String, Object>> upload(MultipartFile file, @RequestParam @NotNull String key) {
+    public Result<Map<String, Object>> upload(@NotEmpty MultipartFile file, @RequestParam @NotEmpty String key) {
         try {
             return Result.success(uploadService.upload(key, file));
         } catch (Exception e) {
@@ -62,7 +63,7 @@ public class UploadController {
      */
     @UserAuthorization
     @PostMapping(path = "/upload/image")
-    public Result<Map<String, Object>> uploadImage(MultipartFile file, @RequestParam @NotNull String key) {
+    public Result<Map<String, Object>> uploadImage(@NotEmpty MultipartFile file, @RequestParam @NotEmpty String key) {
         try {
             return Result.success(uploadService.uploadImage(key, file));
         } catch (Exception e) {
@@ -80,7 +81,7 @@ public class UploadController {
      */
     @UserAuthorization
     @PostMapping(path = "/upload/video")
-    public Result<Map<String, Object>> uploadVideo(MultipartFile file, @RequestParam @NotNull String key) {
+    public Result<Map<String, Object>> uploadVideo(@NotEmpty MultipartFile file, @RequestParam @NotEmpty String key) {
         try {
             return Result.success(uploadService.uploadVideo(key, file));
         } catch (Exception e) {

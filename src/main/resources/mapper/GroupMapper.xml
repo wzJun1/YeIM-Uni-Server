@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.wzjun1.yeimServer.mapper.GroupMapper">
+
+    <resultMap id="BaseResultMap" type="cn.wzjun1.yeimServer.domain.Group">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="groupId" column="group_id" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="avatarUrl" column="avatar_url" jdbcType="VARCHAR"/>
+        <result property="leaderUserId" column="leader_user_id" jdbcType="VARCHAR"/>
+        <result property="introduction" column="introduction" jdbcType="VARCHAR"/>
+        <result property="notification" column="notification" jdbcType="VARCHAR"/>
+        <result property="createdAt" column="created_at" jdbcType="BIGINT"/>
+        <result property="isMute" column="is_mute" jdbcType="BIGINT"/>
+        <result property="isDissolve" column="is_dissolve" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id
+        ,group_id,name,
+        avatar_url,leader_user_id,introduction,notification,created_at,is_mute,is_dissolve
+    </sql>
+</mapper>

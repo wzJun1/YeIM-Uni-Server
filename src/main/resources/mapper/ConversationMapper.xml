@@ -16,6 +16,11 @@
             <result property="avatarUrl" column="avatar_url" jdbcType="VARCHAR"/>
         </association>
 
+        <association property="groupInfo" javaType="cn.wzjun1.yeimServer.domain.Group">
+            <result property="name" column="group_name" jdbcType="VARCHAR"/>
+            <result property="avatarUrl" column="group_avatar_url" jdbcType="VARCHAR"/>
+        </association>
+
         <association property="lastMessage" javaType="cn.wzjun1.yeimServer.domain.Message">
 
             <id property="sequence" column="sequence" jdbcType="BIGINT"/>
@@ -53,28 +58,33 @@
                c.`created_at`,
                u.nickname,
                u.avatar_url,
-               m.`sequence`,
-               m.`message_id`,
-               m.`conversation_id` as message_conversation_id,
-               m.`user_id` as message_user_id,
-               m.`direction`,
-               m.`from`,
-               m.`to`,
-               m.`type`            as message_type,
-               m.`body`,
-               m.`extra`,
-               m.`is_read`,
-               m.`is_revoke`,
-               m.`is_deleted`,
-               m.`status`          as message_status,
-               m.`receive`,
-               m.`time`,
-               mu.nickname         as mu_nickname,
-               mu.avatar_url       as mu_avatar_url
+               g.name as group_name,
+               g.avatar_url as group_avatar_url,
+               (CASE WHEN (m.`sequence` is not null and c.type = 'private') THEN m.`sequence` ELSE gm.`sequence` END) sequence,
+               (CASE WHEN (m.`message_id` is not null and c.type = 'private') THEN m.`message_id` ELSE gm.`message_id` END) message_id,
+               (CASE WHEN (m.`conversation_id` is not null and c.type = 'private') THEN m.`conversation_id` ELSE gm.`conversation_id` END) message_conversation_id,
+               (CASE WHEN (m.`user_id` is not null and c.type = 'private') THEN m.`user_id` ELSE gm.`user_id` END) message_user_id,
+               (CASE WHEN (m.`direction` is not null and c.type = 'private') THEN m.`direction` ELSE (CASE WHEN (gm.`from` != c.`user_id`) THEN 'in' ELSE 'out' END) END) direction,
+               (CASE WHEN (m.`from` is not null and c.type = 'private') THEN m.`from` ELSE gm.`from` END) `from`,
+               (CASE WHEN (m.`to` is not null and c.type = 'private') THEN m.`to` ELSE gm.`to` END) `to`,
+               (CASE WHEN (m.`type` is not null and c.type = 'private') THEN m.`type` ELSE gm.`type` END) message_type,
+               (CASE WHEN (m.`body` is not null and c.type = 'private') THEN m.`body` ELSE gm.`body` END) body,
+               (CASE WHEN (m.`extra` is not null and c.type = 'private') THEN m.`extra` ELSE gm.`extra` END) extra,
+               (CASE WHEN (m.`is_read` is not null and c.type = 'private') THEN m.`is_read` ELSE gm.`is_read` END) is_read,
+               (CASE WHEN (m.`is_revoke` is not null and c.type = 'private') THEN m.`is_revoke` ELSE gm.`is_revoke` END) is_revoke,
+               (CASE WHEN (m.`is_deleted` is not null and c.type = 'private') THEN m.`is_deleted` ELSE gm.`is_deleted` END) is_deleted,
+               (CASE WHEN (m.`status` is not null and c.type = 'private') THEN m.`status` ELSE gm.`status` END) message_status,
+               (CASE WHEN (m.`receive` is not null and c.type = 'private') THEN m.`receive` ELSE gm.`receive` END) receive,
+               (CASE WHEN (m.`time` is not null and c.type = 'private') THEN m.`time` ELSE gm.`time` END) `time`,
+               (CASE WHEN (mu.`nickname` is not null and c.type = 'private') THEN mu.`nickname` ELSE gmu.`nickname` END) `mu_nickname`,
+               (CASE WHEN (mu.`avatar_url` is not null and c.type = 'private') THEN mu.`avatar_url` ELSE gmu.`avatar_url` END) `mu_avatar_url`
         FROM `conversation` as c
-                 LEFT JOIN `user` as u ON u.`user_id` = c.`conversation_id`
-                 LEFT JOIN `message` as m ON m.`message_id` = c.`last_message_id`
-                 LEFT JOIN `user` as mu ON mu.`user_id` = m.`from`
+                 LEFT JOIN `user` as u ON u.`user_id` = c.`conversation_id` and c.`type` = 'private'
+                 LEFT JOIN `group` as g ON g.`group_id` = c.`conversation_id` and c.`type` = 'group'
+                 LEFT JOIN `message` as m ON m.`message_id` = c.`last_message_id` and c.`type` = 'private'
+                 LEFT JOIN `group_message` as gm ON gm.`message_id` = c.`last_message_id` and c.`type` = 'group'
+                 LEFT JOIN `user` as mu ON mu.`user_id` = m.`from` and c.`type` = 'private'
+                 LEFT JOIN `user` as gmu ON gmu.`user_id` = gm.`from` and c.`type` = 'group'
         WHERE c.`user_id` = #{userId}
         ORDER BY c.`updated_at` desc
     </select>
@@ -87,28 +97,33 @@
                c.`created_at`,
                u.nickname,
                u.avatar_url,
-               m.`sequence`,
-               m.`message_id`,
-               m.`conversation_id` as message_conversation_id,
-               m.`user_id` as message_user_id,
-               m.`direction`,
-               m.`from`,
-               m.`to`,
-               m.`type`            as message_type,
-               m.`body`,
-               m.`extra`,
-               m.`is_read`,
-               m.`is_revoke`,
-               m.`is_deleted`,
-               m.`status`          as message_status,
-               m.`receive`,
-               m.`time`,
-               mu.nickname         as mu_nickname,
-               mu.avatar_url       as mu_avatar_url
+               g.name as group_name,
+               g.avatar_url as group_avatar_url,
+               (CASE WHEN (m.`sequence` is not null and c.type = 'private') THEN m.`sequence` ELSE gm.`sequence` END) sequence,
+               (CASE WHEN (m.`message_id` is not null and c.type = 'private') THEN m.`message_id` ELSE gm.`message_id` END) message_id,
+               (CASE WHEN (m.`conversation_id` is not null and c.type = 'private') THEN m.`conversation_id` ELSE gm.`conversation_id` END) message_conversation_id,
+               (CASE WHEN (m.`user_id` is not null and c.type = 'private') THEN m.`user_id` ELSE gm.`user_id` END) message_user_id,
+               (CASE WHEN (m.`direction` is not null and c.type = 'private') THEN m.`direction` ELSE (CASE WHEN (gm.`from` != c.`user_id`) THEN 'in' ELSE 'out' END) END) direction,
+               (CASE WHEN (m.`from` is not null and c.type = 'private') THEN m.`from` ELSE gm.`from` END) `from`,
+               (CASE WHEN (m.`to` is not null and c.type = 'private') THEN m.`to` ELSE gm.`to` END) `to`,
+               (CASE WHEN (m.`type` is not null and c.type = 'private') THEN m.`type` ELSE gm.`type` END) message_type,
+               (CASE WHEN (m.`body` is not null and c.type = 'private') THEN m.`body` ELSE gm.`body` END) body,
+               (CASE WHEN (m.`extra` is not null and c.type = 'private') THEN m.`extra` ELSE gm.`extra` END) extra,
+               (CASE WHEN (m.`is_read` is not null and c.type = 'private') THEN m.`is_read` ELSE gm.`is_read` END) is_read,
+               (CASE WHEN (m.`is_revoke` is not null and c.type = 'private') THEN m.`is_revoke` ELSE gm.`is_revoke` END) is_revoke,
+               (CASE WHEN (m.`is_deleted` is not null and c.type = 'private') THEN m.`is_deleted` ELSE gm.`is_deleted` END) is_deleted,
+               (CASE WHEN (m.`status` is not null and c.type = 'private') THEN m.`status` ELSE gm.`status` END) message_status,
+               (CASE WHEN (m.`receive` is not null and c.type = 'private') THEN m.`receive` ELSE gm.`receive` END) receive,
+               (CASE WHEN (m.`time` is not null and c.type = 'private') THEN m.`time` ELSE gm.`time` END) `time`,
+               (CASE WHEN (mu.`nickname` is not null and c.type = 'private') THEN mu.`nickname` ELSE gmu.`nickname` END) `mu_nickname`,
+               (CASE WHEN (mu.`avatar_url` is not null and c.type = 'private') THEN mu.`avatar_url` ELSE gmu.`avatar_url` END) `mu_avatar_url`
         FROM `conversation` as c
-                 LEFT JOIN `user` as u ON u.`user_id` = c.`conversation_id`
-                 LEFT JOIN `message` as m ON m.`message_id` = c.`last_message_id`
-                 LEFT JOIN `user` as mu ON mu.`user_id` = m.`from`
+                 LEFT JOIN `user` as u ON u.`user_id` = c.`conversation_id` and c.`type` = 'private'
+                 LEFT JOIN `group` as g ON g.`group_id` = c.`conversation_id` and c.`type` = 'group'
+                 LEFT JOIN `message` as m ON m.`message_id` = c.`last_message_id` and c.`type` = 'private'
+                 LEFT JOIN `group_message` as gm ON gm.`message_id` = c.`last_message_id` and c.`type` = 'group'
+                 LEFT JOIN `user` as mu ON mu.`user_id` = m.`from` and c.`type` = 'private'
+                 LEFT JOIN `user` as gmu ON gmu.`user_id` = gm.`from` and c.`type` = 'group'
         WHERE c.`conversation_id` = #{conversationId}
           and c.`user_id` = #{userId}
         ORDER BY c.`updated_at` desc limit 1

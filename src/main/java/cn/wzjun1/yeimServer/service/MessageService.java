@@ -1,10 +1,12 @@
 package cn.wzjun1.yeimServer.service;
 
+import cn.wzjun1.yeimServer.domain.GroupMessage;
 import cn.wzjun1.yeimServer.domain.Message;
 import cn.wzjun1.yeimServer.domain.User;
 import cn.wzjun1.yeimServer.dto.message.MessageSaveDTO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author wzjun1
@@ -13,7 +15,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface MessageService extends IService<Message> {
 
-    Message insertMessage(User user, MessageSaveDTO params);
+    Message insertMessage(User user, MessageSaveDTO params)  throws Exception;
 
     void updatePrivateMessageById(Message update, String userId, String messageId) throws Exception;
 

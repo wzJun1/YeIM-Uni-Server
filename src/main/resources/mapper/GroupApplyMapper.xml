@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.wzjun1.yeimServer.mapper.GroupApplyMapper">
+
+    <resultMap id="BaseResultMap" type="cn.wzjun1.yeimServer.domain.GroupApply">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="groupId" column="group_id" jdbcType="VARCHAR"/>
+        <result property="userId" column="user_id" jdbcType="VARCHAR"/>
+        <result property="inviterId" column="inviter_id" jdbcType="VARCHAR"/>
+        <result property="extraMessage" column="extra_message" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="adminId" column="admin_id" jdbcType="VARCHAR"/>
+        <result property="transformTime" column="transform_time" jdbcType="BIGINT"/>
+        <result property="transformMessage" column="transform_message" jdbcType="VARCHAR"/>
+        <result property="createdAt" column="created_at" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <resultMap id="GroupApplyV0" type="cn.wzjun1.yeimServer.domain.GroupApply">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="groupId" column="group_id" jdbcType="VARCHAR"/>
+        <result property="userId" column="user_id" jdbcType="VARCHAR"/>
+        <result property="inviterId" column="inviter_id" jdbcType="VARCHAR"/>
+        <result property="extraMessage" column="extra_message" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="adminId" column="admin_id" jdbcType="VARCHAR"/>
+        <result property="transformTime" column="transform_time" jdbcType="BIGINT"/>
+        <result property="transformMessage" column="transform_message" jdbcType="VARCHAR"/>
+        <result property="createdAt" column="created_at" jdbcType="BIGINT"/>
+        <association property="userInfo" javaType="cn.wzjun1.yeimServer.domain.User">
+            <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+            <result property="avatarUrl" column="avatar_url" jdbcType="VARCHAR"/>
+        </association>
+        <association property="groupInfo" javaType="cn.wzjun1.yeimServer.domain.Group">
+            <result property="name" column="group_name" jdbcType="VARCHAR"/>
+            <result property="avatarUrl" column="group_avatar_url" jdbcType="VARCHAR"/>
+        </association>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id
+        ,group_id,user_id,
+        inviter_id,status,admin_id,transform_message,extra_message
+        transform_time,created_at
+    </sql>
+    <select id="getApply" resultMap="GroupApplyV0">
+        select ga.*, u.nickname, u.avatar_url, g.name as group_name, g.avatar_url as group_avatar_url
+        from `group_apply` as ga
+                 left join `user` as u on u.user_id = ga.user_id
+                 left join `group` as g on g.group_id = ga.group_id
+        where ga.id = #{id} limit 1
+    </select>
+    <select id="getApplyList" resultMap="GroupApplyV0">
+        select ga.*,u.nickname,u.avatar_url,g.name as group_name,g.avatar_url as group_avatar_url from `group_apply` as
+        ga
+        left join `user` as u on u.user_id = ga.user_id
+        left join `group` as g on g.group_id = ga.group_id
+        where ga.group_id in
+        <foreach collection="groupIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        order by ga.id desc
+    </select>
+
+</mapper>

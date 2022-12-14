@@ -1,18 +1,15 @@
 package cn.wzjun1.yeimServer.service.impl;
 
-import cn.wzjun1.yeimServer.domain.Conversation;
-import cn.wzjun1.yeimServer.domain.Message;
-import cn.wzjun1.yeimServer.domain.User;
-import cn.wzjun1.yeimServer.interceptor.LoginUserContext;
-import cn.wzjun1.yeimServer.mapper.MessageMapper;
-import cn.wzjun1.yeimServer.mapper.UserMapper;
+import cn.wzjun1.yeimServer.domain.*;
+import cn.wzjun1.yeimServer.mapper.*;
 import cn.wzjun1.yeimServer.dto.message.MessageSaveDTO;
 import cn.wzjun1.yeimServer.service.ConversationService;
+import cn.wzjun1.yeimServer.service.GroupMessageService;
 import cn.wzjun1.yeimServer.service.MessageService;
 import cn.wzjun1.yeimServer.socket.WebSocket;
 import cn.wzjun1.yeimServer.socket.cons.MessageStatus;
 import cn.wzjun1.yeimServer.socket.cons.SocketStatusCode;
-import cn.wzjun1.yeimServer.utils.Result;
+import cn.wzjun1.yeimServer.result.Result;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -37,15 +34,29 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
     MessageMapper messageMapper;
 
     @Autowired
+    GroupMapper groupMapper;
+
+    @Autowired
+    GroupUserMapper groupUserMapper;
+
+    @Autowired
+    GroupMessageMapper groupMessageMapper;
+
+    @Autowired
+    GroupMessageService groupMessageService;
+
+    @Autowired
     ConversationService conversationService;
+
+    @Autowired
+    ConversationMapper conversationMapper;
 
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     @Override
-    public Message insertMessage(User user, MessageSaveDTO message) {
+    public Message insertMessage(User user, MessageSaveDTO message) throws Exception {
         try {
 
             //判断接收者是否存在
-
             User toUser = userMapper.selectOne(new QueryWrapper<User>().eq("user_id", message.getTo()));
             if (toUser == null || toUser.getUserId() == null) {
                 throw new Exception("接收者ID错误");
@@ -62,7 +73,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
             String outMessageId = messageId + "-1";
             String inMessageId = messageId + "-2";
 
-            //1.1 插入发送者会话
+            //私聊消息将会给发送方和接收方都存一条消息。
+            //代表着发送方的会话和接收方的会话里都有一条消息。
+            //1.1 消息插入，属发送者会话
             Message out = new Message();
             out.setMessageId(outMessageId);
             out.setUserId(message.getFrom());
@@ -80,7 +93,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
             boolean messageResult = this.save(out);
             Message outResultMessage = messageMapper.getMessageById(outMessageId, user.getUserId());
 
-            //1.2 插入接收者会话
+            //1.2 消息插入，属接收者会话
             Message in = new Message();
             in.setMessageId(inMessageId);
             in.setUserId(message.getTo());
@@ -148,10 +161,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
                 throw new Exception("insertMessage error");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new Exception(e.getMessage());
         }
-        return null;
     }
+
+
+
+
 
     /**
      * 私聊消息更新应更新两条，发送消息 、接收消息（发件箱、收件箱）
@@ -181,6 +197,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
     public IPage<Message> listMessage(IPage<Message> page, String userId, String conversationId) {
         return messageMapper.listMessage(page, userId, conversationId);
     }
+
 
     /**
      * 会话更新,推送给双方

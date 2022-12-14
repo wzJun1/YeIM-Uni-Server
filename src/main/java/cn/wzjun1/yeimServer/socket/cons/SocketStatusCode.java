@@ -18,8 +18,11 @@ public enum SocketStatusCode {
     CONVERSATION_LIST_CHANGED(204, "会话列表更新"),
     //私聊会话已读回执
     PRIVATE_READ_RECEIPT(205, "会话已读回执"),
+    //入群申请事件
+    GROUP_APPLY_RECEIVE(206, "入群申请"),
     //推送新消息
     MESSAGE_RECEIVE(200, "");
+
     private Integer code;
     private String desc;
 

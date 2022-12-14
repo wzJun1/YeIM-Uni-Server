@@ -36,6 +36,7 @@ public class UserAuthorizationInterceptor extends HandlerInterceptorAdapter {
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         Method method = handlerMethod.getMethod();
         String token = request.getHeader(httpHeaderName);
+
         if (token != null && token.length() > 0) {
             String key = "token:" + token;
             if (redisUtil.hasKey(key)) {

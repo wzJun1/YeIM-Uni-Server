@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.wzjun1.yeimServer.mapper.GroupMessageMapper">
+
+    <resultMap id="GroupMessageMap" type="cn.wzjun1.yeimServer.domain.GroupMessage">
+        <id property="sequence" column="sequence" jdbcType="BIGINT"/>
+        <result property="messageId" column="message_id" jdbcType="VARCHAR"/>
+        <result property="conversationId" column="message_conversation_id" jdbcType="VARCHAR"/>
+        <result property="direction" column="direction" jdbcType="VARCHAR"/>
+        <result property="userId" column="user_id" jdbcType="VARCHAR"/>
+        <result property="from" column="from" jdbcType="VARCHAR"/>
+        <result property="to" column="to" jdbcType="VARCHAR"/>
+        <result property="type" column="message_type" jdbcType="VARCHAR"/>
+        <result property="body" column="body" jdbcType="OTHER" javaType="com.alibaba.fastjson.JSONObject"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.FastjsonTypeHandler"/>
+        <result property="extra" column="extra" jdbcType="LONGVARCHAR"/>
+        <result property="isRead" column="is_read" jdbcType="INTEGER"/>
+        <result property="isRevoke" column="is_revoke" jdbcType="INTEGER"/>
+        <result property="isDeleted" column="is_deleted" jdbcType="INTEGER"/>
+        <result property="receive" column="receive" jdbcType="INTEGER"/>
+        <result property="status" column="message_status" jdbcType="VARCHAR"/>
+        <result property="time" column="time" jdbcType="BIGINT"/>
+        <association property="fromUserInfo" javaType="cn.wzjun1.yeimServer.domain.User">
+            <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+            <result property="avatarUrl" column="avatar_url" jdbcType="VARCHAR"/>
+        </association>
+    </resultMap>
+
+    <select id="getMessageById" resultMap="GroupMessageMap">
+        SELECT u.nickname,
+               u.avatar_url,
+               m.`sequence`,
+               m.`user_id`,
+               m.`direction`,
+               m.`message_id`,
+               m.`conversation_id` as message_conversation_id,
+               m.`from`,
+               m.`to`,
+               m.`type`            as message_type,
+               m.`body`,
+               m.`extra`,
+               m.`is_read`,
+               m.`is_revoke`,
+               m.`is_deleted`,
+               m.`status`          as message_status,
+               m.`receive`,
+               m.`time`
+        FROM `group_message` as m
+                 LEFT JOIN `user` as u ON u.`user_id` = m.`from`
+        WHERE m.`is_deleted` = 0 and m.`message_id` = #{messageId} and m.`conversation_id` = #{conversationId}
+    </select>
+
+
+    <select id="listMessage" resultMap="GroupMessageMap">
+        SELECT u.nickname,
+               u.avatar_url,
+               m.`sequence`,
+               m.`message_id`,
+               m.`user_id`,
+               m.`direction`,
+               m.`conversation_id` as message_conversation_id,
+               m.`from`,
+               m.`to`,
+               m.`type`            as message_type,
+               m.`body`,
+               m.`extra`,
+               m.`is_read`,
+               m.`is_revoke`,
+               m.`is_deleted`,
+               m.`status`          as message_status,
+               m.`receive`,
+               m.`time`
+        FROM `group_message` as m
+                 LEFT JOIN `user` as u ON u.`user_id` = m.`from`
+        WHERE m.`conversation_id` = #{conversationId}
+        ORDER BY m.`sequence` desc
+    </select>
+</mapper>

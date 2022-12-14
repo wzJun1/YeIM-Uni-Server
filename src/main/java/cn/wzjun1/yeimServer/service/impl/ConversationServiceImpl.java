@@ -6,7 +6,7 @@ import cn.wzjun1.yeimServer.interceptor.LoginUserContext;
 import cn.wzjun1.yeimServer.mapper.MessageMapper;
 import cn.wzjun1.yeimServer.socket.WebSocket;
 import cn.wzjun1.yeimServer.socket.cons.SocketStatusCode;
-import cn.wzjun1.yeimServer.utils.Result;
+import cn.wzjun1.yeimServer.result.Result;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import cn.wzjun1.yeimServer.domain.Conversation;
@@ -39,10 +39,14 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
 
     @Override
     public void clearConversationUnread(String conversationId) throws Exception {
+        boolean exist = conversationMapper.exists(new QueryWrapper<Conversation>().eq("conversation_id", conversationId).eq("user_id",LoginUserContext.getUser().getUserId()));
+        if (!exist){
+            throw new Exception("会话不存在");
+        }
         Conversation update = new Conversation();
         update.setUnread(0);
         //更新会话未读数
-        conversationMapper.update(update, new QueryWrapper<Conversation>().eq("conversation_id", conversationId));
+        conversationMapper.update(update, new QueryWrapper<Conversation>().eq("conversation_id", conversationId).eq("user_id",LoginUserContext.getUser().getUserId()));
         //更新消息已读状态
         Message updateMessage = new Message();
         updateMessage.setIsRead(1);

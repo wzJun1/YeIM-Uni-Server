@@ -1,4 +1,4 @@
-package cn.wzjun1.yeimServer.utils;
+package cn.wzjun1.yeimServer.result;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.Data;

@@ -3,28 +3,27 @@ package cn.wzjun1.yeimServer.controller;
 import cn.wzjun1.yeimServer.annotation.UserAuthorization;
 import cn.wzjun1.yeimServer.domain.User;
 import cn.wzjun1.yeimServer.interceptor.LoginUserContext;
-import cn.wzjun1.yeimServer.interceptor.UserAuthorizationInterceptor;
 import cn.wzjun1.yeimServer.dto.user.UserRegisterDTO;
 import cn.wzjun1.yeimServer.dto.user.UserTokenDTO;
 import cn.wzjun1.yeimServer.dto.user.UserUpdateDTO;
 import cn.wzjun1.yeimServer.service.UserService;
 import cn.wzjun1.yeimServer.utils.MD5Util;
 import cn.wzjun1.yeimServer.utils.RedisUtil;
-import cn.wzjun1.yeimServer.utils.Result;
-import com.github.yitter.idgen.YitIdHelper;
+import cn.wzjun1.yeimServer.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
+@Validated
 @RestController
 public class UserController {
 
@@ -36,13 +35,6 @@ public class UserController {
 
     @Autowired
     UserService userService;
-
-    @GetMapping(path = "/aa")
-    public void sss() {
-        long newId = YitIdHelper.nextId();
-        System.out.println("生成一个id：" + newId);
-    }
-
 
     /**
      * 用户注册
@@ -128,7 +120,7 @@ public class UserController {
      */
     @UserAuthorization
     @GetMapping(path = "/user/info")
-    public Result getUserInfo(@RequestParam @NotNull(message = "用户ID不能为空") String userId) {
+    public Result getUserInfo(@RequestParam @NotEmpty String userId) {
         return Result.success(userService.getUserById(userId));
     }
 

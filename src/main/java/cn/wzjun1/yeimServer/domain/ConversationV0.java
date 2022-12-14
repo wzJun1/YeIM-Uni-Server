@@ -14,10 +14,15 @@ public class ConversationV0 implements Serializable {
     private String conversationId;
 
     /**
-     * 所属用户
+     * 用户信息
 
      */
     private User userInfo;
+
+    /**
+     * 群组信息
+     */
+    private Group groupInfo;
 
 
     /**
