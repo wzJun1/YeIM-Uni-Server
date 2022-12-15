@@ -1,0 +1,1141 @@
+{
+	"info": {
+		"_postman_id": "330491d3-b6b2-47af-acec-321c85e76583",
+		"name": "YeIM-Uni-Server",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17630535"
+	},
+	"item": [
+		{
+			"name": "User(用户相关)",
+			"item": [
+				{
+					"name": "换取登录Token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userId\":\"user1\", //用户ID\r\n    \"timestamp\":1702174620000, //到期时间戳\r\n    \"sign\":\"c5d5d9c4a73525194bbb382969270731\" //签名：md5(userId+timestamp+yeim.secret.key)\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/token/get",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"token",
+								"get"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "换取登录Token",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"userId\":\"user1\", //用户ID\r\n    \"timestamp\":1702174620000, //到期时间戳\r\n    \"sign\":\"c5d5d9c4a73525194bbb382969270731\" //签名：md5(userId+timestamp+yeim.secret.key)\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/user/token/get",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"user",
+										"token",
+										"get"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 14 Dec 2022 03:15:58 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": {\n        \"token\": \"e764cf977dbaa19f97a586b2e8d070a5\" //换取的登录Token。YeIM-Uni-SDK中connect接口使用此token进行登录\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "获取用户信息",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "userId",
+									"value": "user2",
+									"description": "用户ID",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/info",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"info"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "获取用户信息",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "userId",
+											"value": "user2",
+											"description": "用户ID",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/user/info",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"user",
+										"info"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 14 Dec 2022 03:18:05 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": {\n        \"id\": 2,\n        \"userId\": \"user2\", //用户ID\n        \"nickname\": \"鸹貔\", //用户昵称\n        \"avatarUrl\": \"https://api.multiavatar.com/931213.png\", //用户头像\n        \"createdAt\": 1670316445532 //创建时间\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Group(群组相关)",
+			"item": [
+				{
+					"name": "Group",
+					"item": [
+						{
+							"name": "创建群组",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"user1的群组9\", //群名称(必填)\r\n    \"avatarUrl\": \"https://s2.loli.net/2022/12/13/9h4gtNTWlqdeCL5.webp\", //群头像(必填)\r\n    \"groupId\": \"group_99\", //群ID(全局唯一，选填，如果不填系统将自动生成)\r\n    \"joinMode\": 1, //入群申请处理方式(选填)\r\n    \"introduction\": \"introduction\", //群简介(选填)\r\n    \"notification\": \"notification\", //群公告(选填)\r\n    \"members\": [\r\n        \"user2\",\r\n        \"user3\"\r\n    ] //创建群组时，初始化添加的用户列表\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/group/create",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"group",
+										"create"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "创建群组",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"name\": \"user1的群组9\", //群名称(必填)\r\n    \"avatarUrl\": \"https://s2.loli.net/2022/12/13/9h4gtNTWlqdeCL5.webp\", //群头像(必填)\r\n    \"groupId\": \"group_99\", //群ID(全局唯一，选填，如果不填系统将自动生成)\r\n    \"joinMode\": 1, //入群申请处理方式(选填)\r\n    \"introduction\": \"introduction\", //群简介(选填)\r\n    \"notification\": \"notification\", //群公告(选填)\r\n    \"members\": [\r\n        \"user2\",\r\n        \"user3\"\r\n    ] //创建群组时，初始化添加的用户列表\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/group/create",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"group",
+												"create"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 14 Dec 2022 03:22:39 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=60"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": null\n}"
+								}
+							]
+						},
+						{
+							"name": "转让群主",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "groupId",
+											"value": "group_99",
+											"description": "群ID",
+											"type": "text"
+										},
+										{
+											"key": "userId",
+											"value": "user2",
+											"description": "转让的用户ID",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/group/transferLeader",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"group",
+										"transferLeader"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "转让群主",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "groupId",
+													"value": "group_99",
+													"description": "群ID",
+													"type": "text"
+												},
+												{
+													"key": "userId",
+													"value": "user2",
+													"description": "转让的用户ID",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{baseUrl}}/group/transferLeader",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"group",
+												"transferLeader"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 14 Dec 2022 03:23:13 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=60"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": null\n}"
+								}
+							]
+						},
+						{
+							"name": "解散群组",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "groupId",
+											"value": "group_99",
+											"description": "群ID",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/group/dissolve",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"group",
+										"dissolve"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "解散群组",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "groupId",
+													"value": "group_99",
+													"description": "群ID",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{baseUrl}}/group/dissolve",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"group",
+												"dissolve"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 14 Dec 2022 03:23:35 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=60"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"code\": 500,\n    \"message\": \"仅群主可解散该群\",\n    \"data\": null\n}"
+								}
+							]
+						},
+						{
+							"name": "添加群成员",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"groupId\": \"group_363712804290629\", //群ID(必填)\r\n    \"members\": [\r\n        \"user2\",\r\n        \"user3\"\r\n    ] //要添加的用户ID数组\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/group/user/add",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"group",
+										"user",
+										"add"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "添加群成员",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"groupId\": \"group_363712804290629\", //群ID(必填)\r\n    \"members\": [\r\n        \"user2\",\r\n        \"user3\"\r\n    ] //要添加的用户ID数组\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/group/user/add",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"group",
+												"user",
+												"add"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 14 Dec 2022 03:15:00 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=60"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": {\n        \"successList\": [\n            \"user2\",\n            \"user3\"\n        ], //成功的用户ID列表\n        \"failList\": [], //失败的用户ID列表\n        \"ignoreList\": [] //忽略的用户ID列表\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "更新群组资料",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"groupId\": \"group_1\", // 群ID(必填)\r\n    \"name\": \"修改的群名1\", //群名称(选填)\r\n    \"avatarUrl\": \"头像地址\", //群头像(选填)\r\n    \"joinMode\": 1, //加群申请处理方式(选填)\r\n    \"introduction\": \"introduction\", //群简介(选填)\r\n    \"notification\": \"notification\", //群公告(选填)\r\n    \"isMute\": 0 //全体禁言 0,1(选填)\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/group/edit",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"group",
+										"edit"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "更新群组资料",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"groupId\": \"group_1\", // 群ID(必填)\r\n    \"name\": \"修改的群名1\", //群名称(选填)\r\n    \"avatarUrl\": \"头像地址\", //群头像(选填)\r\n    \"joinMode\": 1, //加群申请处理方式(选填)\r\n    \"introduction\": \"introduction\", //群简介(选填)\r\n    \"notification\": \"notification\", //群公告(选填)\r\n    \"isMute\": 0 //全体禁言 0,1(选填)\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/group/edit",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"group",
+												"edit"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 14 Dec 2022 03:24:10 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=60"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"code\": 500,\n    \"message\": \"当前群组不存在或已解散\",\n    \"data\": null\n}"
+								}
+							]
+						},
+						{
+							"name": "根据群ID获取群信息",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "groupId",
+											"value": "group_2",
+											"description": "群ID",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/group/get",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"group",
+										"get"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "根据群ID获取群信息",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "groupId",
+													"value": "group_2",
+													"description": "群ID",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{baseUrl}}/group/get",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"group",
+												"get"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 14 Dec 2022 03:10:49 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=60"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": {\n        \"id\": 2,\n        \"groupId\": \"group_2\",\n        \"name\": \"开心群\",\n        \"avatarUrl\": \"https://img2.baidu.com/it/u=2811025682,3067028167&fm=253&fmt=auto&app=138&f=PNG?w=256&h=256\",\n        \"leaderUserId\": \"user2\",\n        \"joinMode\": 2,\n        \"isMute\": 0,\n        \"isDissolve\": 0,\n        \"createdAt\": 1670829443612\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "退出群组",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "groupId",
+											"value": "group_99",
+											"description": "群ID",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/group/user/leave",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"group",
+										"user",
+										"leave"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "退出群组",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "groupId",
+													"value": "group_99",
+													"description": "群ID",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{baseUrl}}/group/user/leave",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"group",
+												"user",
+												"leave"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 14 Dec 2022 03:24:23 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=60"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": null\n}"
+								}
+							]
+						},
+						{
+							"name": "我的群组列表",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/group/list",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"group",
+										"list"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "我的群组列表",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/group/list",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"group",
+												"list"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 14 Dec 2022 03:24:31 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=60"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"groupId\": \"group_1\",\n            \"name\": \"工作红包群1\",\n            \"avatarUrl\": \"https://img2.baidu.com/it/u=2811025682,3067028167&fm=253&fmt=auto&app=138&f=PNG?w=256&h=256\",\n            \"leaderUserId\": \"user1\",\n            \"joinMode\": 1,\n            \"introduction\": \"22\",\n            \"isMute\": 0,\n            \"isDissolve\": 1,\n            \"createdAt\": 1670590372351\n        },\n        {\n            \"id\": 2,\n            \"groupId\": \"group_2\",\n            \"name\": \"开心群\",\n            \"avatarUrl\": \"https://img2.baidu.com/it/u=2811025682,3067028167&fm=253&fmt=auto&app=138&f=PNG?w=256&h=256\",\n            \"leaderUserId\": \"user2\",\n            \"joinMode\": 2,\n            \"isMute\": 0,\n            \"isDissolve\": 0,\n            \"createdAt\": 1670829443612\n        },\n        {\n            \"id\": 6,\n            \"groupId\": \"group_363712804290629\",\n            \"name\": \"红包群111\",\n            \"avatarUrl\": \"https://s2.loli.net/2022/12/13/9h4gtNTWlqdeCL5.webp\",\n            \"leaderUserId\": \"user1\",\n            \"joinMode\": 1,\n            \"isMute\": 0,\n            \"isDissolve\": 0,\n            \"createdAt\": 1670933473362\n        }\n    ]\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "GroupUser",
+					"item": [
+						{
+							"name": "获取群成员列表",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "groupId",
+											"value": "group_2",
+											"description": "群ID",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/group/user/list",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"group",
+										"user",
+										"list"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "获取群成员列表",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "groupId",
+													"value": "group_2",
+													"description": "群ID",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{baseUrl}}/group/user/list",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"group",
+												"user",
+												"list"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 14 Dec 2022 03:24:38 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=60"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": [\n        {\n            \"id\": 5,\n            \"groupId\": \"group_2\",\n            \"userId\": \"user1\",\n            \"userInfo\": {\n                \"nickname\": \"西部小牛\",\n                \"avatarUrl\": \"https://api.multiavatar.com/968410.png\"\n            },\n            \"isAdmin\": 0,\n            \"muteEndTime\": 1670911509840,\n            \"joinAt\": 1670829443616,\n            \"createdAt\": 1670829443616\n        },\n        {\n            \"id\": 8,\n            \"groupId\": \"group_2\",\n            \"userId\": \"user2\",\n            \"userInfo\": {\n                \"nickname\": \"鸹貔\",\n                \"avatarUrl\": \"https://api.multiavatar.com/931213.png\"\n            },\n            \"isAdmin\": 0,\n            \"muteEndTime\": 1670911725696,\n            \"joinAt\": 1670906707298,\n            \"createdAt\": 1670906707298\n        }\n    ]\n}"
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "value",
+				"value": "{{user1Token}}",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "token",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// 去除请求body中的注释",
+					"if (pm?.request?.body?.mode === 'raw') {",
+					"    const rawData = pm.request.body.toString();",
+					"    const strippedData = rawData.replace(",
+					"        /\\\\\"|\"(?:\\\\\"|[^\"])*\"|(\\/\\/.*|\\/\\*[\\s\\S]*?\\*\\/)/g,",
+					"        (m, g) => g ? \"\" : m",
+					"    );",
+					"    // pm.request.body.update(JSON.stringify(JSON.parse(strippedData)));",
+					"    pm.request.body.raw = JSON.stringify(JSON.parse(strippedData));",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
