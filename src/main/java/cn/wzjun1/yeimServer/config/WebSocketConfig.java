@@ -46,13 +46,13 @@ public class WebSocketConfig implements WebSocketConfigurer {
                         token = "token:" + token;
                         if (!redisUtil.hasKey(token)) {
                             //token不存在，验证失败
-                            response.setStatusCode(HttpStatus.FORBIDDEN);
+                            response.setStatusCode(HttpStatus.UNAUTHORIZED);
                             return false;
                         } else {
                             User user = (User) redisUtil.get(token);
                             if (!userId.equals(user.getUserId())) {
                                 //token不属于此user，验证失败
-                                response.setStatusCode(HttpStatus.FORBIDDEN);
+                                response.setStatusCode(HttpStatus.UNAUTHORIZED);
                                 return false;
                             } else {
                                 //验证成功

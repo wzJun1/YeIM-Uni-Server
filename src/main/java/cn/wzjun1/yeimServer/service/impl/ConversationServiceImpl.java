@@ -5,6 +5,7 @@ import cn.wzjun1.yeimServer.domain.Message;
 import cn.wzjun1.yeimServer.interceptor.LoginUserContext;
 import cn.wzjun1.yeimServer.mapper.MessageMapper;
 import cn.wzjun1.yeimServer.socket.WebSocket;
+import cn.wzjun1.yeimServer.socket.cons.ConversationType;
 import cn.wzjun1.yeimServer.socket.cons.SocketStatusCode;
 import cn.wzjun1.yeimServer.result.Result;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -39,23 +40,27 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
 
     @Override
     public void clearConversationUnread(String conversationId) throws Exception {
-        boolean exist = conversationMapper.exists(new QueryWrapper<Conversation>().eq("conversation_id", conversationId).eq("user_id",LoginUserContext.getUser().getUserId()));
-        if (!exist){
+        Conversation exist = conversationMapper.selectOne(new QueryWrapper<Conversation>().eq("conversation_id", conversationId).eq("user_id",LoginUserContext.getUser().getUserId()));
+        if (exist == null || exist.getConversationId() == null){
             throw new Exception("会话不存在");
         }
         Conversation update = new Conversation();
         update.setUnread(0);
         //更新会话未读数
         conversationMapper.update(update, new QueryWrapper<Conversation>().eq("conversation_id", conversationId).eq("user_id",LoginUserContext.getUser().getUserId()));
-        //更新消息已读状态
-        Message updateMessage = new Message();
-        updateMessage.setIsRead(1);
-        //更新当前会话对方的发件箱消息已读状态
-        messageMapper.update(updateMessage, new QueryWrapper<Message>().eq("user_id", conversationId).eq("conversation_id", LoginUserContext.getUser().getUserId()).eq("direction", "out"));
-        //如果会话接收方在线，发送PRIVATE_READ_RECEIPT事件
-        WebSocket.sendMessage(conversationId, Result.info(SocketStatusCode.PRIVATE_READ_RECEIPT.getCode(), SocketStatusCode.PRIVATE_READ_RECEIPT.getDesc(), new HashMap<String, Object>() {{
-            put("conversationId", LoginUserContext.getUser().getUserId());
-        }}).toJSONString());
+        //私聊会话更新消息已读状态并发送已读消息事件
+        if (exist.getType().equals(ConversationType.PRIVATE)){
+            //更新消息已读状态
+            Message updateMessage = new Message();
+            updateMessage.setIsRead(1);
+            //更新当前会话对方的发件箱消息已读状态
+            messageMapper.update(updateMessage, new QueryWrapper<Message>().eq("user_id", conversationId).eq("conversation_id", LoginUserContext.getUser().getUserId()).eq("direction", "out"));
+            //如果会话接收方在线，发送PRIVATE_READ_RECEIPT事件
+            WebSocket.sendMessage(conversationId, Result.info(SocketStatusCode.PRIVATE_READ_RECEIPT.getCode(), SocketStatusCode.PRIVATE_READ_RECEIPT.getDesc(), new HashMap<String, Object>() {{
+                put("conversationId", LoginUserContext.getUser().getUserId());
+            }}).toJSONString());
+        }
+
     }
 }
 

@@ -73,6 +73,11 @@ public class WebSocket implements WebSocketHandler {
 
         JSONObject msgObj = JSONObject.parseObject(msgStr);
 
+        /**
+         * socket发消息格式：
+         * { type:"", data: "" }
+         */
+
         if (!msgObj.containsKey("type")) {
             log.info("【YeIMUniServer】消息缺失：type");
             return;
@@ -89,24 +94,14 @@ public class WebSocket implements WebSocketHandler {
         if (type.equals("heart")) {
             sendMessage(session, Result.info(SocketStatusCode.HEART.getCode(), SocketStatusCode.HEART.getDesc(), "pong").toJSONString());
         } else if (type.equals("received_call")) {
-            //用户接收到socket消息回调
+            /**
+             * 用户接收到socket消息回调
+             * 这里不要了，下个版本去掉。YeIM的收发消息逻辑不需要ack
+             * @deprecated
+             */
             try {
                 //TODO 更新消息接收状态，暂时没有其他作用，后续有空构建可靠投递机制再用
                 webSocketService.receivedCallMessage(getUserId(session.getId()), data);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else if (type.equals("message")) {
-            log.info("【YeIMUniServer】收到一条IM消息：" + data);
-            //消息
-            try {
-                Message messageObj = JSONObject.parseObject(data, Message.class);
-                String to = messageObj.getTo();
-                WebSocketSession online = sessionPool.get(to);
-                if (online != null) {
-                    messageObj.setConversationId(messageObj.getFrom());
-                    sendMessage(session, Result.success(messageObj).toJSONString());
-                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
