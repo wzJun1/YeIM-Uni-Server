@@ -179,7 +179,7 @@ public class UploadServiceImpl implements UploadService {
         String fileAbsoluteDir = mkFileDirs(filename);
         //图片保存相对路径
         String fileRelativeDir = filename.substring(0, filename.lastIndexOf("/"));
-
+        System.out.println(fileRelativeDir);
         BufferedImage originalImage = ImageIO.read(file.getInputStream());
 
         File desc = new File(baseDir + File.separator + filename);
@@ -214,20 +214,21 @@ public class UploadServiceImpl implements UploadService {
         int finalThumbnailHeight = (int) thumbnailHeight;
 
         //缩略图文件相对路径
-        String thumbFileName = fileRelativeDir + "_thumb." + extName;
+        String thumbFileRelativeUrl = fileRelativeDir + File.separator;
+        String thumbFileName = MD5Util.encode(filename) + "_thumb." + extName;
 
         //保存缩略图
-        File thumb = new File(baseDir + File.separator + thumbFileName);
+        File thumb = new File(baseDir + File.separator + thumbFileRelativeUrl + thumbFileName);
         Thumbnails.of(desc.getAbsolutePath())
                 .size(finalThumbnailWidth, finalThumbnailHeight)
                 .outputQuality(0.8f)
                 .toFile(thumb.getAbsolutePath());
 
-        //可访问图片相对路径URL
+        //可访问原始图片相对路径URL
         String imageRelativeUrl = "/" + filename;
 
         //可访问缩略图相对路径URL
-        String thumbnailRelativeUrl = "/" + thumbFileName;
+        String thumbnailRelativeUrl = "/" + fileRelativeDir + "/" + thumbFileName;
 
         return new HashMap<String, Object>() {{
             put("url", imageRelativeUrl);
@@ -266,7 +267,6 @@ public class UploadServiceImpl implements UploadService {
         //保存视频文件
         File desc = new File(fileAbsoluteDir + File.separator + videoName);
         file.transferTo(desc);
-
         //可访问视频文件相对路径
         String videoRelativeUrl = "/" + fileRelativeDir + "/" + videoName;
 

@@ -164,7 +164,11 @@ public class GroupMessageServiceImpl extends ServiceImpl<GroupMessageMapper, Gro
                     Conversation conversation = conversations.get(exist);
                     conversation.setLastMessageId(message.getMessageId());
                     conversation.setUpdatedAt(time);
-                    conversation.setUnread(conversation.getUnread() + 1);
+                    if(message.getFrom().equals(groupUser.getUserId())){
+                        conversation.setUnread(conversation.getUnread());
+                    }else{
+                        conversation.setUnread(conversation.getUnread() + 1);
+                    }
                     conversationMapper.updateGroupConversation(message.getMessageId(), time, groupId, groupUser.getUserId());
                 } else {
                     //会话不存在就新增
@@ -173,6 +177,11 @@ public class GroupMessageServiceImpl extends ServiceImpl<GroupMessageMapper, Gro
                     conversation.setType(ConversationType.GROUP);
                     conversation.setUserId(groupUser.getUserId());
                     conversation.setUnread(1);
+                    if(message.getFrom().equals(groupUser.getUserId())){
+                        conversation.setUnread(0);
+                    }else{
+                        conversation.setUnread(1);
+                    }
                     conversation.setLastMessageId(message.getMessageId());
                     if (conversation.getCreatedAt() == null || conversation.getCreatedAt() == 0) {
                         conversation.setCreatedAt(System.currentTimeMillis());

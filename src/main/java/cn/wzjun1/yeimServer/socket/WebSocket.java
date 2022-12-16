@@ -93,18 +93,6 @@ public class WebSocket implements WebSocketHandler {
         //心跳
         if (type.equals("heart")) {
             sendMessage(session, Result.info(SocketStatusCode.HEART.getCode(), SocketStatusCode.HEART.getDesc(), "pong").toJSONString());
-        } else if (type.equals("received_call")) {
-            /**
-             * 用户接收到socket消息回调
-             * 这里不要了，下个版本去掉。YeIM的收发消息逻辑不需要ack
-             * @deprecated
-             */
-            try {
-                //TODO 更新消息接收状态，暂时没有其他作用，后续有空构建可靠投递机制再用
-                webSocketService.receivedCallMessage(getUserId(session.getId()), data);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
     }
 

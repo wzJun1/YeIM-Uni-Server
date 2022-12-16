@@ -20,16 +20,13 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import cn.wzjun1.yeimServer.domain.Group;
 import cn.wzjun1.yeimServer.mapper.GroupMapper;
 import com.github.yitter.idgen.YitIdHelper;
-import com.sun.deploy.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * @author Administrator

@@ -121,7 +121,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
             conversation1.setConversationId(message.getTo());
             conversation1.setType(message.getConversationType());
             conversation1.setUserId(user.getUserId());
-            conversation1.setUnread(conversation1.getUnread() + 1);
             conversation1.setLastMessageId(outMessageId);
             if (conversation1.getCreatedAt() == null || conversation1.getCreatedAt() == 0) {
                 conversation1.setCreatedAt(System.currentTimeMillis());
