@@ -40,6 +40,11 @@ public class User implements Serializable {
     private String avatarUrl;
 
     /**
+     * 移动端推送标识符
+     */
+    private String mobileDeviceId;
+
+    /**
      * 创建时间
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)

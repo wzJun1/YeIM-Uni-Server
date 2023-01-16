@@ -20,4 +20,5 @@ public interface MessageService extends IService<Message> {
     void updatePrivateMessageById(Message update, String userId, String messageId) throws Exception;
 
     IPage<Message> listMessage(IPage<Message> page, String userId, String conversationId);
+
 }

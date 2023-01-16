@@ -1,5 +1,6 @@
 package cn.wzjun1.yeimServer.service.impl;
 
+import cn.wzjun1.yeimServer.constant.*;
 import cn.wzjun1.yeimServer.domain.*;
 import cn.wzjun1.yeimServer.dto.group.GroupUserAddDTO;
 import cn.wzjun1.yeimServer.dto.message.MessageSaveDTO;
@@ -12,7 +13,6 @@ import cn.wzjun1.yeimServer.service.ConversationService;
 import cn.wzjun1.yeimServer.service.GroupApplyService;
 import cn.wzjun1.yeimServer.service.GroupMessageService;
 import cn.wzjun1.yeimServer.socket.WebSocket;
-import cn.wzjun1.yeimServer.socket.cons.*;
 import cn.wzjun1.yeimServer.result.Result;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;

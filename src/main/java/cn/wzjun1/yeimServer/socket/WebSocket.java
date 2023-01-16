@@ -1,14 +1,15 @@
 package cn.wzjun1.yeimServer.socket;
 
-import cn.wzjun1.yeimServer.domain.Message;
 import cn.wzjun1.yeimServer.domain.User;
+import cn.wzjun1.yeimServer.pojo.YeIMPushConfig;
 import cn.wzjun1.yeimServer.service.WebSocketService;
-import cn.wzjun1.yeimServer.socket.cons.SocketStatusCode;
+import cn.wzjun1.yeimServer.constant.SocketStatusCode;
 import cn.wzjun1.yeimServer.utils.Common;
 import cn.wzjun1.yeimServer.result.Result;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.socket.*;
 
 import java.util.HashMap;
@@ -20,14 +21,17 @@ public class WebSocket implements WebSocketHandler {
 
     private WebSocketService webSocketService;
 
+    private YeIMPushConfig yeIMPushConfig;
+
     private static CopyOnWriteArraySet<WebSocket> webSockets = new CopyOnWriteArraySet<>();
 
     private static ConcurrentHashMap<String, String> userPool = new ConcurrentHashMap<>();
 
     private static ConcurrentHashMap<String, WebSocketSession> sessionPool = new ConcurrentHashMap<>();
 
-    public WebSocket(WebSocketService webSocketService) {
+    public WebSocket(WebSocketService webSocketService, YeIMPushConfig yeIMPushConfig) {
         this.webSocketService = webSocketService;
+        this.yeIMPushConfig = yeIMPushConfig;
     }
 
     /**
@@ -52,6 +56,7 @@ public class WebSocket implements WebSocketHandler {
 
         sendMessage(session, Result.info(SocketStatusCode.LOGIN_SUCCESS.getCode(), SocketStatusCode.LOGIN_SUCCESS.getDesc(), new HashMap<String, Object>() {{
             put("user", user);
+            put("pushConfig",yeIMPushConfig);
         }}).toJSONString());
         log.info("【YeIMUniServer】有新用户：" + user.getNickname() + "(userId：" + user.getUserId() + ")" + "的连接，现存总数为:" + webSockets.size());
     }
@@ -140,17 +145,20 @@ public class WebSocket implements WebSocketHandler {
      *
      * @param userId
      * @param message
+     * @return int
      */
-    public static void sendMessage(String userId, String message) {
+    public static int sendMessage(String userId, String message) {
         WebSocketSession session = sessionPool.get(userId);
         if (session != null && session.isOpen()) {
             try {
                 log.info("【YeIMUniServer】向userId：" + userId + " 发送消息：" + message);
                 session.sendMessage(new TextMessage(message));
+                return 1;
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+        return 0;
     }
 
     /**

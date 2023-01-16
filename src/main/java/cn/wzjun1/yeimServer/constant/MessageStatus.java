@@ -1,4 +1,4 @@
-package cn.wzjun1.yeimServer.socket.cons;
+package cn.wzjun1.yeimServer.constant;
 
 public class MessageStatus {
     public static final String UNSEND = "unSend";

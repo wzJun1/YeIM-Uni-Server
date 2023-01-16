@@ -14,7 +14,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface GroupMessageService extends IService<GroupMessage> {
     GroupMessage insertGroupMessage(User user, MessageSaveDTO message) throws Exception;
-
     IPage<GroupMessage> listMessage(IPage<GroupMessage> page, String conversationId) throws Exception;
+
 
 }

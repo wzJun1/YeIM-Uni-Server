@@ -1,18 +1,22 @@
 package cn.wzjun1.yeimServer.service.impl;
 
+import cn.wzjun1.yeimServer.constant.MessageType;
 import cn.wzjun1.yeimServer.domain.*;
 import cn.wzjun1.yeimServer.dto.message.MessageSaveDTO;
 import cn.wzjun1.yeimServer.interceptor.LoginUserContext;
 import cn.wzjun1.yeimServer.mapper.ConversationMapper;
 import cn.wzjun1.yeimServer.mapper.GroupMapper;
 import cn.wzjun1.yeimServer.mapper.GroupUserMapper;
+import cn.wzjun1.yeimServer.pojo.YeIMPushConfig;
+import cn.wzjun1.yeimServer.service.AsyncService;
 import cn.wzjun1.yeimServer.service.ConversationService;
+import cn.wzjun1.yeimServer.service.PushService;
 import cn.wzjun1.yeimServer.socket.WebSocket;
-import cn.wzjun1.yeimServer.socket.cons.ConversationType;
-import cn.wzjun1.yeimServer.socket.cons.JoinGroupMode;
-import cn.wzjun1.yeimServer.socket.cons.MessageStatus;
-import cn.wzjun1.yeimServer.socket.cons.SocketStatusCode;
+import cn.wzjun1.yeimServer.constant.ConversationType;
+import cn.wzjun1.yeimServer.constant.MessageStatus;
+import cn.wzjun1.yeimServer.constant.SocketStatusCode;
 import cn.wzjun1.yeimServer.result.Result;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -50,9 +54,13 @@ public class GroupMessageServiceImpl extends ServiceImpl<GroupMessageMapper, Gro
     @Autowired
     ConversationService conversationService;
 
+    @Autowired
+    AsyncService asyncService;
+
     /**
      * 发送群消息
-     * @param user 当前操作者
+     *
+     * @param user    当前操作者
      * @param message 消息
      * @return
      * @throws Exception
@@ -79,7 +87,7 @@ public class GroupMessageServiceImpl extends ServiceImpl<GroupMessageMapper, Gro
             }
 
             //判断是否有发言权限(群主、管理员禁言状态下也可以发言)
-            if (isExistGroup.getIsMute().equals(1) && !isAdmin){
+            if (isExistGroup.getIsMute().equals(1) && !isAdmin) {
                 throw new Exception("当前群组全体禁言");
             }
 
@@ -88,7 +96,7 @@ public class GroupMessageServiceImpl extends ServiceImpl<GroupMessageMapper, Gro
                 throw new Exception("非群成员无法给当前群组发送消息");
             }
 
-            if (isGroupUser.getMuteEndTime() > System.currentTimeMillis() && !isAdmin){
+            if (isGroupUser.getMuteEndTime() > System.currentTimeMillis() && !isAdmin) {
                 throw new Exception("您在当前群组内已被禁言");
             }
 
@@ -121,7 +129,7 @@ public class GroupMessageServiceImpl extends ServiceImpl<GroupMessageMapper, Gro
             if (messageResult) {
                 //2.更新多端会话
                 ///异步批量更新群用户会话 + 转发事件
-                updateGroupConversationSendEvent(message.getTo(), outResultMessage);
+                asyncService.updateGroupConversationSendEvent(message.getTo(), outResultMessage);
                 return outResultMessage;
             } else {
                 throw new Exception("insertMessage error");
@@ -129,80 +137,6 @@ public class GroupMessageServiceImpl extends ServiceImpl<GroupMessageMapper, Gro
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
-    }
-
-    /**
-     * 异步
-     * 发送群组会话更新，群新消息通知事件
-     *
-     * @param groupId 群ID
-     * @param message 群消息
-     */
-    @Async
-    protected void updateGroupConversationSendEvent(String groupId, GroupMessage message) {
-
-        //TODO 后面看情况用队列改一下
-
-        long time = System.currentTimeMillis();
-
-        //查出群组全部用户的会话
-        List<Conversation> conversations = conversationMapper.selectList(new QueryWrapper<Conversation>().eq("conversation_id ", groupId).eq("type", "group"));
-
-        //查出群组内所有的用户，并更新群成员的会话。
-        List<GroupUser> groupUsers = groupUserMapper.selectList(new QueryWrapper<GroupUser>().eq("group_id", groupId));
-        groupUsers.forEach(groupUser -> {
-            try {
-                int exist = -1;
-                for (int i = 0; i < conversations.size(); i++) {
-                    if (groupUser.getUserId().equals(conversations.get(i).getUserId())) {
-                        //此用户已有会话
-                        exist = i;
-                    }
-                }
-                //会话存在则更新
-                if (exist != -1) {
-                    Conversation conversation = conversations.get(exist);
-                    conversation.setLastMessageId(message.getMessageId());
-                    conversation.setUpdatedAt(time);
-                    if(message.getFrom().equals(groupUser.getUserId())){
-                        conversation.setUnread(conversation.getUnread());
-                    }else{
-                        conversation.setUnread(conversation.getUnread() + 1);
-                    }
-                    conversationMapper.updateGroupConversation(message.getMessageId(), time, groupId, groupUser.getUserId());
-                } else {
-                    //会话不存在就新增
-                    Conversation conversation = new Conversation();
-                    conversation.setConversationId(groupId);
-                    conversation.setType(ConversationType.GROUP);
-                    conversation.setUserId(groupUser.getUserId());
-                    conversation.setUnread(1);
-                    if(message.getFrom().equals(groupUser.getUserId())){
-                        conversation.setUnread(0);
-                    }else{
-                        conversation.setUnread(1);
-                    }
-                    conversation.setLastMessageId(message.getMessageId());
-                    if (conversation.getCreatedAt() == null || conversation.getCreatedAt() == 0) {
-                        conversation.setCreatedAt(System.currentTimeMillis());
-                    } else {
-                        conversation.setUpdatedAt(System.currentTimeMillis());
-                    }
-                    conversationMapper.insert(conversation);
-                }
-                //socket转发会话更新事件，非群成员不发送（已删除的成员，会话仍在，消息不更新）
-                WebSocket.sendMessage(groupUser.getUserId(), Result.info(SocketStatusCode.CONVERSATION_CHANGED.getCode(), SocketStatusCode.CONVERSATION_CHANGED.getDesc(), conversationService.getConversation(groupUser.getGroupId(), groupUser.getUserId())).toJSONString());
-
-                //给群成员发送在线消息（发送者除外）
-                if (!message.getFrom().equals(groupUser.getUserId())) {
-                    WebSocket.sendMessage(groupUser.getUserId(), Result.info(SocketStatusCode.MESSAGE_RECEIVE.getCode(), "", message).toJSONString());
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                log.error(e.getMessage());
-            }
-        });
     }
 
     @Override

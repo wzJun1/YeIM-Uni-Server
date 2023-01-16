@@ -10,6 +10,7 @@ import cn.wzjun1.yeimServer.service.UserService;
 import cn.wzjun1.yeimServer.utils.MD5Util;
 import cn.wzjun1.yeimServer.utils.RedisUtil;
 import cn.wzjun1.yeimServer.result.Result;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -122,6 +123,25 @@ public class UserController {
     @GetMapping(path = "/user/info")
     public Result getUserInfo(@RequestParam @NotEmpty String userId) {
         return Result.success(userService.getUserById(userId));
+    }
+
+    /**
+     * 绑定个推移动端推送clientId
+     *
+     * @param clientId 推送标识符
+     * @return
+     */
+    @UserAuthorization
+    @PostMapping(path = "/user/bind/push/id")
+    public Result update(@RequestParam @NotEmpty String clientId) {
+        try {
+            User update = new User();
+            update.setMobileDeviceId(clientId);
+            userService.update(update, new UpdateWrapper<User>().eq("user_id", LoginUserContext.getUser().getUserId()));
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
+        return Result.success();
     }
 
 }

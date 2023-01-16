@@ -1,4 +1,4 @@
-package cn.wzjun1.yeimServer.socket.cons;
+package cn.wzjun1.yeimServer.constant;
 
 /**
  * 会话类型

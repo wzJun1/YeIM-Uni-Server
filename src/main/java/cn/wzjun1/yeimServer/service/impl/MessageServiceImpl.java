@@ -1,20 +1,22 @@
 package cn.wzjun1.yeimServer.service.impl;
 
+import cn.wzjun1.yeimServer.constant.MessageType;
 import cn.wzjun1.yeimServer.domain.*;
 import cn.wzjun1.yeimServer.mapper.*;
 import cn.wzjun1.yeimServer.dto.message.MessageSaveDTO;
-import cn.wzjun1.yeimServer.service.ConversationService;
-import cn.wzjun1.yeimServer.service.GroupMessageService;
-import cn.wzjun1.yeimServer.service.MessageService;
+import cn.wzjun1.yeimServer.pojo.YeIMPushConfig;
+import cn.wzjun1.yeimServer.service.*;
 import cn.wzjun1.yeimServer.socket.WebSocket;
-import cn.wzjun1.yeimServer.socket.cons.MessageStatus;
-import cn.wzjun1.yeimServer.socket.cons.SocketStatusCode;
+import cn.wzjun1.yeimServer.constant.MessageStatus;
+import cn.wzjun1.yeimServer.constant.SocketStatusCode;
 import cn.wzjun1.yeimServer.result.Result;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.yitter.idgen.YitIdHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,6 +52,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
 
     @Autowired
     ConversationMapper conversationMapper;
+
+    @Autowired
+    AsyncService asyncService;
 
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     @Override
@@ -151,8 +156,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
             boolean conversation2Result = conversationService.saveOrUpdate(conversation2);
             // 2.2.1 推送给接收者会话更新消息
             this.emitJSSDKConversationUpdated(conversation2);
-            // 2.2.2 推送给接收者socket消息，如果在线的话
-            this.emitJSSDKMessageReceive(inResultMessage);
+            // 2.2.2 异步推送给接收者socket消息，如果在线的话
+            asyncService.emitJSSDKMessageReceive(inResultMessage);
 
             if (messageResult && conversation1Result && conversation2Result) {
                 return outResultMessage;
@@ -163,9 +168,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
             throw new Exception(e.getMessage());
         }
     }
-
-
-
 
 
     /**
@@ -205,17 +207,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
      */
     private void emitJSSDKConversationUpdated(Conversation conversation) {
         WebSocket.sendMessage(conversation.getUserId(), Result.info(SocketStatusCode.CONVERSATION_CHANGED.getCode(), SocketStatusCode.CONVERSATION_CHANGED.getDesc(), conversationService.getConversation(conversation.getConversationId(), conversation.getUserId())).toJSONString());
-    }
-
-    /**
-     * 给接收方推送socket message
-     *
-     * @param message
-     */
-    private void emitJSSDKMessageReceive(Message message) {
-        //消息是发送方的参照，会话ID是接收方，这里切换成发送方的。
-        message.setConversationId(message.getFrom());
-        WebSocket.sendMessage(message.getTo(), Result.info(SocketStatusCode.MESSAGE_RECEIVE.getCode(), "", message).toJSONString());
     }
 
 }

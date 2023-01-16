@@ -25,6 +25,7 @@
         <association property="userInfo" javaType="cn.wzjun1.yeimServer.domain.User">
             <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
             <result property="avatarUrl" column="avatar_url" jdbcType="VARCHAR"/>
+            <result property="mobileDeviceId" column="mobile_device_id" jdbcType="VARCHAR"/>
         </association>
     </resultMap>
 
@@ -35,7 +36,7 @@
     </sql>
 
     <select id="getGroupUserList" resultMap="GroupUserV0">
-        select gu.*,u.nickname,u.avatar_url from `group_user` as gu
+        select gu.*,u.nickname,u.avatar_url,u.mobile_device_id from `group_user` as gu
         left join `user` as u on u.user_id = gu.user_id
         where gu.group_id = #{groupId}
         order by gu.join_at asc

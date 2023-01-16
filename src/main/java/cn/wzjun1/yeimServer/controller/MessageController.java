@@ -10,7 +10,7 @@ import cn.wzjun1.yeimServer.dto.message.MessageSaveDTO;
 import cn.wzjun1.yeimServer.service.ConversationService;
 import cn.wzjun1.yeimServer.service.GroupMessageService;
 import cn.wzjun1.yeimServer.service.MessageService;
-import cn.wzjun1.yeimServer.socket.cons.ConversationType;
+import cn.wzjun1.yeimServer.constant.ConversationType;
 import cn.wzjun1.yeimServer.result.Result;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -19,9 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 @Slf4j
 @Validated
