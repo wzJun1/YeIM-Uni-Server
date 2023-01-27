@@ -1,8 +1,8 @@
 <p align="center">
-    <strong><font size="6">YeIM-Uni-SDK</font></strong>
+    <strong><font size="6">YeIM-Uni-Server</font></strong>
     <br>
     <br>
-    <strong><font size="5">即时通讯JSSDK</font></strong> 
+    <strong><font size="5">YeIM-Uni-SDK服务端</font></strong> 
     <br>
     <br>
     <a target="_blank" href="https://wzjun1.netlify.app/ye_plugins/sdk/yeimunisdk">查看文档</a>
@@ -19,7 +19,9 @@
 
 支持私聊和群聊，支持发送的消息类型：文字消息、图片消息、语音消息、视频消息、位置消息、自定义消息。
 
-必须搭配`YeIM-Uni-Server`服务端，开箱即用。
+`YeIM-Uni-Server`是`YeIM-Uni-SDK`的配套服务端。
+
+因此`YeIM-Uni-SDK`必须搭配[YeIM-Uni-Server](https://github.com/wzJun1/YeIM-Uni-Server)服务端，开箱即用。
 
 ## 使用文档
 
