@@ -17,7 +17,12 @@ public interface MessageService extends IService<Message> {
 
     Message insertMessage(User user, MessageSaveDTO params)  throws Exception;
 
+    @Deprecated
     void updatePrivateMessageById(Message update, String userId, String messageId) throws Exception;
+
+    void deleteMessage(String userId, String messageId) throws Exception;
+
+    void revokeMessage(String userId, String messageId) throws Exception;
 
     IPage<Message> listMessage(IPage<Message> page, String userId, String conversationId);
 

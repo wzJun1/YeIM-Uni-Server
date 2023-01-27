@@ -2,14 +2,12 @@ package cn.wzjun1.yeimServer.socket;
 
 import cn.wzjun1.yeimServer.domain.User;
 import cn.wzjun1.yeimServer.pojo.YeIMPushConfig;
-import cn.wzjun1.yeimServer.service.WebSocketService;
 import cn.wzjun1.yeimServer.constant.SocketStatusCode;
 import cn.wzjun1.yeimServer.utils.Common;
 import cn.wzjun1.yeimServer.result.Result;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.socket.*;
 
 import java.util.HashMap;
@@ -19,8 +17,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @Slf4j
 public class WebSocket implements WebSocketHandler {
 
-    private WebSocketService webSocketService;
-
     private YeIMPushConfig yeIMPushConfig;
 
     private static CopyOnWriteArraySet<WebSocket> webSockets = new CopyOnWriteArraySet<>();
@@ -29,8 +25,7 @@ public class WebSocket implements WebSocketHandler {
 
     private static ConcurrentHashMap<String, WebSocketSession> sessionPool = new ConcurrentHashMap<>();
 
-    public WebSocket(WebSocketService webSocketService, YeIMPushConfig yeIMPushConfig) {
-        this.webSocketService = webSocketService;
+    public WebSocket(YeIMPushConfig yeIMPushConfig) {
         this.yeIMPushConfig = yeIMPushConfig;
     }
 
@@ -130,7 +125,7 @@ public class WebSocket implements WebSocketHandler {
                 log.info("【YeIMUniServer】用户：" + getUserId(session.getId()) + " 连接断开，总数为:" + webSockets.size());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 
@@ -155,7 +150,7 @@ public class WebSocket implements WebSocketHandler {
                 session.sendMessage(new TextMessage(message));
                 return 1;
             } catch (Exception e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         }
         return 0;
@@ -173,7 +168,7 @@ public class WebSocket implements WebSocketHandler {
                 log.info("【YeIMUniServer】向sessionId：" + session.getId() + "(userId: " + getUserId(session.getId()) + ") 发送消息：" + message);
                 session.sendMessage(new TextMessage(message));
             } catch (Exception e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         }
     }

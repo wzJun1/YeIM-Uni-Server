@@ -8,6 +8,7 @@
         <id property="sequence" column="sequence" jdbcType="BIGINT"/>
         <result property="messageId" column="message_id" jdbcType="VARCHAR"/>
         <result property="conversationId" column="message_conversation_id" jdbcType="VARCHAR"/>
+        <result property="conversationType" column="conversation_type" jdbcType="VARCHAR"/>
         <result property="direction" column="direction" jdbcType="VARCHAR"/>
         <result property="userId" column="user_id" jdbcType="VARCHAR"/>
         <result property="from" column="from" jdbcType="VARCHAR"/>
@@ -36,6 +37,7 @@
                m.`direction`,
                m.`message_id`,
                m.`conversation_id` as message_conversation_id,
+               m.`conversation_type`,
                m.`from`,
                m.`to`,
                m.`type`            as message_type,
@@ -49,7 +51,9 @@
                m.`time`
         FROM `group_message` as m
                  LEFT JOIN `user` as u ON u.`user_id` = m.`from`
-        WHERE m.`is_deleted` = 0 and m.`message_id` = #{messageId} and m.`conversation_id` = #{conversationId}
+        WHERE m.`is_deleted` = 0
+          and m.`message_id` = #{messageId}
+          and m.`conversation_id` = #{conversationId}
     </select>
 
 
@@ -61,6 +65,7 @@
                m.`user_id`,
                m.`direction`,
                m.`conversation_id` as message_conversation_id,
+               m.`conversation_type`,
                m.`from`,
                m.`to`,
                m.`type`            as message_type,
@@ -72,9 +77,20 @@
                m.`status`          as message_status,
                m.`receive`,
                m.`time`
-        FROM `group_message` as m
+        FROM (SELECT *
+              FROM `group_message`
+              WHERE `group_message`.`message_id` NOT IN (SELECT message_id
+                                                         FROM `group_message_deleted`
+                                                         WHERE `group_message_deleted`.`group_id` = #{conversationId}
+                                                           AND `group_message_deleted`.`user_id` = #{userId})) as m
                  LEFT JOIN `user` as u ON u.`user_id` = m.`from`
         WHERE m.`conversation_id` = #{conversationId}
         ORDER BY m.`sequence` desc
     </select>
+
+    <insert id="deleteGroupMessage">
+        INSERT INTO `group_message_deleted`(`message_id`, `group_id`, `user_id`, `created_at`)
+        VALUES (#{messageId}, #{groupId}, #{userId}, #{createdAt})
+    </insert>
+
 </mapper>

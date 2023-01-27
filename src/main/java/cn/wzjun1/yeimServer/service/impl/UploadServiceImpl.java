@@ -170,9 +170,9 @@ public class UploadServiceImpl implements UploadService {
         //文件类型检验
         String extName = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
         // 判断是不是图片文件后缀
-        if (!extName.matches("(png|jpg|jpeg|webp|bmp|tiff)")) {
+        if (!extName.matches("(png|jpg|jpeg|webp|bmp|tiff|PNG|JPG|JPEG|WEBP|BMP|TIFF)")) {
             // "文件格式错误"
-            throw new Exception("当前类型文件不允许上传");
+            throw new Exception("当前类型文件不允许上传：" + extName);
         }
 
         //图片保存绝对路径
@@ -251,7 +251,7 @@ public class UploadServiceImpl implements UploadService {
         //文件类型检验
         String extName = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
         // 判断是不是图片文件后缀
-        if (!extName.matches("(mp4|mov|avi|flv|3gp|rmvb)")) {
+        if (!extName.matches("(mp4|mov|avi|flv|3gp|rmvb|MP4|MOV|AVI|FLV|3GP|RMVB)")) {
             //文件格式错误
             throw new Exception("当前类型文件不允许上传");
         }

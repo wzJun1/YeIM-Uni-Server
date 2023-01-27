@@ -7,4 +7,10 @@ public interface AsyncService {
     void emitJSSDKMessageReceive(Message message);
 
     void updateGroupConversationSendEvent(String groupId, GroupMessage message);
+
+    void groupMessageRevokedSendEvent(String groupId, GroupMessage message);
+
+    void messageRevokedSendEvent(Message message);
+
+
 }

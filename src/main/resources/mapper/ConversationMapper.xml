@@ -26,6 +26,8 @@
             <id property="sequence" column="sequence" jdbcType="BIGINT"/>
             <result property="messageId" column="message_id" jdbcType="VARCHAR"/>
             <result property="conversationId" column="message_conversation_id" jdbcType="VARCHAR"/>
+            <result property="conversationType" column="conversation_type" jdbcType="VARCHAR"/>
+
             <result property="direction" column="direction" jdbcType="VARCHAR"/>
             <result property="userId" column="message_user_id" jdbcType="VARCHAR"/>
             <result property="from" column="from" jdbcType="VARCHAR"/>
@@ -63,6 +65,7 @@
                (CASE WHEN (m.`sequence` is not null and c.type = 'private') THEN m.`sequence` ELSE gm.`sequence` END) sequence,
                (CASE WHEN (m.`message_id` is not null and c.type = 'private') THEN m.`message_id` ELSE gm.`message_id` END) message_id,
                (CASE WHEN (m.`conversation_id` is not null and c.type = 'private') THEN m.`conversation_id` ELSE gm.`conversation_id` END) message_conversation_id,
+               (CASE WHEN (m.`conversation_type` is not null and c.type = 'private') THEN m.`conversation_type` ELSE gm.`conversation_type` END) conversation_type,
                (CASE WHEN (m.`user_id` is not null and c.type = 'private') THEN m.`user_id` ELSE gm.`user_id` END) message_user_id,
                (CASE WHEN (m.`direction` is not null and c.type = 'private') THEN m.`direction` ELSE (CASE WHEN (gm.`from` != c.`user_id`) THEN 'in' ELSE 'out' END) END) direction,
                (CASE WHEN (m.`from` is not null and c.type = 'private') THEN m.`from` ELSE gm.`from` END) `from`,
@@ -102,6 +105,7 @@
                (CASE WHEN (m.`sequence` is not null and c.type = 'private') THEN m.`sequence` ELSE gm.`sequence` END) sequence,
                (CASE WHEN (m.`message_id` is not null and c.type = 'private') THEN m.`message_id` ELSE gm.`message_id` END) message_id,
                (CASE WHEN (m.`conversation_id` is not null and c.type = 'private') THEN m.`conversation_id` ELSE gm.`conversation_id` END) message_conversation_id,
+               (CASE WHEN (m.`conversation_type` is not null and c.type = 'private') THEN m.`conversation_type` ELSE gm.`conversation_type` END) conversation_type,
                (CASE WHEN (m.`user_id` is not null and c.type = 'private') THEN m.`user_id` ELSE gm.`user_id` END) message_user_id,
                (CASE WHEN (m.`direction` is not null and c.type = 'private') THEN m.`direction` ELSE (CASE WHEN (gm.`from` != c.`user_id`) THEN 'in' ELSE 'out' END) END) direction,
                (CASE WHEN (m.`from` is not null and c.type = 'private') THEN m.`from` ELSE gm.`from` END) `from`,

@@ -69,6 +69,24 @@ public class MessageController {
     }
 
     /**
+     * 删除消息
+     *
+     * @param messageId 消息ID
+     * @return Result
+     */
+    @UserAuthorization
+    @GetMapping(path = "/message/delete")
+    public Result delete(@RequestParam @NotEmpty String messageId) {
+        try {
+            //根据消息ID删除消息
+            messageService.deleteMessage(LoginUserContext.getUser().getUserId(), messageId);
+            return Result.success();
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
+    }
+
+    /**
      * 撤回消息
      *
      * @param messageId 消息ID
@@ -78,10 +96,8 @@ public class MessageController {
     @GetMapping(path = "/message/revoke")
     public Result revoke(@RequestParam @NotEmpty String messageId) {
         try {
-            Message update = new Message();
-            update.setIsRevoke(1);
-            //根据消息ID更新消息（两条）
-            messageService.updatePrivateMessageById(update, LoginUserContext.getUser().getUserId(), messageId);
+            //根据消息ID撤回消息
+            messageService.revokeMessage(LoginUserContext.getUser().getUserId(), messageId);
             return Result.success();
         } catch (Exception e) {
             return Result.error(e.getMessage());

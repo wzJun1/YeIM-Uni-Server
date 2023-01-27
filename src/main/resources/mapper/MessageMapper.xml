@@ -8,6 +8,7 @@
         <id property="sequence" column="sequence" jdbcType="BIGINT"/>
         <result property="messageId" column="message_id" jdbcType="VARCHAR"/>
         <result property="conversationId" column="message_conversation_id" jdbcType="VARCHAR"/>
+        <result property="conversationType" column="conversation_type" jdbcType="VARCHAR"/>
         <result property="direction" column="direction" jdbcType="VARCHAR"/>
         <result property="userId" column="user_id" jdbcType="VARCHAR"/>
         <result property="from" column="from" jdbcType="VARCHAR"/>
@@ -36,6 +37,7 @@
                m.`direction`,
                m.`message_id`,
                m.`conversation_id` as message_conversation_id,
+               m.`conversation_type`,
                m.`from`,
                m.`to`,
                m.`type`            as message_type,
@@ -61,6 +63,7 @@
                m.`user_id`,
                m.`direction`,
                m.`conversation_id` as message_conversation_id,
+               m.`conversation_type`,
                m.`from`,
                m.`to`,
                m.`type`            as message_type,

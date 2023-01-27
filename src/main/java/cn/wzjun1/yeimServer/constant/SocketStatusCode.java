@@ -20,6 +20,9 @@ public enum SocketStatusCode {
     PRIVATE_READ_RECEIPT(205, "会话已读回执"),
     //入群申请事件
     GROUP_APPLY_RECEIVE(206, "入群申请"),
+    //消息撤回事件
+    MESSAGE_REVOKED(207, "消息撤回"),
+
     //推送新消息
     MESSAGE_RECEIVE(200, "");
 

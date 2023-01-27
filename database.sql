@@ -51,6 +51,7 @@ CREATE TABLE `group_message` (
   `message_id` varchar(255) NOT NULL COMMENT '消息ID',
   `user_id` varchar(255) NOT NULL COMMENT '消息所属用户ID',
   `conversation_id` varchar(255) NOT NULL COMMENT '消息所属会话ID',
+  `conversation_type` varchar(20) NOT NULL DEFAULT 'group' COMMENT '会话类型，当前表默认group群聊',
   `direction` varchar(50) NOT NULL COMMENT '消息方向：in=接收 out等于发出（群消息应用层控制）',
   `from` varchar(255) NOT NULL COMMENT '消息发送方',
   `to` varchar(255) NOT NULL COMMENT '消息接收方',
@@ -64,6 +65,14 @@ CREATE TABLE `group_message` (
   `receive` int(11) NOT NULL DEFAULT '0' COMMENT '接收状态，0 = 未接收， 1 = 已接收',
   `time` bigint(20) NOT NULL DEFAULT '0' COMMENT '消息时间，毫秒'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='群消息表';
+
+CREATE TABLE `group_message_deleted` (
+  `deleted_id` bigint(20) NOT NULL,
+  `message_id` varchar(255) NOT NULL COMMENT '消息ID',
+  `group_id` varchar(255) NOT NULL COMMENT '会话ID(群ID)',
+  `user_id` varchar(255) NOT NULL COMMENT '操作用户ID',
+  `created_at` bigint(20) NOT NULL COMMENT '删除时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='群消息软删除记录表';
 
 CREATE TABLE `group_user` (
   `id` int(11) NOT NULL,
@@ -80,6 +89,7 @@ CREATE TABLE `message` (
   `message_id` varchar(255) NOT NULL COMMENT '消息ID',
   `user_id` varchar(255) NOT NULL COMMENT '消息所属用户ID',
   `conversation_id` varchar(255) NOT NULL COMMENT '消息所属会话ID',
+  `conversation_type` varchar(20) NOT NULL DEFAULT 'private' COMMENT '会话类型，当前表默认private私聊',
   `direction` varchar(50) NOT NULL COMMENT '消息方向：in=接收 out等于发出',
   `from` varchar(255) NOT NULL COMMENT '消息发送方',
   `to` varchar(255) NOT NULL COMMENT '消息接收方',
@@ -128,6 +138,10 @@ ALTER TABLE `group_message`
   ADD UNIQUE KEY `message_id_conversation_id_unique` (`message_id`,`conversation_id`) USING BTREE,
   ADD KEY `message_id_idx` (`message_id`);
 
+ALTER TABLE `group_message_deleted`
+  ADD PRIMARY KEY (`deleted_id`),
+  ADD UNIQUE KEY `unique` (`message_id`,`group_id`,`user_id`);
+
 ALTER TABLE `group_user`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `group_id_user_id_unique` (`group_id`,`user_id`);
@@ -154,6 +168,9 @@ ALTER TABLE `group_apply`
 
 ALTER TABLE `group_message`
   MODIFY `sequence` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '顺序';
+
+ALTER TABLE `group_message_deleted`
+  MODIFY `deleted_id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `group_user`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;

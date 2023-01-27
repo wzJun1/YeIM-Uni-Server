@@ -180,6 +180,108 @@ public class AsyncServiceImpl implements AsyncService {
         });
     }
 
+    /**
+     * 异步
+     * 发送私聊消息撤回事件
+     *
+     * @param message 群消息
+     */
+    @Async
+    public void messageRevokedSendEvent(Message message) {
+        //消息撤回事件
+        WebSocket.sendMessage(message.getTo(), Result.info(SocketStatusCode.MESSAGE_REVOKED.getCode(), SocketStatusCode.MESSAGE_REVOKED.getDesc(), message).toJSONString());
+        //如果会话最新消息是撤回的消息，则会话更新
+        ConversationV0 conversation = conversationService.getConversation(message.getFrom(), message.getTo());
+        if (conversation != null && conversation.getLastMessage().getMessageId().equals(message.getMessageId())) {
+            WebSocket.sendMessage(message.getTo(), Result.info(SocketStatusCode.CONVERSATION_CHANGED.getCode(), SocketStatusCode.CONVERSATION_CHANGED.getDesc(), conversation).toJSONString());
+        }
+        //第三方通知消息推送。在线透传，离线通知
+        try {
+            if (yeIMPushConfig.isEnable()) {
+                User user = userMapper.findByUserId(message.getTo());
+                if (user.getMobileDeviceId() != null) {
+                    String pushTitle = user.getNickname();
+                    String pushContent = "[对方撤回了一条消息]";
+                    pushService.pushSingleByDeviceId(user.getMobileDeviceId(), pushTitle, pushContent);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 异步
+     * 发送群组消息撤回事件
+     *
+     * @param groupId 群ID
+     * @param message 群消息
+     */
+    @Async
+    public void groupMessageRevokedSendEvent(String groupId, GroupMessage message) {
+
+        //TODO 后面看情况用队列改一下
+
+        long time = System.currentTimeMillis();
+
+        //查出群组全部用户的会话
+        List<Conversation> conversations = conversationMapper.selectList(new QueryWrapper<Conversation>().eq("conversation_id ", groupId).eq("type", "group"));
+
+        Group group = groupMapper.selectOne(new QueryWrapper<Group>().eq("group_id", groupId).eq("is_dissolve", 0));
+
+        //查出群组内所有的用户，并更新群成员的会话。
+        List<GroupUser> groupUsers = groupUserMapper.getGroupUserList(groupId);
+        groupUsers.forEach(groupUser -> {
+            try {
+                int exist = -1;
+                for (int i = 0; i < conversations.size(); i++) {
+                    if (groupUser.getUserId().equals(conversations.get(i).getUserId())) {
+                        //此用户已有会话
+                        exist = i;
+                    }
+                }
+
+                //如果会话存在，并且会话最新消息是当前撤回的消息，则更新会话
+                if (exist != -1) {
+                    Conversation conversation = conversations.get(exist);
+                    if (conversation.getLastMessageId().equals(message.getMessageId())){
+                        conversation.setLastMessageId(message.getMessageId());
+                        conversation.setUpdatedAt(time);
+                        if (message.getFrom().equals(groupUser.getUserId())) {
+                            conversation.setUnread(conversation.getUnread());
+                        } else {
+                            conversation.setUnread(conversation.getUnread() + 1);
+                        }
+                        conversationMapper.updateGroupConversation(message.getMessageId(), time, groupId, groupUser.getUserId());
+                        //socket转发会话更新事件，非群成员不发送（已删除的成员，会话仍在，消息不更新）
+                        WebSocket.sendMessage(groupUser.getUserId(), Result.info(SocketStatusCode.CONVERSATION_CHANGED.getCode(), SocketStatusCode.CONVERSATION_CHANGED.getDesc(), conversationService.getConversation(groupUser.getGroupId(), groupUser.getUserId())).toJSONString());
+                    }
+                }
+                //给群成员发送撤回事件
+                if (!message.getFrom().equals(groupUser.getUserId())) {
+                    WebSocket.sendMessage(groupUser.getUserId(), Result.info(SocketStatusCode.MESSAGE_REVOKED.getCode(), SocketStatusCode.MESSAGE_REVOKED.getDesc(), message).toJSONString());
+                    //第三方通知消息推送。在线透传，离线通知
+                    try {
+                        if (yeIMPushConfig.isEnable()) {
+                            if (groupUser.getUserInfo().getMobileDeviceId() != null) {
+                                String pushTitle = group.getName();
+                                String pushContent = "";
+                                pushContent = message.getFromUserInfo().getNickname() + ": [撤回了一条消息]";
+                                pushService.pushSingleByDeviceId(groupUser.getUserInfo().getMobileDeviceId(), pushTitle, pushContent);
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                log.error(e.getMessage());
+            }
+        });
+    }
+
 
 }
 

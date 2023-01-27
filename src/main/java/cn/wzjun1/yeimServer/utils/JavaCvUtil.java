@@ -36,7 +36,7 @@ public class JavaCvUtil {
                 bufferedImage = converter.getBufferedImage(f);
                 if (null != rotate && rotate.length() > 1) {
                     Image image = (Image) bufferedImage;
-                    bufferedImage = rotate(image, 90);//图片旋转90度
+                    bufferedImage = rotate(image, 90);
                 }
                 break;
             }

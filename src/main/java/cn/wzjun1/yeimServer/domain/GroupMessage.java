@@ -36,6 +36,11 @@ public class GroupMessage implements Serializable {
     private String conversationId;
 
     /**
+     * 会话类型
+     */
+    private String conversationType;
+
+    /**
      * 消息方向：in=接收 out等于发出
      */
     private String direction;

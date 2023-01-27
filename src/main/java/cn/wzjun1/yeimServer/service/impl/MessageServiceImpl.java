@@ -54,6 +54,12 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
     ConversationMapper conversationMapper;
 
     @Autowired
+    YeIMPushConfig yeIMPushConfig;
+
+    @Autowired
+    PushService pushService;
+
+    @Autowired
     AsyncService asyncService;
 
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
@@ -177,20 +183,91 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
      * @param update
      * @param messageId
      * @return
+     * @Deprecated
      */
+    @Deprecated
     @Override
     public void updatePrivateMessageById(Message update, String userId, String messageId) throws Exception {
-
         Message exist = messageMapper.getMessageById(messageId, userId);
-
         if (exist == null) {
             throw new Exception("messageId 错误");
         }
         String prefix = messageId.substring(0, messageId.length() - 1);
-        //更新接收者消息
-        this.update(update, new QueryWrapper<Message>().eq("message_id", prefix + "1"));
         //更新发送者消息
+        this.update(update, new QueryWrapper<Message>().eq("message_id", prefix + "1"));
+        //更新接收者消息
         this.update(update, new QueryWrapper<Message>().eq("message_id", prefix + "2"));
+    }
+
+    /**
+     *
+     * 根据消息ID删除消息
+     *
+     * @param userId
+     * @param messageId
+     * @return
+     */
+    @Override
+    public void deleteMessage(String userId, String messageId) throws Exception {
+        Message privateMessage = messageMapper.getMessageById(messageId, userId);
+        if (privateMessage != null) {
+            Message update = new Message();
+            update.setIsDeleted(1);
+            String prefix = messageId.substring(0, messageId.length() - 1);
+            if (privateMessage.getFrom().equals(userId)){
+                //被删除的消息发送者是当前登录用户
+                //更新发送者消息
+                this.update(update, new QueryWrapper<Message>().eq("message_id", prefix + "1"));
+            }else if (privateMessage.getTo().equals(userId)){
+                //被删除的消息接收者是当前登录用户
+                //更新接收者消息
+                this.update(update, new QueryWrapper<Message>().eq("message_id", prefix + "2"));
+            }
+        } else {
+            GroupMessage groupMessage = groupMessageMapper.selectOne(new QueryWrapper<GroupMessage>().eq("message_id", messageId).eq("`from`", userId));
+            if (groupMessage != null){
+                groupMessageMapper.deleteGroupMessage(messageId, groupMessage.getConversationId(), userId, System.currentTimeMillis());
+            }
+        }
+    }
+
+    /**
+     * 撤回消息
+     * <p>
+     * 私聊消息更新应更新两条，发送消息 、接收消息（发件箱、收件箱）
+     * 私聊消息ID组成：分布式唯一ID-毫秒级时间戳-发送端1（接收端2）
+     * <p>
+     * 群里消息更新仅需更新一条即可
+     *
+     * @param userId
+     * @param messageId
+     * @return
+     */
+    @Override
+    public void revokeMessage(String userId, String messageId) throws Exception {
+        boolean isPrivateMessage = messageMapper.exists(new QueryWrapper<Message>().eq("message_id", messageId));
+        if (isPrivateMessage) {
+            Message update = new Message();
+            update.setIsRevoke(1);
+            String prefix = messageId.substring(0, messageId.length() - 1);
+            //更新接收者消息
+            this.update(update, new QueryWrapper<Message>().eq("message_id", prefix + "1"));
+            //更新发送者消息
+            this.update(update, new QueryWrapper<Message>().eq("message_id", prefix + "2"));
+            //发送事件
+            emitJSSDKPrivateMessageRevoked(messageMapper.getMessageById(messageId, userId));
+        } else {
+            boolean isGroupMessage = groupMessageMapper.exists(new QueryWrapper<GroupMessage>().eq("message_id", messageId).eq("from", userId));
+            if (isGroupMessage) {
+                GroupMessage update = new GroupMessage();
+                update.setIsRevoke(1);
+                //更新群消息
+                groupMessageMapper.update(update, new QueryWrapper<GroupMessage>().eq("message_id", messageId).eq("from", userId));
+                emitJSSDKGroupMessageRevoked(groupMessageMapper.selectOne(new QueryWrapper<GroupMessage>().eq("message_id", messageId).eq("from", userId)));
+            } else {
+                throw new Exception("messageId 错误");
+            }
+        }
     }
 
 
@@ -199,14 +276,31 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
         return messageMapper.listMessage(page, userId, conversationId);
     }
 
-
     /**
-     * 会话更新,推送给双方
+     * 会话更新事件
      *
      * @param conversation
      */
     private void emitJSSDKConversationUpdated(Conversation conversation) {
         WebSocket.sendMessage(conversation.getUserId(), Result.info(SocketStatusCode.CONVERSATION_CHANGED.getCode(), SocketStatusCode.CONVERSATION_CHANGED.getDesc(), conversationService.getConversation(conversation.getConversationId(), conversation.getUserId())).toJSONString());
+    }
+
+    /**
+     * 私聊消息撤回事件
+     *
+     * @param message
+     */
+    private void emitJSSDKPrivateMessageRevoked(Message message) {
+        asyncService.messageRevokedSendEvent(message);
+    }
+
+    /**
+     * 群聊消息撤回事件，推送给对方
+     *
+     * @param message
+     */
+    private void emitJSSDKGroupMessageRevoked(GroupMessage message) {
+        asyncService.groupMessageRevokedSendEvent(message.getConversationId(), message);
     }
 
 }

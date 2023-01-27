@@ -154,7 +154,7 @@ public class GroupMessageServiceImpl extends ServiceImpl<GroupMessageMapper, Gro
             throw new Exception("非群成员无法获取群聊天记录");
         }
 
-        return groupMessageMapper.listMessage(page, conversationId);
+        return groupMessageMapper.listMessage(page,LoginUserContext.getUser().getUserId(), conversationId);
     }
 
 

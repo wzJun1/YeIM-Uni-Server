@@ -2,7 +2,6 @@ package cn.wzjun1.yeimServer.config;
 
 import cn.wzjun1.yeimServer.domain.User;
 import cn.wzjun1.yeimServer.pojo.YeIMPushConfig;
-import cn.wzjun1.yeimServer.service.WebSocketService;
 import cn.wzjun1.yeimServer.socket.WebSocket;
 import cn.wzjun1.yeimServer.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -30,13 +29,10 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Autowired
     RedisUtil redisUtil;
 
-    @Autowired
-    WebSocketService webSocketService;
-
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry
-                .addHandler(new WebSocket(webSocketService, yeIMPushConfig), "/im/*/*")
+                .addHandler(new WebSocket(yeIMPushConfig), "/im/*/*")
                 .addInterceptors(new HttpSessionHandshakeInterceptor() {
                     @Override
                     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
