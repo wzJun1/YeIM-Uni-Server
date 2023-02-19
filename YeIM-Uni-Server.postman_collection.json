@@ -10,6 +10,99 @@
 			"name": "User(用户相关)",
 			"item": [
 				{
+					"name": "注册用户",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userId\": \"user_88\",\r\n    \"nickname\": \"小明2\",\r\n    \"avatarUrl\": \"https://api.multiavatar.com/Starcrasher.png\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"register"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "注册用户",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"userId\": \"user_88\", //注册的用户ID，全局唯一\r\n    \"nickname\": \"小明2\", //用户昵称\r\n    \"avatarUrl\": \"https://api.multiavatar.com/Starcrasher.png\" //用户头像网络地址\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/user/register",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"user",
+										"register"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 14 Dec 2022 09:35:45 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": null\n}"
+						}
+					]
+				},
+				{
 					"name": "换取登录Token",
 					"request": {
 						"method": "POST",
@@ -203,6 +296,238 @@
 							"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": {\n        \"id\": 2,\n        \"userId\": \"user2\", //用户ID\n        \"nickname\": \"鸹貔\", //用户昵称\n        \"avatarUrl\": \"https://api.multiavatar.com/931213.png\", //用户头像\n        \"createdAt\": 1670316445532 //创建时间\n    }\n}"
 						}
 					]
+				},
+				{
+					"name": "更新用户资料",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nickname\": \"暗黑守护者\",\r\n    \"avatarUrl\": \"https://api.multiavatar.com/Starcrasher.png\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/update",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"update"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "更新用户资料",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"nickname\": \"小明2\", //用户昵称\r\n    \"avatarUrl\": \"https://api.multiavatar.com/Starcrasher.png\" //用户头像网络地址\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/user/update",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"user",
+										"update"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 14 Dec 2022 09:37:34 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": null\n}"
+						}
+					]
+				},
+				{
+					"name": "获取黑名单列表",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/user/black/list",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"black",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "添加黑名单",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"members\": [\n        \"user2\",\n        \"user3\" //添加的用户ID列表\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/black/add",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"black",
+								"add"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "添加黑名单",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"members\": [\n        \"user2\",\n        \"user3\" //添加的用户ID列表\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/user/black/add",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"user",
+										"black",
+										"add"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "移出黑名单",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"members\": [ \n        \"user3\"  \n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/black/remove",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"black",
+								"remove"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "移出黑名单",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"members\": [ \n        \"user3\"  \n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/user/black/remove",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"user",
+										"black",
+										"remove"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
 				}
 			]
 		},
@@ -219,7 +544,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"name\": \"user1的群组9\", //群名称(必填)\r\n    \"avatarUrl\": \"https://s2.loli.net/2022/12/13/9h4gtNTWlqdeCL5.webp\", //群头像(必填)\r\n    \"groupId\": \"group_99\", //群ID(全局唯一，选填，如果不填系统将自动生成)\r\n    \"joinMode\": 1, //入群申请处理方式(选填)\r\n    \"introduction\": \"introduction\", //群简介(选填)\r\n    \"notification\": \"notification\", //群公告(选填)\r\n    \"members\": [\r\n        \"user2\",\r\n        \"user3\"\r\n    ] //创建群组时，初始化添加的用户列表\r\n}",
+									"raw": "{\r\n    \"name\": \"user1的群组8\", //群名称(必填)\r\n    \"avatarUrl\": \"https://s2.loli.net/2022/12/13/9h4gtNTWlqdeCL5.webp\", //群头像(必填)\r\n    \"groupId\": \"group_8\", //群ID(全局唯一，选填，如果不填系统将自动生成)\r\n    \"joinMode\": 1, //入群申请处理方式(选填)\r\n    \"introduction\": \"introduction\", //群简介(选填)\r\n    \"notification\": \"notification\", //群公告(选填)\r\n    \"members\": [] //创建群组时，初始化添加的用户列表\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -514,101 +839,6 @@
 									],
 									"cookie": [],
 									"body": "{\n    \"code\": 500,\n    \"message\": \"仅群主可解散该群\",\n    \"data\": null\n}"
-								}
-							]
-						},
-						{
-							"name": "添加群成员",
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"groupId\": \"group_363712804290629\", //群ID(必填)\r\n    \"members\": [\r\n        \"user2\",\r\n        \"user3\"\r\n    ] //要添加的用户ID数组\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{baseUrl}}/group/user/add",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"group",
-										"user",
-										"add"
-									]
-								}
-							},
-							"response": [
-								{
-									"name": "添加群成员",
-									"originalRequest": {
-										"method": "POST",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "{\r\n    \"groupId\": \"group_363712804290629\", //群ID(必填)\r\n    \"members\": [\r\n        \"user2\",\r\n        \"user3\"\r\n    ] //要添加的用户ID数组\r\n}",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{baseUrl}}/group/user/add",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"group",
-												"user",
-												"add"
-											]
-										}
-									},
-									"status": "OK",
-									"code": 200,
-									"_postman_previewlanguage": "json",
-									"header": [
-										{
-											"key": "Vary",
-											"value": "Origin"
-										},
-										{
-											"key": "Vary",
-											"value": "Access-Control-Request-Method"
-										},
-										{
-											"key": "Vary",
-											"value": "Access-Control-Request-Headers"
-										},
-										{
-											"key": "Content-Type",
-											"value": "application/json"
-										},
-										{
-											"key": "Transfer-Encoding",
-											"value": "chunked"
-										},
-										{
-											"key": "Date",
-											"value": "Wed, 14 Dec 2022 03:15:00 GMT"
-										},
-										{
-											"key": "Keep-Alive",
-											"value": "timeout=60"
-										},
-										{
-											"key": "Connection",
-											"value": "keep-alive"
-										}
-									],
-									"cookie": [],
-									"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": {\n        \"successList\": [\n            \"user2\",\n            \"user3\"\n        ], //成功的用户ID列表\n        \"failList\": [], //失败的用户ID列表\n        \"ignoreList\": [] //忽略的用户ID列表\n    }\n}"
 								}
 							]
 						},
@@ -981,12 +1211,365 @@
 									"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"groupId\": \"group_1\",\n            \"name\": \"工作红包群1\",\n            \"avatarUrl\": \"https://img2.baidu.com/it/u=2811025682,3067028167&fm=253&fmt=auto&app=138&f=PNG?w=256&h=256\",\n            \"leaderUserId\": \"user1\",\n            \"joinMode\": 1,\n            \"introduction\": \"22\",\n            \"isMute\": 0,\n            \"isDissolve\": 1,\n            \"createdAt\": 1670590372351\n        },\n        {\n            \"id\": 2,\n            \"groupId\": \"group_2\",\n            \"name\": \"开心群\",\n            \"avatarUrl\": \"https://img2.baidu.com/it/u=2811025682,3067028167&fm=253&fmt=auto&app=138&f=PNG?w=256&h=256\",\n            \"leaderUserId\": \"user2\",\n            \"joinMode\": 2,\n            \"isMute\": 0,\n            \"isDissolve\": 0,\n            \"createdAt\": 1670829443612\n        },\n        {\n            \"id\": 6,\n            \"groupId\": \"group_363712804290629\",\n            \"name\": \"红包群111\",\n            \"avatarUrl\": \"https://s2.loli.net/2022/12/13/9h4gtNTWlqdeCL5.webp\",\n            \"leaderUserId\": \"user1\",\n            \"joinMode\": 1,\n            \"isMute\": 0,\n            \"isDissolve\": 0,\n            \"createdAt\": 1670933473362\n        }\n    ]\n}"
 								}
 							]
+						},
+						{
+							"name": "退出群组",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "groupId",
+											"value": "group_1",
+											"description": "群ID",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/group/user/leave",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"group",
+										"user",
+										"leave"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "退出群组",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "groupId",
+													"value": "group_1",
+													"description": "群ID",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{baseUrl}}/group/user/leave",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"group",
+												"user",
+												"leave"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 14 Dec 2022 07:09:29 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=60"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"code\": 500,\n    \"message\": \"当前群组不存在或已解散\",\n    \"data\": null\n}"
+								}
+							]
+						},
+						{
+							"name": "设置群管理员",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "groupId",
+											"value": "group_8",
+											"description": "群ID",
+											"type": "text"
+										},
+										{
+											"key": "userId",
+											"value": "user2",
+											"description": "用户ID",
+											"type": "text"
+										},
+										{
+											"key": "isAdmin",
+											"value": "1",
+											"description": "是否设置管理员，0=取消，1=设置",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/group/user/set/adminstrator",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"group",
+										"user",
+										"set",
+										"adminstrator"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "设置群管理员",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "groupId",
+													"value": "group_8",
+													"description": "群ID",
+													"type": "text"
+												},
+												{
+													"key": "userId",
+													"value": "user2",
+													"description": "用户ID",
+													"type": "text"
+												},
+												{
+													"key": "isAdmin",
+													"value": "1",
+													"description": "是否设置管理员，0=取消，1=设置",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{baseUrl}}/group/user/set/adminstrator",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"group",
+												"user",
+												"set",
+												"adminstrator"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 14 Dec 2022 07:28:45 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=60"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": null\n}"
+								}
+							]
 						}
 					]
 				},
 				{
 					"name": "GroupUser",
 					"item": [
+						{
+							"name": "添加群成员",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"groupId\": \"group_8\", //群ID(必填)\r\n    \"members\": [\r\n        \"user2\",\r\n        \"user3\"\r\n    ] //要添加的用户ID数组\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/group/user/add",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"group",
+										"user",
+										"add"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "添加群成员",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"groupId\": \"group_8\", //群ID(必填)\r\n    \"members\": [\r\n        \"user2\",\r\n        \"user3\"\r\n    ] //要添加的用户ID数组\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/group/user/add",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"group",
+												"user",
+												"add"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 14 Dec 2022 03:31:25 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=60"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": {\n        \"group\": {\n            \"id\": 10,\n            \"groupId\": \"group_8\",\n            \"name\": \"user1的群组8\",\n            \"avatarUrl\": \"https://s2.loli.net/2022/12/13/9h4gtNTWlqdeCL5.webp\",\n            \"leaderUserId\": \"user1\",\n            \"joinMode\": 1,\n            \"introduction\": \"introduction\",\n            \"notification\": \"introduction\",\n            \"isMute\": 0,\n            \"isDissolve\": 0,\n            \"createdAt\": 1670988670845\n        },\n        \"successList\": [\n            \"user2\",\n            \"user3\"\n        ],\n        \"failList\": [],\n        \"ignoreList\": []\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "移除群成员",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"groupId\": \"group_8\", //群ID(必填)\r\n    \"members\": [\r\n        \"user2\",\r\n        \"user3\"\r\n    ] //要移除的用户ID数组\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/group/user/delete",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"group",
+										"user",
+										"delete"
+									]
+								}
+							},
+							"response": []
+						},
 						{
 							"name": "获取群成员列表",
 							"protocolProfileBehavior": {
@@ -1088,6 +1671,1150 @@
 									"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": [\n        {\n            \"id\": 5,\n            \"groupId\": \"group_2\",\n            \"userId\": \"user1\",\n            \"userInfo\": {\n                \"nickname\": \"西部小牛\",\n                \"avatarUrl\": \"https://api.multiavatar.com/968410.png\"\n            },\n            \"isAdmin\": 0,\n            \"muteEndTime\": 1670911509840,\n            \"joinAt\": 1670829443616,\n            \"createdAt\": 1670829443616\n        },\n        {\n            \"id\": 8,\n            \"groupId\": \"group_2\",\n            \"userId\": \"user2\",\n            \"userInfo\": {\n                \"nickname\": \"鸹貔\",\n                \"avatarUrl\": \"https://api.multiavatar.com/931213.png\"\n            },\n            \"isAdmin\": 0,\n            \"muteEndTime\": 1670911725696,\n            \"joinAt\": 1670906707298,\n            \"createdAt\": 1670906707298\n        }\n    ]\n}"
 								}
 							]
+						},
+						{
+							"name": "获取入群申请列表",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{baseUrl}}/group/user/apply/list",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"group",
+										"user",
+										"apply",
+										"list"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "获取入群申请列表",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": []
+										},
+										"url": {
+											"raw": "{{baseUrl}}/group/user/apply/list",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"group",
+												"user",
+												"apply",
+												"list"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 14 Dec 2022 08:43:02 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=60"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": [\n        {\n            \"id\": 1602201808653434884,\n            \"groupId\": \"group_363710937731141\",\n            \"groupInfo\": {\n                \"name\": \"user4的群组3\",\n                \"avatarUrl\": \"https://s2.loli.net/2022/12/13/9h4gtNTWlqdeCL5.webp\",\n                \"isMute\": null\n            },\n            \"userId\": \"user5\",\n            \"userInfo\": {\n                \"nickname\": \"雪女\",\n                \"avatarUrl\": \"https://api.multiavatar.com/346250.png\"\n            },\n            \"inviterId\": \"user5\",\n            \"extraMessage\": null,\n            \"status\": 1,\n            \"adminId\": null,\n            \"transformTime\": 0,\n            \"transformMessage\": null,\n            \"createdAt\": 1671007376785\n        }\n    ]\n}"
+								}
+							]
+						},
+						{
+							"name": "处理用户入群申请",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "id",
+											"value": "1",
+											"description": "申请Id",
+											"type": "text"
+										},
+										{
+											"key": "status",
+											"value": "2",
+											"description": "处理结果，1,2,3 GroupApplyStatus",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/group/user/apply/change",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"group",
+										"user",
+										"apply",
+										"change"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "处理用户入群申请",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "id",
+													"value": "1",
+													"description": "申请Id",
+													"type": "text"
+												},
+												{
+													"key": "status",
+													"value": "2",
+													"description": "处理结果，1,2,3 GroupApplyStatus",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{baseUrl}}/group/user/apply/change",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"group",
+												"user",
+												"apply",
+												"change"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 14 Dec 2022 09:03:24 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=60"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": {\n        \"id\": 1,\n        \"groupId\": \"group_2\",\n        \"groupInfo\": {\n            \"name\": \"开心群\",\n            \"avatarUrl\": \"https://img2.baidu.com/it/u=2811025682,3067028167&fm=253&fmt=auto&app=138&f=PNG?w=256&h=256\",\n            \"isMute\": null\n        },\n        \"userId\": \"user2\",\n        \"userInfo\": {\n            \"nickname\": \"鸹貔\",\n            \"avatarUrl\": \"https://api.multiavatar.com/931213.png\"\n        },\n        \"inviterId\": \"user4\",\n        \"extraMessage\": null,\n        \"status\": 2,\n        \"adminId\": \"user1\",\n        \"transformTime\": 1670837139893,\n        \"transformMessage\": \"\",\n        \"createdAt\": 1670829653307\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "禁言群成员",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "groupId",
+											"value": "group_8",
+											"description": "群ID",
+											"type": "text"
+										},
+										{
+											"key": "userId",
+											"value": "user2",
+											"description": "禁言用户",
+											"type": "text"
+										},
+										{
+											"key": "time",
+											"value": "10",
+											"description": "禁言时长，分钟",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/group/user/set/mute",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"group",
+										"user",
+										"set",
+										"mute"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "禁言群成员",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "groupId",
+													"value": "group_8",
+													"description": "群ID",
+													"type": "text"
+												},
+												{
+													"key": "userId",
+													"value": "user2",
+													"description": "禁言用户",
+													"type": "text"
+												},
+												{
+													"key": "time",
+													"value": "10",
+													"description": "禁言时长，分钟",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{baseUrl}}/group/user/set/mute",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"group",
+												"user",
+												"set",
+												"mute"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 14 Dec 2022 09:24:02 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=60"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": null\n}"
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Conversation(会话相关)",
+			"item": [
+				{
+					"name": "获取会话列表",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "页码",
+									"type": "text"
+								},
+								{
+									"key": "limit",
+									"value": "20",
+									"description": "每页数量",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/conversation/list",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"conversation",
+								"list"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "获取会话列表",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "page",
+											"value": "1",
+											"description": "页码",
+											"type": "text"
+										},
+										{
+											"key": "limit",
+											"value": "20",
+											"description": "每页数量",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/conversation/list",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"conversation",
+										"list"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 14 Dec 2022 09:41:41 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": {\n        \"records\": [\n            {\n                \"conversationId\": \"group_8\",\n                \"userInfo\": null,\n                \"groupInfo\": {\n                    \"name\": \"user1的群组8\",\n                    \"avatarUrl\": \"https://s2.loli.net/2022/12/13/9h4gtNTWlqdeCL5.webp\",\n                    \"isMute\": null\n                },\n                \"type\": \"group\",\n                \"unread\": 2,\n                \"lastMessage\": {\n                    \"sequence\": 49,\n                    \"messageId\": \"364025612595269-1671009842575\",\n                    \"userId\": \"\",\n                    \"conversationId\": \"group_8\",\n                    \"direction\": \"in\",\n                    \"from\": \"0\",\n                    \"fromUserInfo\": null,\n                    \"to\": \"group_8\",\n                    \"type\": \"group_sys_notice\",\n                    \"body\": {\n                        \"tips\": \"西部小牛禁言鸹貔10分钟\"\n                    },\n                    \"extra\": \"\",\n                    \"isRead\": 0,\n                    \"isRevoke\": 0,\n                    \"isDeleted\": 0,\n                    \"status\": \"success\",\n                    \"receive\": 0,\n                    \"time\": 1671009842575\n                },\n                \"createdAt\": 1670988670848,\n                \"updatedAt\": 1671009842579\n            },\n            {\n                \"conversationId\": \"group_99\",\n                \"userInfo\": null,\n                \"groupInfo\": {\n                    \"name\": \"user1的群组9\",\n                    \"avatarUrl\": \"https://s2.loli.net/2022/12/13/9h4gtNTWlqdeCL5.webp\",\n                    \"isMute\": null\n                },\n                \"type\": \"group\",\n                \"unread\": 3,\n                \"lastMessage\": {\n                    \"sequence\": 43,\n                    \"messageId\": \"363937224343621-1670988263412\",\n                    \"userId\": \"\",\n                    \"conversationId\": \"group_99\",\n                    \"direction\": \"in\",\n                    \"from\": \"0\",\n                    \"fromUserInfo\": null,\n                    \"to\": \"group_99\",\n                    \"type\": \"group_sys_notice\",\n                    \"body\": {\n                        \"tips\": \"西部小牛退出了群组\"\n                    },\n                    \"extra\": \"\",\n                    \"isRead\": 0,\n                    \"isRevoke\": 0,\n                    \"isDeleted\": 0,\n                    \"status\": \"success\",\n                    \"receive\": 0,\n                    \"time\": 1670988263412\n                },\n                \"createdAt\": 1670988159158,\n                \"updatedAt\": 1670988263419\n            },\n            {\n                \"conversationId\": \"group_363712804290629\",\n                \"userInfo\": null,\n                \"groupInfo\": {\n                    \"name\": \"红包群111\",\n                    \"avatarUrl\": \"https://s2.loli.net/2022/12/13/9h4gtNTWlqdeCL5.webp\",\n                    \"isMute\": null\n                },\n                \"type\": \"group\",\n                \"unread\": 1,\n                \"lastMessage\": {\n                    \"sequence\": 39,\n                    \"messageId\": \"363934917361733-1670987700184\",\n                    \"userId\": \"\",\n                    \"conversationId\": \"group_363712804290629\",\n                    \"direction\": \"in\",\n                    \"from\": \"0\",\n                    \"fromUserInfo\": null,\n                    \"to\": \"group_363712804290629\",\n                    \"type\": \"group_sys_notice\",\n                    \"body\": {\n                        \"tips\": \"新用户鸹貔、小洋人加入了群组\"\n                    },\n                    \"extra\": \"\",\n                    \"isRead\": 0,\n                    \"isRevoke\": 0,\n                    \"isDeleted\": 0,\n                    \"status\": \"success\",\n                    \"receive\": 0,\n                    \"time\": 1670987700184\n                },\n                \"createdAt\": 1670933473363,\n                \"updatedAt\": 1670987700188\n            },\n            {\n                \"conversationId\": \"group_2\",\n                \"userInfo\": null,\n                \"groupInfo\": {\n                    \"name\": \"开心群\",\n                    \"avatarUrl\": \"https://img2.baidu.com/it/u=2811025682,3067028167&fm=253&fmt=auto&app=138&f=PNG?w=256&h=256\",\n                    \"isMute\": null\n                },\n                \"type\": \"group\",\n                \"unread\": 0,\n                \"lastMessage\": {\n                    \"sequence\": 38,\n                    \"messageId\": \"363930488938565-1670986619026\",\n                    \"userId\": \"\",\n                    \"conversationId\": \"group_2\",\n                    \"direction\": \"in\",\n                    \"from\": \"0\",\n                    \"fromUserInfo\": null,\n                    \"to\": \"group_2\",\n                    \"type\": \"group_sys_notice\",\n                    \"body\": {\n                        \"tips\": \"西部小牛已转让群主给鸹貔\"\n                    },\n                    \"extra\": \"\",\n                    \"isRead\": 0,\n                    \"isRevoke\": 0,\n                    \"isDeleted\": 0,\n                    \"status\": \"success\",\n                    \"receive\": 0,\n                    \"time\": 1670986619026\n                },\n                \"createdAt\": 1670829443616,\n                \"updatedAt\": 1670986619031\n            },\n            {\n                \"conversationId\": \"group_1\",\n                \"userInfo\": null,\n                \"groupInfo\": {\n                    \"name\": \"工作红包群1\",\n                    \"avatarUrl\": \"https://img2.baidu.com/it/u=2811025682,3067028167&fm=253&fmt=auto&app=138&f=PNG?w=256&h=256\",\n                    \"isMute\": null\n                },\n                \"type\": \"group\",\n                \"unread\": 0,\n                \"lastMessage\": {\n                    \"sequence\": 21,\n                    \"messageId\": \"363364224626757-1670848370903\",\n                    \"userId\": \"\",\n                    \"conversationId\": \"group_1\",\n                    \"direction\": \"in\",\n                    \"from\": \"0\",\n                    \"fromUserInfo\": null,\n                    \"to\": \"group_1\",\n                    \"type\": \"group_sys_notice\",\n                    \"body\": {\n                        \"tips\": \"群主解散了该群\"\n                    },\n                    \"extra\": \"\",\n                    \"isRead\": 0,\n                    \"isRevoke\": 0,\n                    \"isDeleted\": 0,\n                    \"status\": \"success\",\n                    \"receive\": 0,\n                    \"time\": 1670848370903\n                },\n                \"createdAt\": 1670590372352,\n                \"updatedAt\": 1670848370909\n            },\n            {\n                \"conversationId\": \"user2\",\n                \"userInfo\": {\n                    \"nickname\": \"鸹貔\",\n                    \"avatarUrl\": \"https://api.multiavatar.com/931213.png\"\n                },\n                \"groupInfo\": null,\n                \"type\": \"private\",\n                \"unread\": 0,\n                \"lastMessage\": {\n                    \"sequence\": 64,\n                    \"messageId\": \"362522514010181-1670642875147-2\",\n                    \"userId\": \"user1\",\n                    \"conversationId\": \"user2\",\n                    \"direction\": \"in\",\n                    \"from\": \"user2\",\n                    \"fromUserInfo\": {\n                        \"nickname\": \"鸹貔\",\n                        \"avatarUrl\": \"https://api.multiavatar.com/931213.png\"\n                    },\n                    \"to\": \"user1\",\n                    \"type\": \"text\",\n                    \"body\": {\n                        \"text\": \"[表情_13][表情_21][表情_21]\"\n                    },\n                    \"extra\": \"这是自定义的内容啊嗷嗷！！\",\n                    \"isRead\": 0,\n                    \"isRevoke\": 0,\n                    \"isDeleted\": 0,\n                    \"status\": \"success\",\n                    \"receive\": 1,\n                    \"time\": 1670642875147\n                },\n                \"createdAt\": 1670642273358,\n                \"updatedAt\": 1670642875157\n            }\n        ],\n        \"total\": 6,\n        \"size\": 20,\n        \"current\": 1,\n        \"orders\": [],\n        \"optimizeCountSql\": true,\n        \"searchCount\": true,\n        \"countId\": null,\n        \"maxLimit\": null,\n        \"pages\": 1\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "清除会话未读数",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "conversationId",
+									"value": "1111",
+									"description": "会话ID",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/conversation/update/unread",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"conversation",
+								"update",
+								"unread"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "清除会话未读数",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "conversationId",
+											"value": "1111",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/conversation/update/unread",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"conversation",
+										"update",
+										"unread"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 14 Dec 2022 09:50:40 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 500,\n    \"message\": \"会话不存在\",\n    \"data\": null\n}"
+						}
+					]
+				},
+				{
+					"name": "删除会话",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "conversationId",
+									"value": "1",
+									"description": "会话ID",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/conversation/delete",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"conversation",
+								"delete"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "删除会话",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "conversationId",
+											"value": "1",
+											"description": "会话ID",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/conversation/delete",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"conversation",
+										"delete"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 14 Dec 2022 09:54:24 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 500,\n    \"message\": \"会话不存在\",\n    \"data\": null\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Message(消息相关)",
+			"item": [
+				{
+					"name": "获取历史消息",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "page",
+									"value": "2",
+									"description": "页码",
+									"type": "text"
+								},
+								{
+									"key": "conversationId",
+									"value": "group1",
+									"description": "会话ID",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/message/list",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"message",
+								"list"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "获取历史消息",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "page",
+											"value": "1",
+											"description": "页码",
+											"type": "text"
+										},
+										{
+											"key": "conversationId",
+											"value": "user2",
+											"description": "会话ID",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/message/list",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"message",
+										"list"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 14 Dec 2022 09:57:18 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": {\n        \"records\": [\n            {\n                \"sequence\": 64,\n                \"messageId\": \"362522514010181-1670642875147-2\",\n                \"userId\": \"user1\",\n                \"conversationId\": \"user2\",\n                \"direction\": \"in\",\n                \"from\": \"user2\",\n                \"fromUserInfo\": {\n                    \"nickname\": \"鸹貔\",\n                    \"avatarUrl\": \"https://api.multiavatar.com/931213.png\"\n                },\n                \"to\": \"user1\",\n                \"type\": \"text\",\n                \"body\": {\n                    \"text\": \"[表情_13][表情_21][表情_21]\"\n                },\n                \"extra\": \"这是自定义的内容啊嗷嗷！！\",\n                \"isRead\": 0,\n                \"isRevoke\": 0,\n                \"isDeleted\": 0,\n                \"status\": \"success\",\n                \"receive\": 1,\n                \"time\": 1670642875147\n            },\n            {\n                \"sequence\": 62,\n                \"messageId\": \"362520926928965-1670642487676-2\",\n                \"userId\": \"user1\",\n                \"conversationId\": \"user2\",\n                \"direction\": \"in\",\n                \"from\": \"user2\",\n                \"fromUserInfo\": {\n                    \"nickname\": \"鸹貔\",\n                    \"avatarUrl\": \"https://api.multiavatar.com/931213.png\"\n                },\n                \"to\": \"user1\",\n                \"type\": \"text\",\n                \"body\": {\n                    \"text\": \"[表情_21][表情_21]\"\n                },\n                \"extra\": \"这是自定义的内容啊嗷嗷！！\",\n                \"isRead\": 0,\n                \"isRevoke\": 0,\n                \"isDeleted\": 0,\n                \"status\": \"success\",\n                \"receive\": 1,\n                \"time\": 1670642487676\n            },\n            {\n                \"sequence\": 60,\n                \"messageId\": \"362520903741509-1670642482015-2\",\n                \"userId\": \"user1\",\n                \"conversationId\": \"user2\",\n                \"direction\": \"in\",\n                \"from\": \"user2\",\n                \"fromUserInfo\": {\n                    \"nickname\": \"鸹貔\",\n                    \"avatarUrl\": \"https://api.multiavatar.com/931213.png\"\n                },\n                \"to\": \"user1\",\n                \"type\": \"text\",\n                \"body\": {\n                    \"text\": \"知道了\"\n                },\n                \"extra\": \"这是自定义的内容啊嗷嗷！！\",\n                \"isRead\": 0,\n                \"isRevoke\": 0,\n                \"isDeleted\": 0,\n                \"status\": \"success\",\n                \"receive\": 1,\n                \"time\": 1670642482015\n            },\n            {\n                \"sequence\": 58,\n                \"messageId\": \"362520883929157-1670642477178-2\",\n                \"userId\": \"user1\",\n                \"conversationId\": \"user2\",\n                \"direction\": \"in\",\n                \"from\": \"user2\",\n                \"fromUserInfo\": {\n                    \"nickname\": \"鸹貔\",\n                    \"avatarUrl\": \"https://api.multiavatar.com/931213.png\"\n                },\n                \"to\": \"user1\",\n                \"type\": \"text\",\n                \"body\": {\n                    \"text\": \"好\"\n                },\n                \"extra\": \"这是自定义的内容啊嗷嗷！！\",\n                \"isRead\": 0,\n                \"isRevoke\": 0,\n                \"isDeleted\": 0,\n                \"status\": \"success\",\n                \"receive\": 1,\n                \"time\": 1670642477178\n            },\n            {\n                \"sequence\": 55,\n                \"messageId\": \"362520840400965-1670642466551-1\",\n                \"userId\": \"user1\",\n                \"conversationId\": \"user2\",\n                \"direction\": \"out\",\n                \"from\": \"user1\",\n                \"fromUserInfo\": {\n                    \"nickname\": \"暗黑守护者\",\n                    \"avatarUrl\": \"https://api.multiavatar.com/Starcrasher.png\"\n                },\n                \"to\": \"user2\",\n                \"type\": \"text\",\n                \"body\": {\n                    \"text\": \"ok\"\n                },\n                \"extra\": \"这是自定义的内容啊嗷嗷！！\",\n                \"isRead\": 1,\n                \"isRevoke\": 0,\n                \"isDeleted\": 0,\n                \"status\": \"success\",\n                \"receive\": 1,\n                \"time\": 1670642466551\n            },\n            {\n                \"sequence\": 53,\n                \"messageId\": \"362520825069637-1670642462808-1\",\n                \"userId\": \"user1\",\n                \"conversationId\": \"user2\",\n                \"direction\": \"out\",\n                \"from\": \"user1\",\n                \"fromUserInfo\": {\n                    \"nickname\": \"暗黑守护者\",\n                    \"avatarUrl\": \"https://api.multiavatar.com/Starcrasher.png\"\n                },\n                \"to\": \"user2\",\n                \"type\": \"text\",\n                \"body\": {\n                    \"text\": \"现在可以吗\"\n                },\n                \"extra\": \"这是自定义的内容啊嗷嗷！！\",\n                \"isRead\": 1,\n                \"isRevoke\": 0,\n                \"isDeleted\": 0,\n                \"status\": \"success\",\n                \"receive\": 1,\n                \"time\": 1670642462808\n            },\n            {\n                \"sequence\": 51,\n                \"messageId\": \"362520525369413-1670642389639-1\",\n                \"userId\": \"user1\",\n                \"conversationId\": \"user2\",\n                \"direction\": \"out\",\n                \"from\": \"user1\",\n                \"fromUserInfo\": {\n                    \"nickname\": \"暗黑守护者\",\n                    \"avatarUrl\": \"https://api.multiavatar.com/Starcrasher.png\"\n                },\n                \"to\": \"user2\",\n                \"type\": \"text\",\n                \"body\": {\n                    \"text\": \"11\"\n                },\n                \"extra\": \"这是自定义的内容啊嗷嗷！！\",\n                \"isRead\": 1,\n                \"isRevoke\": 0,\n                \"isDeleted\": 0,\n                \"status\": \"success\",\n                \"receive\": 0,\n                \"time\": 1670642389639\n            },\n            {\n                \"sequence\": 50,\n                \"messageId\": \"362520352989253-1670642347554-2\",\n                \"userId\": \"user1\",\n                \"conversationId\": \"user2\",\n                \"direction\": \"in\",\n                \"from\": \"user2\",\n                \"fromUserInfo\": {\n                    \"nickname\": \"鸹貔\",\n                    \"avatarUrl\": \"https://api.multiavatar.com/931213.png\"\n                },\n                \"to\": \"user1\",\n                \"type\": \"text\",\n                \"body\": {\n                    \"text\": \"啥意思\"\n                },\n                \"extra\": \"这是自定义的内容啊嗷嗷！！\",\n                \"isRead\": 0,\n                \"isRevoke\": 0,\n                \"isDeleted\": 0,\n                \"status\": \"success\",\n                \"receive\": 0,\n                \"time\": 1670642347554\n            },\n            {\n                \"sequence\": 47,\n                \"messageId\": \"362520279625797-1670642329643-1\",\n                \"userId\": \"user1\",\n                \"conversationId\": \"user2\",\n                \"direction\": \"out\",\n                \"from\": \"user1\",\n                \"fromUserInfo\": {\n                    \"nickname\": \"暗黑守护者\",\n                    \"avatarUrl\": \"https://api.multiavatar.com/Starcrasher.png\"\n                },\n                \"to\": \"user2\",\n                \"type\": \"text\",\n                \"body\": {\n                    \"text\": \"？？\"\n                },\n                \"extra\": \"这是自定义的内容啊嗷嗷！！\",\n                \"isRead\": 1,\n                \"isRevoke\": 0,\n                \"isDeleted\": 0,\n                \"status\": \"success\",\n                \"receive\": 0,\n                \"time\": 1670642329643\n            },\n            {\n                \"sequence\": 45,\n                \"messageId\": \"362520049057861-1670642273352-1\",\n                \"userId\": \"user1\",\n                \"conversationId\": \"user2\",\n                \"direction\": \"out\",\n                \"from\": \"user1\",\n                \"fromUserInfo\": {\n                    \"nickname\": \"暗黑守护者\",\n                    \"avatarUrl\": \"https://api.multiavatar.com/Starcrasher.png\"\n                },\n                \"to\": \"user2\",\n                \"type\": \"text\",\n                \"body\": {\n                    \"text\": \"在不\"\n                },\n                \"extra\": \"这是自定义的内容啊嗷嗷！！\",\n                \"isRead\": 1,\n                \"isRevoke\": 0,\n                \"isDeleted\": 0,\n                \"status\": \"success\",\n                \"receive\": 0,\n                \"time\": 1670642273352\n            },\n            {\n                \"sequence\": 43,\n                \"messageId\": \"361263380684869-1670335469550-1\",\n                \"userId\": \"user1\",\n                \"conversationId\": \"user2\",\n                \"direction\": \"out\",\n                \"from\": \"user1\",\n                \"fromUserInfo\": {\n                    \"nickname\": \"暗黑守护者\",\n                    \"avatarUrl\": \"https://api.multiavatar.com/Starcrasher.png\"\n                },\n                \"to\": \"user2\",\n                \"type\": \"image\",\n                \"body\": {\n                    \"originalHeight\": 165,\n                    \"originalUrl\": \"http://192.168.110.239:10010/image/20221206/5dc5ea69dc270a7fdc510f417ea1a635_image.png\",\n                    \"thumbnailWidth\": 198,\n                    \"thumbnailHeight\": 129,\n                    \"originalWidth\": 252,\n                    \"thumbnailUrl\": \"http://192.168.110.239:10010/image/20221206/5dc5ea69dc270a7fdc510f417ea1a635_image_thumb.png\"\n                },\n                \"extra\": \"\",\n                \"isRead\": 1,\n                \"isRevoke\": 0,\n                \"isDeleted\": 0,\n                \"status\": \"success\",\n                \"receive\": 0,\n                \"time\": 1670335469550\n            },\n            {\n                \"sequence\": 41,\n                \"messageId\": \"361262250651717-1670335193663-1\",\n                \"userId\": \"user1\",\n                \"conversationId\": \"user2\",\n                \"direction\": \"out\",\n                \"from\": \"user1\",\n                \"fromUserInfo\": {\n                    \"nickname\": \"暗黑守护者\",\n                    \"avatarUrl\": \"https://api.multiavatar.com/Starcrasher.png\"\n                },\n                \"to\": \"user2\",\n                \"type\": \"video\",\n                \"body\": {\n                    \"videoWidth\": 544,\n                    \"videoUrl\": \"http://192.168.110.239:10010/video/20221206/03aab4dfb951f1aa163450a98b54b3ae.mp4\",\n                    \"videoHeight\": 960,\n                    \"thumbnailUrl\": \"http://192.168.110.239:10010/video/20221206/3da5fd71ae85e9e95d440a4c57f1ac49_videoThumb.jpg\"\n                },\n                \"extra\": \"\",\n                \"isRead\": 1,\n                \"isRevoke\": 0,\n                \"isDeleted\": 0,\n                \"status\": \"success\",\n                \"receive\": 0,\n                \"time\": 1670335193663\n            },\n            {\n                \"sequence\": 39,\n                \"messageId\": \"361260743192645-1670334825631-1\",\n                \"userId\": \"user1\",\n                \"conversationId\": \"user2\",\n                \"direction\": \"out\",\n                \"from\": \"user1\",\n                \"fromUserInfo\": {\n                    \"nickname\": \"暗黑守护者\",\n                    \"avatarUrl\": \"https://api.multiavatar.com/Starcrasher.png\"\n                },\n                \"to\": \"user2\",\n                \"type\": \"video\",\n                \"body\": {\n                    \"videoWidth\": 544,\n                    \"videoUrl\": \"http://192.168.110.239:10010/video/20221206/6dc11c82051688bf45d677d3b9518850.mp4\",\n                    \"videoHeight\": 960,\n                    \"thumbnailUrl\": \"http://192.168.110.239:10010/782f7def42056f9b27630468a19f456a_videoThumb.jpg\"\n                },\n                \"extra\": \"\",\n                \"isRead\": 1,\n                \"isRevoke\": 0,\n                \"isDeleted\": 0,\n                \"status\": \"success\",\n                \"receive\": 0,\n                \"time\": 1670334825631\n            },\n            {\n                \"sequence\": 37,\n                \"messageId\": \"361260500471877-1670334766373-1\",\n                \"userId\": \"user1\",\n                \"conversationId\": \"user2\",\n                \"direction\": \"out\",\n                \"from\": \"user1\",\n                \"fromUserInfo\": {\n                    \"nickname\": \"暗黑守护者\",\n                    \"avatarUrl\": \"https://api.multiavatar.com/Starcrasher.png\"\n                },\n                \"to\": \"user2\",\n                \"type\": \"video\",\n                \"body\": {\n                    \"videoWidth\": 544,\n                    \"videoUrl\": \"http://192.168.110.239:10010/video/20221206/13fbb0d2cb6830289dfb9f7456b28466.mp4\",\n                    \"videoHeight\": 960,\n                    \"thumbnailUrl\": \"http://192.168.110.239:10010/733ea98d27e0d6875c0204514f7b5bf8_videoThumb.jpg\"\n                },\n                \"extra\": \"\",\n                \"isRead\": 1,\n                \"isRevoke\": 0,\n                \"isDeleted\": 0,\n                \"status\": \"success\",\n                \"receive\": 0,\n                \"time\": 1670334766373\n            },\n            {\n                \"sequence\": 35,\n                \"messageId\": \"361257895116869-1670334130300-1\",\n                \"userId\": \"user1\",\n                \"conversationId\": \"user2\",\n                \"direction\": \"out\",\n                \"from\": \"user1\",\n                \"fromUserInfo\": {\n                    \"nickname\": \"暗黑守护者\",\n                    \"avatarUrl\": \"https://api.multiavatar.com/Starcrasher.png\"\n                },\n                \"to\": \"user2\",\n                \"type\": \"image\",\n                \"body\": {\n                    \"originalHeight\": 165,\n                    \"originalUrl\": \"http://192.168.110.239:10010/image/20221206/acaf0750056fc2ab217e2fb5b7c9efe4_image.png\",\n                    \"thumbnailWidth\": 198,\n                    \"thumbnailHeight\": 129,\n                    \"originalWidth\": 252,\n                    \"thumbnailUrl\": \"http://192.168.110.239:10010/image/20221206/acaf0750056fc2ab217e2fb5b7c9efe4_image_thumb.png\"\n                },\n                \"extra\": \"\",\n                \"isRead\": 1,\n                \"isRevoke\": 0,\n                \"isDeleted\": 0,\n                \"status\": \"success\",\n                \"receive\": 0,\n                \"time\": 1670334130300\n            },\n            {\n                \"sequence\": 33,\n                \"messageId\": \"361257775652933-1670334101134-1\",\n                \"userId\": \"user1\",\n                \"conversationId\": \"user2\",\n                \"direction\": \"out\",\n                \"from\": \"user1\",\n                \"fromUserInfo\": {\n                    \"nickname\": \"暗黑守护者\",\n                    \"avatarUrl\": \"https://api.multiavatar.com/Starcrasher.png\"\n                },\n                \"to\": \"user2\",\n                \"type\": \"image\",\n                \"body\": {\n                    \"originalHeight\": 165,\n                    \"originalUrl\": \"http://192.168.110.239:10010/image/20221206/260ed0fefb6ef791cfb640dcb762bd8d_image.png\",\n                    \"thumbnailWidth\": 198,\n                    \"thumbnailHeight\": 129,\n                    \"originalWidth\": 252,\n                    \"thumbnailUrl\": \"http://192.168.110.239:10010/image/20221206/260ed0fefb6ef791cfb640dcb762bd8d_image_thumb.png\"\n                },\n                \"extra\": \"\",\n                \"isRead\": 1,\n                \"isRevoke\": 0,\n                \"isDeleted\": 0,\n                \"status\": \"success\",\n                \"receive\": 0,\n                \"time\": 1670334101134\n            },\n            {\n                \"sequence\": 31,\n                \"messageId\": \"361253350051909-1670333020665-1\",\n                \"userId\": \"user1\",\n                \"conversationId\": \"user2\",\n                \"direction\": \"out\",\n                \"from\": \"user1\",\n                \"fromUserInfo\": {\n                    \"nickname\": \"暗黑守护者\",\n                    \"avatarUrl\": \"https://api.multiavatar.com/Starcrasher.png\"\n                },\n                \"to\": \"user2\",\n                \"type\": \"image\",\n                \"body\": {\n                    \"originalHeight\": 165,\n                    \"originalUrl\": \"http://192.168.110.239:10010/image/20221206/47eab59dad0c7984cb75672e35bb559f_image.png\",\n                    \"thumbnailWidth\": 198,\n                    \"thumbnailHeight\": 129,\n                    \"originalWidth\": 252,\n                    \"thumbnailUrl\": \"http://192.168.110.239:10010/cc7cfd6efbc7cfce2a9e50bef5877c5b_thumb.png\"\n                },\n                \"extra\": \"\",\n                \"isRead\": 1,\n                \"isRevoke\": 0,\n                \"isDeleted\": 0,\n                \"status\": \"success\",\n                \"receive\": 0,\n                \"time\": 1670333020665\n            },\n            {\n                \"sequence\": 29,\n                \"messageId\": \"361244421943365-1670330840951-1\",\n                \"userId\": \"user1\",\n                \"conversationId\": \"user2\",\n                \"direction\": \"out\",\n                \"from\": \"user1\",\n                \"fromUserInfo\": {\n                    \"nickname\": \"暗黑守护者\",\n                    \"avatarUrl\": \"https://api.multiavatar.com/Starcrasher.png\"\n                },\n                \"to\": \"user2\",\n                \"type\": \"image\",\n                \"body\": {\n                    \"originalHeight\": 165,\n                    \"originalUrl\": \"http://192.168.110.239:10010/f0809a04abcc59119958183814a543c8_image.png\",\n                    \"thumbnailWidth\": 198,\n                    \"thumbnailHeight\": 129,\n                    \"originalWidth\": 252,\n                    \"thumbnailUrl\": \"http://192.168.110.239:10010/e1bef6d1198f527d98ed7f32a6b2fbb4_thumb.png\"\n                },\n                \"extra\": \"\",\n                \"isRead\": 1,\n                \"isRevoke\": 0,\n                \"isDeleted\": 0,\n                \"status\": \"success\",\n                \"receive\": 0,\n                \"time\": 1670330840951\n            },\n            {\n                \"sequence\": 27,\n                \"messageId\": \"361244217028677-1670330790923-1\",\n                \"userId\": \"user1\",\n                \"conversationId\": \"user2\",\n                \"direction\": \"out\",\n                \"from\": \"user1\",\n                \"fromUserInfo\": {\n                    \"nickname\": \"暗黑守护者\",\n                    \"avatarUrl\": \"https://api.multiavatar.com/Starcrasher.png\"\n                },\n                \"to\": \"user2\",\n                \"type\": \"image\",\n                \"body\": {\n                    \"originalHeight\": 165,\n                    \"originalUrl\": \"http://192.168.110.239:10010/43c0d58f22ee046381eb35de44d85d1a_image.png\",\n                    \"thumbnailWidth\": 198,\n                    \"thumbnailHeight\": 129,\n                    \"originalWidth\": 252,\n                    \"thumbnailUrl\": \"http://192.168.110.239:10010/a6d6950e82de83c42137614e8b6063eb_thumb.png\"\n                },\n                \"extra\": \"\",\n                \"isRead\": 1,\n                \"isRevoke\": 0,\n                \"isDeleted\": 0,\n                \"status\": \"success\",\n                \"receive\": 0,\n                \"time\": 1670330790923\n            },\n            {\n                \"sequence\": 25,\n                \"messageId\": \"361243731943493-1670330672494-1\",\n                \"userId\": \"user1\",\n                \"conversationId\": \"user2\",\n                \"direction\": \"out\",\n                \"from\": \"user1\",\n                \"fromUserInfo\": {\n                    \"nickname\": \"暗黑守护者\",\n                    \"avatarUrl\": \"https://api.multiavatar.com/Starcrasher.png\"\n                },\n                \"to\": \"user2\",\n                \"type\": \"image\",\n                \"body\": {\n                    \"originalHeight\": 165,\n                    \"originalUrl\": \"http://192.168.110.239:10010/1dc83d6dd157dab0e75612365e877851_image.png\",\n                    \"thumbnailWidth\": 198,\n                    \"thumbnailHeight\": 129,\n                    \"originalWidth\": 252,\n                    \"thumbnailUrl\": \"http://192.168.110.239:10010/0db54ba679578902e1327d7405091067_thumb.png\"\n                },\n                \"extra\": \"\",\n                \"isRead\": 1,\n                \"isRevoke\": 0,\n                \"isDeleted\": 0,\n                \"status\": \"success\",\n                \"receive\": 0,\n                \"time\": 1670330672494\n            }\n        ],\n        \"total\": 31,\n        \"size\": 20,\n        \"current\": 1,\n        \"orders\": [],\n        \"optimizeCountSql\": true,\n        \"searchCount\": true,\n        \"countId\": null,\n        \"maxLimit\": null,\n        \"pages\": 2\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "发送消息",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"conversationId\": \"\",\r\n    \"conversationType\": \"\",\r\n    \"from\": \"\",\r\n    \"to\": \"\",\r\n    \"type\": \"\",\r\n    \"body\": \"\",\r\n    \"extra\": \"\",\r\n    \"time\": 1668420384000\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/message/save",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"message",
+								"save"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "发送消息",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"conversationId\": \"\", //会话ID\r\n    \"conversationType\": \"\", //会话类型：私聊、群聊\r\n    \"from\": \"\", //发送者ID\r\n    \"to\": \"\", //接收者ID，私聊为对方用户ID，群聊为群组ID\r\n    \"type\": \"\", //消息类型\r\n    \"body\": {}, //消息体\r\n    \"extra\": \"\", //扩展消息字段\r\n    \"time\": 1668420384000 //发送时间\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/message/save",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"message",
+										"save"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 14 Dec 2022 10:06:04 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 500,\n    \"message\": \"type 不能为空\",\n    \"data\": null\n}"
+						}
+					]
+				},
+				{
+					"name": "撤回消息",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "messageId",
+									"value": "1",
+									"description": "消息ID",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/message/revoke",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"message",
+								"revoke"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "撤回消息",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "messageId",
+											"value": "1",
+											"description": "消息ID",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/message/revoke",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"message",
+										"revoke"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 14 Dec 2022 10:08:26 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 500,\n    \"message\": \"messageId 错误\",\n    \"data\": null\n}"
+						}
+					]
+				},
+				{
+					"name": "获取媒体上传参数",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/upload/sign",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"upload",
+								"sign"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "获取媒体上传参数",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/upload/sign",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"upload",
+										"sign"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 14 Dec 2022 10:09:19 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": {\n        \"storage\": \"local\",\n        \"customDomain\": \"\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "通用上传",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"description": "上传文件",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "key",
+									"value": "1.jpg",
+									"description": "上传的文件名称，带后缀",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/upload",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"upload"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "通用上传",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "file",
+											"description": "上传文件",
+											"type": "file",
+											"src": []
+										},
+										{
+											"key": "key",
+											"value": "1.jpg",
+											"description": "上传的文件名称，带后缀",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/upload",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"upload"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 14 Dec 2022 10:10:49 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": {\n        \"url\": \"/1.jpg\"\n    }\n}"
 						}
 					]
 				}
