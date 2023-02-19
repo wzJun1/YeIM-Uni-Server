@@ -54,6 +54,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
     ConversationMapper conversationMapper;
 
     @Autowired
+    UserBlackListMapper userBlackListMapper;
+
+    @Autowired
     YeIMPushConfig yeIMPushConfig;
 
     @Autowired
@@ -71,6 +74,12 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
             User toUser = userMapper.selectOne(new QueryWrapper<User>().eq("user_id", message.getTo()));
             if (toUser == null || toUser.getUserId() == null) {
                 throw new Exception("接收者ID错误");
+            }
+
+            //判断发送方是否在接收方的黑名单中
+            boolean isBlack = userBlackListMapper.exists(new QueryWrapper<UserBlackList>().eq("cover_user_id", message.getFrom()).eq("user_id", message.getTo()));
+            if (isBlack){
+                throw new Exception("您已被当前用户拉黑，无法向他发送消息");
             }
 
             //1.插入消息到数据库
@@ -200,7 +209,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
     }
 
     /**
-     *
      * 根据消息ID删除消息
      *
      * @param userId
@@ -214,18 +222,18 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
             Message update = new Message();
             update.setIsDeleted(1);
             String prefix = messageId.substring(0, messageId.length() - 1);
-            if (privateMessage.getFrom().equals(userId)){
+            if (privateMessage.getFrom().equals(userId)) {
                 //被删除的消息发送者是当前登录用户
                 //更新发送者消息
                 this.update(update, new QueryWrapper<Message>().eq("message_id", prefix + "1"));
-            }else if (privateMessage.getTo().equals(userId)){
+            } else if (privateMessage.getTo().equals(userId)) {
                 //被删除的消息接收者是当前登录用户
                 //更新接收者消息
                 this.update(update, new QueryWrapper<Message>().eq("message_id", prefix + "2"));
             }
         } else {
             GroupMessage groupMessage = groupMessageMapper.selectOne(new QueryWrapper<GroupMessage>().eq("message_id", messageId).eq("`from`", userId));
-            if (groupMessage != null){
+            if (groupMessage != null) {
                 groupMessageMapper.deleteGroupMessage(messageId, groupMessage.getConversationId(), userId, System.currentTimeMillis());
             }
         }

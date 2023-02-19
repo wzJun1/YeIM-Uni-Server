@@ -62,7 +62,6 @@ public class MessageController {
                 }
                 return Result.success(message);
             }
-
         } catch (Exception e) {
             return Result.error(e.getMessage());
         }

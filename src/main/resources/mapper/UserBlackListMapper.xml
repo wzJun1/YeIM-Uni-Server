@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.wzjun1.yeimServer.mapper.UserBlackListMapper">
+
+    <resultMap id="BaseResultMap" type="cn.wzjun1.yeimServer.domain.UserBlackList">
+        <id property="blackId" column="black_id" jdbcType="BIGINT"/>
+        <result property="userId" column="user_id" jdbcType="VARCHAR"/>
+        <result property="coverUserId" column="cover_user_id" jdbcType="VARCHAR"/>
+        <result property="createdAt" column="created_at" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <resultMap id="UserBlackListV0" type="cn.wzjun1.yeimServer.domain.UserBlackListV0">
+        <id property="blackId" column="black_id" jdbcType="BIGINT"/>
+        <result property="userId" column="user_id" jdbcType="VARCHAR"/>
+        <result property="coverUserId" column="cover_user_id" jdbcType="VARCHAR"/>
+        <result property="createdAt" column="created_at" jdbcType="BIGINT"/>
+        <association property="coverUser" javaType="cn.wzjun1.yeimServer.domain.User">
+            <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+            <result property="avatarUrl" column="avatar_url" jdbcType="VARCHAR"/>
+        </association>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        black_id
+        ,user_id,cover_user_id,
+        created_at
+    </sql>
+
+    <select id="getBlackUserList" resultMap="UserBlackListV0">
+        select ubl.*, u.nickname, u.avatar_url
+        from `user_black_list` as ubl
+                 left join `user` as u on u.user_id = ubl.cover_user_id
+        where ubl.user_id = #{userId}
+        order by ubl.created_at desc
+    </select>
+
+
+</mapper>

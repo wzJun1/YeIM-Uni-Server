@@ -1,12 +1,28 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.0
+-- https://www.phpmyadmin.net/
+--
+-- 主机： localhost
+-- 生成日期： 2023-02-19 12:58:25
+-- 服务器版本： 5.7.40-log
+-- PHP 版本： 7.4.33
+
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
+
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `conversation`
+--
 
 CREATE TABLE `conversation` (
   `id` bigint(20) NOT NULL,
@@ -18,6 +34,12 @@ CREATE TABLE `conversation` (
   `updated_at` bigint(20) NOT NULL DEFAULT '0' COMMENT '更新时间',
   `created_at` bigint(20) NOT NULL COMMENT '创建时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='会话表';
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `group`
+--
 
 CREATE TABLE `group` (
   `id` bigint(20) NOT NULL,
@@ -33,6 +55,12 @@ CREATE TABLE `group` (
   `created_at` bigint(20) NOT NULL COMMENT '创建时间	'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='群组表';
 
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `group_apply`
+--
+
 CREATE TABLE `group_apply` (
   `id` bigint(20) NOT NULL,
   `group_id` varchar(255) NOT NULL COMMENT '群组ID',
@@ -45,6 +73,12 @@ CREATE TABLE `group_apply` (
   `transform_message` varchar(255) DEFAULT NULL COMMENT '处理附言',
   `created_at` bigint(20) NOT NULL COMMENT '申请时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='入群申请表';
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `group_message`
+--
 
 CREATE TABLE `group_message` (
   `sequence` bigint(20) NOT NULL COMMENT '顺序',
@@ -66,6 +100,12 @@ CREATE TABLE `group_message` (
   `time` bigint(20) NOT NULL DEFAULT '0' COMMENT '消息时间，毫秒'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='群消息表';
 
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `group_message_deleted`
+--
+
 CREATE TABLE `group_message_deleted` (
   `deleted_id` bigint(20) NOT NULL,
   `message_id` varchar(255) NOT NULL COMMENT '消息ID',
@@ -73,6 +113,12 @@ CREATE TABLE `group_message_deleted` (
   `user_id` varchar(255) NOT NULL COMMENT '操作用户ID',
   `created_at` bigint(20) NOT NULL COMMENT '删除时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='群消息软删除记录表';
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `group_user`
+--
 
 CREATE TABLE `group_user` (
   `id` int(11) NOT NULL,
@@ -83,6 +129,12 @@ CREATE TABLE `group_user` (
   `join_at` bigint(20) NOT NULL COMMENT '加入时间',
   `created_at` bigint(20) NOT NULL COMMENT '创建时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='群成员表';
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `message`
+--
 
 CREATE TABLE `message` (
   `sequence` bigint(20) NOT NULL COMMENT '顺序',
@@ -104,6 +156,12 @@ CREATE TABLE `message` (
   `time` bigint(20) NOT NULL DEFAULT '0' COMMENT '消息时间，毫秒'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='私聊消息表';
 
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `user`
+--
+
 CREATE TABLE `user` (
   `id` bigint(20) NOT NULL,
   `user_id` varchar(32) DEFAULT NULL COMMENT '用户ID',
@@ -113,7 +171,26 @@ CREATE TABLE `user` (
   `created_at` bigint(20) DEFAULT NULL COMMENT '创建时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
 
+-- --------------------------------------------------------
 
+--
+-- 表的结构 `user_black_list`
+--
+
+CREATE TABLE `user_black_list` (
+  `black_id` bigint(20) NOT NULL COMMENT 'ID',
+  `user_id` varchar(32) NOT NULL COMMENT '添加者',
+  `cover_user_id` varchar(32) NOT NULL COMMENT '被添加者',
+  `created_at` bigint(20) NOT NULL COMMENT '添加时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户黑名单列表';
+
+--
+-- 转储表的索引
+--
+
+--
+-- 表的索引 `conversation`
+--
 ALTER TABLE `conversation`
   ADD PRIMARY KEY (`id`) USING BTREE,
   ADD UNIQUE KEY `conversation_id_user_id_unique` (`conversation_id`,`user_id`) USING BTREE,
@@ -125,61 +202,123 @@ ALTER TABLE `conversation`
   ADD KEY `user_id_type_idx` (`user_id`,`type`),
   ADD KEY `user_id_updated_at_type_idx` (`user_id`,`type`,`updated_at`);
 
+--
+-- 表的索引 `group`
+--
 ALTER TABLE `group`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `group_id_unique` (`group_id`) USING BTREE,
   ADD KEY `group_id_idx` (`group_id`);
 
+--
+-- 表的索引 `group_apply`
+--
 ALTER TABLE `group_apply`
   ADD PRIMARY KEY (`id`);
 
+--
+-- 表的索引 `group_message`
+--
 ALTER TABLE `group_message`
   ADD PRIMARY KEY (`sequence`),
   ADD UNIQUE KEY `message_id_conversation_id_unique` (`message_id`,`conversation_id`) USING BTREE,
   ADD KEY `message_id_idx` (`message_id`);
 
+--
+-- 表的索引 `group_message_deleted`
+--
 ALTER TABLE `group_message_deleted`
   ADD PRIMARY KEY (`deleted_id`),
   ADD UNIQUE KEY `unique` (`message_id`,`group_id`,`user_id`);
 
+--
+-- 表的索引 `group_user`
+--
 ALTER TABLE `group_user`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `group_id_user_id_unique` (`group_id`,`user_id`);
 
+--
+-- 表的索引 `message`
+--
 ALTER TABLE `message`
   ADD PRIMARY KEY (`sequence`),
   ADD UNIQUE KEY `message_id_conversation_id_unique` (`message_id`,`conversation_id`) USING BTREE,
   ADD KEY `message_id_idx` (`message_id`);
 
+--
+-- 表的索引 `user`
+--
 ALTER TABLE `user`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `user_id_unique` (`user_id`) USING BTREE,
   ADD KEY `user_id_idx` (`user_id`);
 
+--
+-- 表的索引 `user_black_list`
+--
+ALTER TABLE `user_black_list`
+  ADD PRIMARY KEY (`black_id`),
+  ADD KEY `user_id_idx` (`user_id`),
+  ADD KEY `user_id_cover_idx` (`user_id`,`cover_user_id`);
 
+--
+-- 在导出的表使用AUTO_INCREMENT
+--
+
+--
+-- 使用表AUTO_INCREMENT `conversation`
+--
 ALTER TABLE `conversation`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
+--
+-- 使用表AUTO_INCREMENT `group`
+--
 ALTER TABLE `group`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
+--
+-- 使用表AUTO_INCREMENT `group_apply`
+--
 ALTER TABLE `group_apply`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
+--
+-- 使用表AUTO_INCREMENT `group_message`
+--
 ALTER TABLE `group_message`
   MODIFY `sequence` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '顺序';
 
+--
+-- 使用表AUTO_INCREMENT `group_message_deleted`
+--
 ALTER TABLE `group_message_deleted`
   MODIFY `deleted_id` bigint(20) NOT NULL AUTO_INCREMENT;
 
+--
+-- 使用表AUTO_INCREMENT `group_user`
+--
 ALTER TABLE `group_user`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+--
+-- 使用表AUTO_INCREMENT `message`
+--
 ALTER TABLE `message`
   MODIFY `sequence` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '顺序';
 
+--
+-- 使用表AUTO_INCREMENT `user`
+--
 ALTER TABLE `user`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- 使用表AUTO_INCREMENT `user_black_list`
+--
+ALTER TABLE `user_black_list`
+  MODIFY `black_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID';
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

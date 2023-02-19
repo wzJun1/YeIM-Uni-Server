@@ -2,10 +2,13 @@ package cn.wzjun1.yeimServer.controller;
 
 import cn.wzjun1.yeimServer.annotation.UserAuthorization;
 import cn.wzjun1.yeimServer.domain.User;
+import cn.wzjun1.yeimServer.dto.group.GroupUserAddDTO;
+import cn.wzjun1.yeimServer.dto.user.UserBlackListAddDTO;
 import cn.wzjun1.yeimServer.interceptor.LoginUserContext;
 import cn.wzjun1.yeimServer.dto.user.UserRegisterDTO;
 import cn.wzjun1.yeimServer.dto.user.UserTokenDTO;
 import cn.wzjun1.yeimServer.dto.user.UserUpdateDTO;
+import cn.wzjun1.yeimServer.service.UserBlackListService;
 import cn.wzjun1.yeimServer.service.UserService;
 import cn.wzjun1.yeimServer.utils.MD5Util;
 import cn.wzjun1.yeimServer.utils.RedisUtil;
@@ -36,6 +39,9 @@ public class UserController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    UserBlackListService userBlackListService;
 
     /**
      * 用户注册
@@ -138,6 +144,55 @@ public class UserController {
             User update = new User();
             update.setMobileDeviceId(clientId);
             userService.update(update, new UpdateWrapper<User>().eq("user_id", LoginUserContext.getUser().getUserId()));
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
+        return Result.success();
+    }
+
+    /**
+     * 获取黑名单列表
+     *
+     * @return
+     */
+    @UserAuthorization
+    @GetMapping(path = "/user/black/list")
+    public Result getBlackUserList() {
+        try {
+            return Result.success(userBlackListService.getBlackUserList());
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
+    }
+
+    /**
+     * 将用户加入黑名单
+     *
+     * @param params UserBlackListAddDTO
+     * @return
+     */
+    @UserAuthorization
+    @PostMapping(path = "/user/black/add")
+    public Result addToBlackUserList(@RequestBody @Validated UserBlackListAddDTO params) {
+        try {
+            userBlackListService.addToBlackUserList(params);
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
+        return Result.success();
+    }
+
+    /**
+     * 将用户移除黑名单
+     *
+     * @param params UserBlackListAddDTO
+     * @return
+     */
+    @UserAuthorization
+    @PostMapping(path = "/user/black/remove")
+    public Result removeFromBlacklist(@RequestBody @Validated UserBlackListAddDTO params) {
+        try {
+            userBlackListService.removeFromBlacklist(params);
         } catch (Exception e) {
             return Result.error(e.getMessage());
         }

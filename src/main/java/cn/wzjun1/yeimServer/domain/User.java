@@ -42,6 +42,7 @@ public class User implements Serializable {
     /**
      * 移动端推送标识符
      */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String mobileDeviceId;
 
     /**
