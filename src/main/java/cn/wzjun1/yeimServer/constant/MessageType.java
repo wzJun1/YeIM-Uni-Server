@@ -18,8 +18,6 @@ public class MessageType {
     //自定义消息
     public static final String CUSTOM = "custom";
 
-
-
     //群聊系统通知
     public static final String GROUP_SYS_NOTICE = "group_sys_notice";
 }

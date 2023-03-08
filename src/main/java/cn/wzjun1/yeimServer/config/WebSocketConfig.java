@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
@@ -44,7 +45,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
                         }
                         String userId = pathArr[1];
                         String token = pathArr[2];
-
                         token = "token:" + token;
                         if (!redisUtil.hasKey(token)) {
                             //token不存在，验证失败
