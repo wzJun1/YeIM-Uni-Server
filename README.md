@@ -42,3 +42,6 @@
 
 <img src="https://www.pgyer.com/app/qrcode/WYbc" width="250" height="250" />
 
+### Electron 桌面端 Demo
+
+[https://github.com/wzJun1/YeIM-Uni-SDK-Electron-Demo](https://github.com/wzJun1/YeIM-Uni-SDK-Electron-Demo)
