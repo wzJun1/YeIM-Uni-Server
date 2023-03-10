@@ -20,6 +20,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.HashMap;
+import java.util.List;
 
 @Slf4j
 @Validated
@@ -104,6 +106,8 @@ public class MessageController {
     }
 
     /**
+     * @deprecated
+     *
      * 获取历史消息
      *
      * @param page           页码
@@ -127,6 +131,40 @@ public class MessageController {
                 //群聊消息
                 IPage<GroupMessage> messages = groupMessageService.listMessage(Page.of(page, 20), conversationId);
                 return Result.success(messages);
+            }
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
+    }
+
+
+    @UserAuthorization
+    @GetMapping(path = "/v117/message/list")
+    @Validated
+    public Result list(@RequestParam @NotEmpty String conversationId, @RequestParam(defaultValue = "") String nextMessageId, @RequestParam(defaultValue = "20") Integer limit) {
+        try {
+            ConversationV0 conversationV0 = conversationService.getConversation(conversationId, LoginUserContext.getUser().getUserId());
+            if (conversationV0 == null) {
+                throw new Exception("会话不存在");
+            }
+            if (conversationV0.getType().equals(ConversationType.PRIVATE)) {
+                //私聊消息
+                List<Message> messages = messageService.listMessage(conversationId, nextMessageId, limit);
+                return Result.success(new HashMap<String, Object>() {{
+                    put("records", messages);
+                    if (messages.size() > 0) {
+                        put("nextMessageId", messages.get(messages.size() - 1).getMessageId());
+                    }
+                }});
+            } else {
+                //群聊消息
+                List<GroupMessage> messages = groupMessageService.listMessage(conversationId, nextMessageId, limit);
+                return Result.success(new HashMap<String, Object>() {{
+                    put("records", messages);
+                    if (messages.size() > 0) {
+                        put("nextMessageId", messages.get(messages.size() - 1).getMessageId());
+                    }
+                }});
             }
         } catch (Exception e) {
             return Result.error(e.getMessage());

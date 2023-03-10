@@ -154,7 +154,25 @@ public class GroupMessageServiceImpl extends ServiceImpl<GroupMessageMapper, Gro
             throw new Exception("非群成员无法获取群聊天记录");
         }
 
-        return groupMessageMapper.listMessage(page,LoginUserContext.getUser().getUserId(), conversationId);
+        return groupMessageMapper.listMessage(page, LoginUserContext.getUser().getUserId(), conversationId);
+    }
+
+    @Override
+    public List<GroupMessage> listMessage(String conversationId, String nextMessageId, Integer limit) throws Exception {
+
+        //判断群组是否存在
+        Group group = groupMapper.selectOne(new QueryWrapper<Group>().eq("group_id", conversationId).eq("is_dissolve", 0));
+        if (group == null || group.getGroupId() == null) {
+            throw new Exception("当前群组不存在或已解散");
+        }
+
+        //判断是否有权限
+        boolean isGroupUser = groupUserMapper.exists(new QueryWrapper<GroupUser>().eq("group_id", conversationId).eq("user_id", LoginUserContext.getUser().getUserId()));
+        if (!isGroupUser) {
+            throw new Exception("非群成员无法获取群聊天记录");
+        }
+
+        return groupMessageMapper.listMessageByNextMessageId(LoginUserContext.getUser().getUserId(), conversationId, nextMessageId, limit);
     }
 
 

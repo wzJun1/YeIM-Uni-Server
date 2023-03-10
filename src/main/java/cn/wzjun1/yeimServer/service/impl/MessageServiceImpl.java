@@ -2,6 +2,7 @@ package cn.wzjun1.yeimServer.service.impl;
 
 import cn.wzjun1.yeimServer.constant.MessageType;
 import cn.wzjun1.yeimServer.domain.*;
+import cn.wzjun1.yeimServer.interceptor.LoginUserContext;
 import cn.wzjun1.yeimServer.mapper.*;
 import cn.wzjun1.yeimServer.dto.message.MessageSaveDTO;
 import cn.wzjun1.yeimServer.pojo.YeIMPushConfig;
@@ -19,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @author wzjun1
@@ -78,7 +81,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
 
             //判断发送方是否在接收方的黑名单中
             boolean isBlack = userBlackListMapper.exists(new QueryWrapper<UserBlackList>().eq("cover_user_id", message.getFrom()).eq("user_id", message.getTo()));
-            if (isBlack){
+            if (isBlack) {
                 throw new Exception("您已被当前用户拉黑，无法向他发送消息");
             }
 
@@ -278,10 +281,30 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
         }
     }
 
-
+    /**
+     * 分页获取历史消息记录
+     *
+     * @param page 页码
+     * @param userId 当前用户ID
+     * @param conversationId 会话ID
+     * @return IPage<Message>
+     */
     @Override
     public IPage<Message> listMessage(IPage<Message> page, String userId, String conversationId) {
         return messageMapper.listMessage(page, userId, conversationId);
+    }
+
+    /**
+     * 根据nextMesssageId获取下一批历史消息记录
+     *
+     * @param conversationId 会话ID
+     * @param nextMessageId 最后一条消息的ID，用以获取下一批消息
+     * @param limit 获取数量
+     * @return List<Message>
+     */
+    @Override
+    public List<Message> listMessage(String conversationId, String nextMessageId, Integer limit) {
+        return messageMapper.listMessageByNextMessageId(LoginUserContext.getUser().getUserId(), conversationId, nextMessageId, limit);
     }
 
     /**

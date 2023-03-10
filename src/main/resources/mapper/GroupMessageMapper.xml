@@ -88,6 +88,41 @@
         ORDER BY m.`sequence` desc
     </select>
 
+    <select id="listMessageByNextMessageId" resultMap="GroupMessageMap">
+        SELECT u.nickname,
+        u.avatar_url,
+        m.`sequence`,
+        m.`message_id`,
+        m.`user_id`,
+        m.`direction`,
+        m.`conversation_id` as message_conversation_id,
+        m.`conversation_type`,
+        m.`from`,
+        m.`to`,
+        m.`type` as message_type,
+        m.`body`,
+        m.`extra`,
+        m.`is_read`,
+        m.`is_revoke`,
+        m.`is_deleted`,
+        m.`status` as message_status,
+        m.`receive`,
+        m.`time`
+        FROM (SELECT *
+        FROM `group_message`
+        WHERE `group_message`.`message_id` NOT IN (SELECT message_id
+        FROM `group_message_deleted`
+        WHERE `group_message_deleted`.`group_id` = #{conversationId}
+        AND `group_message_deleted`.`user_id` = #{userId})) as m
+        LEFT JOIN `user` as u ON u.`user_id` = m.`from`
+        WHERE 1=1
+        <if test="nextMessageId != null and nextMessageId != ''">
+            AND m.`sequence` &lt; (SELECT `sequence` FROM `group_message` WHERE `message_id` = #{nextMessageId})
+        </if>
+        AND m.`conversation_id` = #{conversationId}
+        ORDER BY m.`sequence` desc
+    </select>
+
     <insert id="deleteGroupMessage">
         INSERT INTO `group_message_deleted`(`message_id`, `group_id`, `user_id`, `created_at`)
         VALUES (#{messageId}, #{groupId}, #{userId}, #{createdAt})
