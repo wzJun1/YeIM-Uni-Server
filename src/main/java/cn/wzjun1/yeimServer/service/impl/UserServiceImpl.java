@@ -1,6 +1,7 @@
 package cn.wzjun1.yeimServer.service.impl;
 
 import cn.wzjun1.yeimServer.domain.User;
+import cn.wzjun1.yeimServer.exception.user.UserDuplicateException;
 import cn.wzjun1.yeimServer.mapper.UserMapper;
 import cn.wzjun1.yeimServer.dto.user.UserRegisterDTO;
 import cn.wzjun1.yeimServer.dto.user.UserUpdateDTO;
@@ -33,7 +34,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     public void register(UserRegisterDTO user) throws Exception {
         User exist = userMapper.selectOne(new QueryWrapper<User>().eq("user_id",user.getUserId()));
         if (!Objects.isNull(exist)){
-            throw new Exception("用户已存在，请勿重复注册");
+            throw new UserDuplicateException("用户已存在，请勿重复注册");
         }
         User entity = new User();
         entity.setUserId(user.getUserId());

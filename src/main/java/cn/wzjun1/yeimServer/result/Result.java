@@ -1,5 +1,6 @@
 package cn.wzjun1.yeimServer.result;
 
+import cn.wzjun1.yeimServer.constant.StatusCode;
 import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
 
@@ -10,8 +11,10 @@ public class Result<T> implements Serializable {
 
     private static final long serialVersionUID = -3960261604608758516L;
 
+    //通用返回成功状态码
     private static final int SUCCESS_CODE = 200;
 
+    //通用返回失败状态码
     private static final int ERROR_CODE = 500;
     private int code;
     private String message;
@@ -66,6 +69,17 @@ public class Result<T> implements Serializable {
      */
     public static <T> Result<T> error(String message) {
         return new Result<>(ERROR_CODE, message, null);
+    }
+
+    /**
+     * 失败，返回消息，无返回数据
+     *
+     * @param statusCode
+     * @return
+     * @param <T>
+     */
+    public static <T> Result<T> error(StatusCode statusCode) {
+        return new Result<>(statusCode.getCode(), statusCode.getDesc(), null);
     }
 
     /**

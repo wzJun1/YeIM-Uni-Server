@@ -2,7 +2,7 @@ package cn.wzjun1.yeimServer.socket;
 
 import cn.wzjun1.yeimServer.domain.User;
 import cn.wzjun1.yeimServer.pojo.YeIMPushConfig;
-import cn.wzjun1.yeimServer.constant.SocketStatusCode;
+import cn.wzjun1.yeimServer.constant.StatusCode;
 import cn.wzjun1.yeimServer.utils.Common;
 import cn.wzjun1.yeimServer.result.Result;
 import com.alibaba.fastjson.JSONObject;
@@ -41,7 +41,7 @@ public class WebSocket implements WebSocketHandler {
         //检测是否在线,踢掉
         WebSocketSession online = sessionPool.get(user.getUserId());
         if (online != null) {
-            sendMessage(online, Result.error(SocketStatusCode.KICKED_OUT.getCode(), SocketStatusCode.KICKED_OUT.getDesc()).toJSONString());
+            sendMessage(online, Result.error(StatusCode.KICKED_OUT.getCode(), StatusCode.KICKED_OUT.getDesc()).toJSONString());
             online.close();
             sessionPool.remove(user.getUserId());
         }
@@ -49,7 +49,7 @@ public class WebSocket implements WebSocketHandler {
         setUserId(session.getId(), user.getUserId());
         sessionPool.put(user.getUserId(), session);
 
-        sendMessage(session, Result.info(SocketStatusCode.LOGIN_SUCCESS.getCode(), SocketStatusCode.LOGIN_SUCCESS.getDesc(), new HashMap<String, Object>() {{
+        sendMessage(session, Result.info(StatusCode.LOGIN_SUCCESS.getCode(), StatusCode.LOGIN_SUCCESS.getDesc(), new HashMap<String, Object>() {{
             put("user", user);
             put("pushConfig",yeIMPushConfig);
         }}).toJSONString());
@@ -92,7 +92,7 @@ public class WebSocket implements WebSocketHandler {
 
         //心跳
         if (type.equals("heart")) {
-            sendMessage(session, Result.info(SocketStatusCode.HEART.getCode(), SocketStatusCode.HEART.getDesc(), "pong").toJSONString());
+            sendMessage(session, Result.info(StatusCode.HEART.getCode(), StatusCode.HEART.getDesc(), "pong").toJSONString());
         }
     }
 

@@ -1,9 +1,16 @@
 package cn.wzjun1.yeimServer.controller;
 
 import cn.wzjun1.yeimServer.annotation.UserAuthorization;
+import cn.wzjun1.yeimServer.constant.StatusCode;
 import cn.wzjun1.yeimServer.domain.User;
 import cn.wzjun1.yeimServer.dto.group.GroupUserAddDTO;
 import cn.wzjun1.yeimServer.dto.user.UserBlackListAddDTO;
+import cn.wzjun1.yeimServer.exception.message.MessageRejectedException;
+import cn.wzjun1.yeimServer.exception.message.ToUserIdNotFoundException;
+import cn.wzjun1.yeimServer.exception.user.ExpireException;
+import cn.wzjun1.yeimServer.exception.user.SignException;
+import cn.wzjun1.yeimServer.exception.user.UserDuplicateException;
+import cn.wzjun1.yeimServer.exception.user.UserNotFoundException;
 import cn.wzjun1.yeimServer.interceptor.LoginUserContext;
 import cn.wzjun1.yeimServer.dto.user.UserRegisterDTO;
 import cn.wzjun1.yeimServer.dto.user.UserTokenDTO;
@@ -54,6 +61,9 @@ public class UserController {
         try {
             userService.register(user);
         } catch (Exception e) {
+            if (e instanceof UserDuplicateException) {
+                return Result.error(StatusCode.USER_DUPLICATE);
+            }
             return Result.error(e.getMessage());
         }
         return Result.success();
@@ -71,19 +81,19 @@ public class UserController {
 
         try {
             if (params.getTimestamp() < System.currentTimeMillis()) {
-                throw new Exception("过期时间设置错误");
+                throw new ExpireException("过期时间设置错误，必须大于当前时间");
             }
             //sign = md5(userId+timestamp+secretKey)
             //secretKey(yeim.secret.key)在application.properties 可自行替换想要的字符串
             String str = params.getUserId() + params.getTimestamp() + secretKey;
             String secret = MD5Util.encode(str);
             if (!secret.equals(params.getSign())) {
-                throw new Exception("签名校验错误");
+                throw new SignException("签名校验错误");
             }
 
             User user = userService.getUserById(params.getUserId());
             if (Objects.isNull(user)) {
-                throw new Exception("用户不存在，请先注册");
+                throw new UserNotFoundException("用户不存在，请先注册");
             }
 
             //过期时间
@@ -98,6 +108,13 @@ public class UserController {
             }});
 
         } catch (Exception e) {
+            if (e instanceof ExpireException) {
+                return Result.error(StatusCode.EXPIRE_ERROR.getCode(), e.getMessage());
+            } else if (e instanceof SignException) {
+                return Result.error(StatusCode.SIGN_ERROR);
+            } else if (e instanceof UserNotFoundException) {
+                return Result.error(StatusCode.USER_NOT_FOUND.getCode(), e.getMessage());
+            }
             return Result.error(e.getMessage());
         }
     }
@@ -138,8 +155,8 @@ public class UserController {
      * @return
      */
     @UserAuthorization
-    @PostMapping(path = "/user/bind/push/id")
-    public Result update(@RequestParam @NotEmpty String clientId) {
+    @GetMapping(path = "/user/bind/push/id")
+    public Result bindClientId(@RequestParam @NotEmpty String clientId) {
         try {
             User update = new User();
             update.setMobileDeviceId(clientId);

@@ -1,5 +1,6 @@
 package cn.wzjun1.yeimServer.service.impl;
 
+import cn.wzjun1.yeimServer.exception.FileUploadException;
 import cn.wzjun1.yeimServer.interceptor.LoginUserContext;
 import cn.wzjun1.yeimServer.service.UploadService;
 import cn.wzjun1.yeimServer.utils.JavaCvUtil;
@@ -49,6 +50,17 @@ public class UploadServiceImpl implements UploadService {
 
     @Value("${yeim.file.storage.baseDir}")
     String baseDir;
+
+
+    //通用文件后缀
+    private static final List<String> FILE_SUFFIX = Arrays.asList("jpg", "jpeg", "png", "bmp", "webp", "tiff", "gif", "ico", "aac", "mp3", "mp4", "mov", "avi", "rmvb", "wav", "rar", "zip", "7z", "xls", "xlsx", "doc", "docx", "ppt");
+
+    //图片文件后缀
+    private static final List<String> IMAGE_FILE_SUFFIX = Arrays.asList("jpg", "jpeg", "png", "bmp", "webp", "tiff", "gif", "ico");
+
+    //视频文件后缀
+    private static final List<String> VIDEO_FILE_SUFFIX = Arrays.asList("mp4", "mov", "avi", "flv", "3gp", "rmvb");
+
 
     @Override
     public Map<String, Object> getStorageParams() throws Exception {
@@ -143,13 +155,12 @@ public class UploadServiceImpl implements UploadService {
         //文件类型检验
         String extName = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
         // 判断文件后缀
-        if (!extName.matches("(aac|mp3|mp4|png|jpg|jpeg|webp|bmp|tiff|rar|zip|7z|xls|xlsx|doc|docx|ppt)")) {
-            // "文件格式错误"
-            throw new Exception("当前类型文件不允许上传");
+        if (!FILE_SUFFIX.contains(extName.toLowerCase())) {
+            throw new FileUploadException("当前类型文件不允许上传");
         }
         //创建保存目录
         mkFileDirs(filename);
-
+        //保存文件
         File desc = new File(baseDir + File.separator + filename);
         file.transferTo(desc);
         return new HashMap<String, Object>() {{
@@ -170,16 +181,13 @@ public class UploadServiceImpl implements UploadService {
         //文件类型检验
         String extName = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
         // 判断是不是图片文件后缀
-        if (!extName.matches("(png|jpg|jpeg|webp|bmp|tiff|PNG|JPG|JPEG|WEBP|BMP|TIFF)")) {
-            // "文件格式错误"
-            throw new Exception("当前类型文件不允许上传：" + extName);
+        if (!IMAGE_FILE_SUFFIX.contains(extName.toLowerCase())) {
+            throw new FileUploadException("当前类型文件不允许上传");
         }
-
         //图片保存绝对路径
         String fileAbsoluteDir = mkFileDirs(filename);
         //图片保存相对路径
         String fileRelativeDir = filename.substring(0, filename.lastIndexOf("/"));
-        System.out.println(fileRelativeDir);
         BufferedImage originalImage = ImageIO.read(file.getInputStream());
 
         File desc = new File(baseDir + File.separator + filename);
@@ -250,10 +258,9 @@ public class UploadServiceImpl implements UploadService {
 
         //文件类型检验
         String extName = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
-        // 判断是不是图片文件后缀
-        if (!extName.matches("(mp4|mov|avi|flv|3gp|rmvb|MP4|MOV|AVI|FLV|3GP|RMVB)")) {
-            //文件格式错误
-            throw new Exception("当前类型文件不允许上传");
+        // 判断是不是视频文件后缀
+        if (!VIDEO_FILE_SUFFIX.contains(extName.toLowerCase())) {
+            throw new FileUploadException("当前类型文件不允许上传");
         }
 
         //视频保存绝对路径

@@ -1,22 +1,20 @@
 package cn.wzjun1.yeimServer.service.impl;
 
-import cn.wzjun1.yeimServer.constant.MessageType;
 import cn.wzjun1.yeimServer.domain.*;
 import cn.wzjun1.yeimServer.dto.message.MessageSaveDTO;
+import cn.wzjun1.yeimServer.exception.group.GroupAllMuteException;
+import cn.wzjun1.yeimServer.exception.group.GroupMuteException;
+import cn.wzjun1.yeimServer.exception.group.GroupNotFoundException;
+import cn.wzjun1.yeimServer.exception.group.NoGroupUserException;
+import cn.wzjun1.yeimServer.exception.message.MessageRejectedException;
+import cn.wzjun1.yeimServer.exception.message.ToUserIdNotFoundException;
 import cn.wzjun1.yeimServer.interceptor.LoginUserContext;
 import cn.wzjun1.yeimServer.mapper.ConversationMapper;
 import cn.wzjun1.yeimServer.mapper.GroupMapper;
 import cn.wzjun1.yeimServer.mapper.GroupUserMapper;
-import cn.wzjun1.yeimServer.pojo.YeIMPushConfig;
 import cn.wzjun1.yeimServer.service.AsyncService;
 import cn.wzjun1.yeimServer.service.ConversationService;
-import cn.wzjun1.yeimServer.service.PushService;
-import cn.wzjun1.yeimServer.socket.WebSocket;
-import cn.wzjun1.yeimServer.constant.ConversationType;
 import cn.wzjun1.yeimServer.constant.MessageStatus;
-import cn.wzjun1.yeimServer.constant.SocketStatusCode;
-import cn.wzjun1.yeimServer.result.Result;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -24,7 +22,6 @@ import cn.wzjun1.yeimServer.service.GroupMessageService;
 import cn.wzjun1.yeimServer.mapper.GroupMessageMapper;
 import com.github.yitter.idgen.YitIdHelper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,7 +70,7 @@ public class GroupMessageServiceImpl extends ServiceImpl<GroupMessageMapper, Gro
             //判断群组是否存在
             Group isExistGroup = groupMapper.selectOne(new QueryWrapper<Group>().eq("group_id", message.getTo()).eq("is_dissolve", 0));
             if (isExistGroup == null || isExistGroup.getGroupId() == null) {
-                throw new Exception("当前群组不存在或已解散");
+                throw new GroupNotFoundException("当前群组不存在或已解散");
             }
 
             boolean isAdmin = false;
@@ -88,16 +85,16 @@ public class GroupMessageServiceImpl extends ServiceImpl<GroupMessageMapper, Gro
 
             //判断是否有发言权限(群主、管理员禁言状态下也可以发言)
             if (isExistGroup.getIsMute().equals(1) && !isAdmin) {
-                throw new Exception("当前群组全体禁言");
+                throw new GroupAllMuteException("当前群组全体禁言");
             }
 
             GroupUser isGroupUser = groupUserMapper.selectOne(new QueryWrapper<GroupUser>().eq("group_id", message.getTo()).eq("user_id", user.getUserId()));
             if (isGroupUser == null || isGroupUser.getUserId() == null) {
-                throw new Exception("非群成员无法给当前群组发送消息");
+                throw new NoGroupUserException("非群成员无法给当前群组发送消息");
             }
 
             if (isGroupUser.getMuteEndTime() > System.currentTimeMillis() && !isAdmin) {
-                throw new Exception("您在当前群组内已被禁言");
+                throw new GroupMuteException("您在当前群组内已被禁言");
             }
 
             //1.插入消息到数据库
@@ -135,7 +132,15 @@ public class GroupMessageServiceImpl extends ServiceImpl<GroupMessageMapper, Gro
                 throw new Exception("insertMessage error");
             }
         } catch (Exception e) {
-            throw new Exception(e.getMessage());
+            if (e instanceof GroupAllMuteException){
+                throw new GroupAllMuteException(e.getMessage());
+            }else if (e instanceof GroupMuteException){
+                throw new GroupMuteException(e.getMessage());
+            }else if (e instanceof NoGroupUserException){
+                throw new NoGroupUserException(e.getMessage());
+            }else{
+                throw new Exception(e.getMessage());
+            }
         }
     }
 
@@ -145,13 +150,13 @@ public class GroupMessageServiceImpl extends ServiceImpl<GroupMessageMapper, Gro
         //判断群组是否存在
         Group group = groupMapper.selectOne(new QueryWrapper<Group>().eq("group_id", conversationId).eq("is_dissolve", 0));
         if (group == null || group.getGroupId() == null) {
-            throw new Exception("当前群组不存在或已解散");
+            throw new GroupNotFoundException("当前群组不存在或已解散");
         }
 
         //判断是否有权限
         boolean isGroupUser = groupUserMapper.exists(new QueryWrapper<GroupUser>().eq("group_id", conversationId).eq("user_id", LoginUserContext.getUser().getUserId()));
         if (!isGroupUser) {
-            throw new Exception("非群成员无法获取群聊天记录");
+            throw new NoGroupUserException("非群成员无法获取群聊天记录");
         }
 
         return groupMessageMapper.listMessage(page, LoginUserContext.getUser().getUserId(), conversationId);
@@ -163,13 +168,13 @@ public class GroupMessageServiceImpl extends ServiceImpl<GroupMessageMapper, Gro
         //判断群组是否存在
         Group group = groupMapper.selectOne(new QueryWrapper<Group>().eq("group_id", conversationId).eq("is_dissolve", 0));
         if (group == null || group.getGroupId() == null) {
-            throw new Exception("当前群组不存在或已解散");
+            throw new GroupNotFoundException("当前群组不存在或已解散");
         }
 
         //判断是否有权限
         boolean isGroupUser = groupUserMapper.exists(new QueryWrapper<GroupUser>().eq("group_id", conversationId).eq("user_id", LoginUserContext.getUser().getUserId()));
         if (!isGroupUser) {
-            throw new Exception("非群成员无法获取群聊天记录");
+            throw new NoGroupUserException("非群成员无法获取群聊天记录");
         }
 
         return groupMessageMapper.listMessageByNextMessageId(LoginUserContext.getUser().getUserId(), conversationId, nextMessageId, limit);

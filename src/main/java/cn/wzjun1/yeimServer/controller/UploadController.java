@@ -1,6 +1,8 @@
 package cn.wzjun1.yeimServer.controller;
 
 import cn.wzjun1.yeimServer.annotation.UserAuthorization;
+import cn.wzjun1.yeimServer.constant.StatusCode;
+import cn.wzjun1.yeimServer.exception.FileUploadException;
 import cn.wzjun1.yeimServer.service.UploadService;
 import cn.wzjun1.yeimServer.result.Result;
 import lombok.extern.slf4j.Slf4j;
@@ -48,9 +50,11 @@ public class UploadController {
     public Result<Map<String, Object>> upload(@NotEmpty MultipartFile file, @RequestParam @NotEmpty String key) {
         try {
             return Result.success(uploadService.upload(key, file));
+        } catch (FileUploadException e) {
+            return Result.error(StatusCode.UPLOAD_ERROR.getCode(), e.getMessage() != null ? e.getMessage() : StatusCode.UPLOAD_ERROR.getDesc());
         } catch (Exception e) {
             e.printStackTrace();
-            return Result.error(e.getMessage());
+            return Result.error(StatusCode.UPLOAD_ERROR);
         }
     }
 
@@ -66,9 +70,11 @@ public class UploadController {
     public Result<Map<String, Object>> uploadImage(@NotEmpty MultipartFile file, @RequestParam @NotEmpty String key) {
         try {
             return Result.success(uploadService.uploadImage(key, file));
+        } catch (FileUploadException e) {
+            return Result.error(StatusCode.UPLOAD_ERROR.getCode(), e.getMessage() != null ? e.getMessage() : StatusCode.UPLOAD_ERROR.getDesc());
         } catch (Exception e) {
             e.printStackTrace();
-            return Result.error(e.getMessage());
+            return Result.error(StatusCode.UPLOAD_ERROR);
         }
     }
 
@@ -84,9 +90,11 @@ public class UploadController {
     public Result<Map<String, Object>> uploadVideo(@NotEmpty MultipartFile file, @RequestParam @NotEmpty String key) {
         try {
             return Result.success(uploadService.uploadVideo(key, file));
+        } catch (FileUploadException e) {
+            return Result.error(StatusCode.UPLOAD_ERROR.getCode(), e.getMessage() != null ? e.getMessage() : StatusCode.UPLOAD_ERROR.getDesc());
         } catch (Exception e) {
             e.printStackTrace();
-            return Result.error(e.getMessage());
+            return Result.error(StatusCode.UPLOAD_ERROR);
         }
     }
 }

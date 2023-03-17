@@ -2,7 +2,7 @@ package cn.wzjun1.yeimServer.service.impl;
 
 import cn.wzjun1.yeimServer.constant.ConversationType;
 import cn.wzjun1.yeimServer.constant.MessageType;
-import cn.wzjun1.yeimServer.constant.SocketStatusCode;
+import cn.wzjun1.yeimServer.constant.StatusCode;
 import cn.wzjun1.yeimServer.domain.*;
 import cn.wzjun1.yeimServer.mapper.ConversationMapper;
 import cn.wzjun1.yeimServer.mapper.GroupMapper;
@@ -61,7 +61,7 @@ public class AsyncServiceImpl implements AsyncService {
     public void emitJSSDKMessageReceive(Message message) {
         //消息是发送方的参照，会话ID是接收方，这里切换成发送方的。
         message.setConversationId(message.getFrom());
-        int result = WebSocket.sendMessage(message.getTo(), Result.info(SocketStatusCode.MESSAGE_RECEIVE.getCode(), "", message).toJSONString());
+        int result = WebSocket.sendMessage(message.getTo(), Result.info(StatusCode.MESSAGE_RECEIVE.getCode(), "", message).toJSONString());
 
         //第三方通知消息推送。在线透传，离线通知
         try{
@@ -148,11 +148,11 @@ public class AsyncServiceImpl implements AsyncService {
                     conversationMapper.insert(conversation);
                 }
                 //socket转发会话更新事件，非群成员不发送（已删除的成员，会话仍在，消息不更新）
-                WebSocket.sendMessage(groupUser.getUserId(), Result.info(SocketStatusCode.CONVERSATION_CHANGED.getCode(), SocketStatusCode.CONVERSATION_CHANGED.getDesc(), conversationService.getConversation(groupUser.getGroupId(), groupUser.getUserId())).toJSONString());
+                WebSocket.sendMessage(groupUser.getUserId(), Result.info(StatusCode.CONVERSATION_CHANGED.getCode(), StatusCode.CONVERSATION_CHANGED.getDesc(), conversationService.getConversation(groupUser.getGroupId(), groupUser.getUserId())).toJSONString());
 
                 //给群成员发送在线消息（发送者除外）
                 if (!message.getFrom().equals(groupUser.getUserId())) {
-                    WebSocket.sendMessage(groupUser.getUserId(), Result.info(SocketStatusCode.MESSAGE_RECEIVE.getCode(), "", message).toJSONString());
+                    WebSocket.sendMessage(groupUser.getUserId(), Result.info(StatusCode.MESSAGE_RECEIVE.getCode(), "", message).toJSONString());
                     //第三方通知消息推送。在线透传，离线通知
                     try {
                         if (yeIMPushConfig.isEnable()) {
@@ -189,11 +189,11 @@ public class AsyncServiceImpl implements AsyncService {
     @Async
     public void messageRevokedSendEvent(Message message) {
         //消息撤回事件
-        WebSocket.sendMessage(message.getTo(), Result.info(SocketStatusCode.MESSAGE_REVOKED.getCode(), SocketStatusCode.MESSAGE_REVOKED.getDesc(), message).toJSONString());
+        WebSocket.sendMessage(message.getTo(), Result.info(StatusCode.MESSAGE_REVOKED.getCode(), StatusCode.MESSAGE_REVOKED.getDesc(), message).toJSONString());
         //如果会话最新消息是撤回的消息，则会话更新
         ConversationV0 conversation = conversationService.getConversation(message.getFrom(), message.getTo());
         if (conversation != null && conversation.getLastMessage().getMessageId().equals(message.getMessageId())) {
-            WebSocket.sendMessage(message.getTo(), Result.info(SocketStatusCode.CONVERSATION_CHANGED.getCode(), SocketStatusCode.CONVERSATION_CHANGED.getDesc(), conversation).toJSONString());
+            WebSocket.sendMessage(message.getTo(), Result.info(StatusCode.CONVERSATION_CHANGED.getCode(), StatusCode.CONVERSATION_CHANGED.getDesc(), conversation).toJSONString());
         }
         //第三方通知消息推送。在线透传，离线通知
         try {
@@ -254,12 +254,12 @@ public class AsyncServiceImpl implements AsyncService {
                         }
                         conversationMapper.updateGroupConversation(message.getMessageId(), time, groupId, groupUser.getUserId());
                         //socket转发会话更新事件，非群成员不发送（已删除的成员，会话仍在，消息不更新）
-                        WebSocket.sendMessage(groupUser.getUserId(), Result.info(SocketStatusCode.CONVERSATION_CHANGED.getCode(), SocketStatusCode.CONVERSATION_CHANGED.getDesc(), conversationService.getConversation(groupUser.getGroupId(), groupUser.getUserId())).toJSONString());
+                        WebSocket.sendMessage(groupUser.getUserId(), Result.info(StatusCode.CONVERSATION_CHANGED.getCode(), StatusCode.CONVERSATION_CHANGED.getDesc(), conversationService.getConversation(groupUser.getGroupId(), groupUser.getUserId())).toJSONString());
                     }
                 }
                 //给群成员发送撤回事件
                 if (!message.getFrom().equals(groupUser.getUserId())) {
-                    WebSocket.sendMessage(groupUser.getUserId(), Result.info(SocketStatusCode.MESSAGE_REVOKED.getCode(), SocketStatusCode.MESSAGE_REVOKED.getDesc(), message).toJSONString());
+                    WebSocket.sendMessage(groupUser.getUserId(), Result.info(StatusCode.MESSAGE_REVOKED.getCode(), StatusCode.MESSAGE_REVOKED.getDesc(), message).toJSONString());
                     //第三方通知消息推送。在线透传，离线通知
                     try {
                         if (yeIMPushConfig.isEnable()) {

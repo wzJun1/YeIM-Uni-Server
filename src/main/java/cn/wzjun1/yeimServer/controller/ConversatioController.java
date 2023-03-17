@@ -1,9 +1,11 @@
 package cn.wzjun1.yeimServer.controller;
 
 import cn.wzjun1.yeimServer.annotation.UserAuthorization;
+import cn.wzjun1.yeimServer.constant.StatusCode;
 import cn.wzjun1.yeimServer.domain.Conversation;
 import cn.wzjun1.yeimServer.domain.ConversationV0;
 import cn.wzjun1.yeimServer.domain.Message;
+import cn.wzjun1.yeimServer.exception.conversation.ConversationNotFoundException;
 import cn.wzjun1.yeimServer.interceptor.LoginUserContext;
 import cn.wzjun1.yeimServer.mapper.ConversationMapper;
 import cn.wzjun1.yeimServer.mapper.MessageMapper;
@@ -68,7 +70,7 @@ public class ConversatioController {
         try {
             boolean exist = conversationMapper.exists(new QueryWrapper<Conversation>().eq("conversation_id", conversationId).eq("user_id", LoginUserContext.getUser().getUserId()));
             if (!exist) {
-                throw new Exception("会话不存在");
+                throw new ConversationNotFoundException("会话不存在");
             }
             //删除会话
             conversationMapper.delete(new QueryWrapper<Conversation>().eq("conversation_id", conversationId));
@@ -78,6 +80,9 @@ public class ConversatioController {
             messageMapper.update(update, new QueryWrapper<Message>().eq("user_id", LoginUserContext.getUser().getUserId()).eq("conversation_id", conversationId));
             return Result.success();
         } catch (Exception e) {
+            if (e instanceof ConversationNotFoundException){
+                return Result.error(StatusCode.CONVERSATION_NOT_FOUND);
+            }
             return Result.error(e.getMessage());
         }
     }
@@ -96,6 +101,9 @@ public class ConversatioController {
             conversationService.clearConversationUnread(conversationId);
             return Result.success();
         } catch (Exception e) {
+            if (e instanceof ConversationNotFoundException){
+                return Result.error(StatusCode.CONVERSATION_NOT_FOUND);
+            }
             return Result.error(e.getMessage());
         }
     }

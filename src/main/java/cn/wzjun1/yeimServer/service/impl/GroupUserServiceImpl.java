@@ -4,6 +4,9 @@ import cn.wzjun1.yeimServer.constant.*;
 import cn.wzjun1.yeimServer.domain.*;
 import cn.wzjun1.yeimServer.dto.group.GroupUserAddDTO;
 import cn.wzjun1.yeimServer.dto.message.MessageSaveDTO;
+import cn.wzjun1.yeimServer.exception.group.*;
+import cn.wzjun1.yeimServer.exception.message.IdException;
+import cn.wzjun1.yeimServer.exception.user.UserNotFoundException;
 import cn.wzjun1.yeimServer.interceptor.LoginUserContext;
 import cn.wzjun1.yeimServer.mapper.GroupApplyMapper;
 import cn.wzjun1.yeimServer.mapper.GroupMapper;
@@ -68,19 +71,19 @@ public class GroupUserServiceImpl extends ServiceImpl<GroupUserMapper, GroupUser
         List<String> ignoreList = new ArrayList<>();
 
         if (groupUserAddDTO.getMembers().size() > 500) {
-            throw new Exception("单次最多添加500个成员");
+            throw new GroupUserInsertLimitException("单次最多添加500个成员");
         }
 
         //判断群组是否存在
         Group group = groupMapper.selectOne(new QueryWrapper<Group>().eq("group_id", groupUserAddDTO.getGroupId()).eq("is_dissolve", 0));
         if (group == null || group.getGroupId() == null) {
-            throw new Exception("当前群组不存在或已解散");
+            throw new GroupNotFoundException("当前群组不存在或已解散");
         }
         addUserToGroupResultVO.setGroup(group);
         //判断加群方式
         //禁止加群直接返回
         if (group.getJoinMode().equals(JoinGroupMode.FORBIDDEN)) {
-            throw new Exception("当前群组设置禁止加群");
+            throw new GroupNoEntryException("当前群组设置禁止加群");
         }
         //是否需要申请才能入群
         boolean needApply = true;
@@ -194,9 +197,10 @@ public class GroupUserServiceImpl extends ServiceImpl<GroupUserMapper, GroupUser
 
             });
 
-            if (addUserName.size() == 0) {
-                throw new Exception("传递的用户ID列表没有可以添加的");
-            }
+            //暂时无用
+            //if (addUserName.size() == 0) {
+            //  throw new Exception("传递的用户ID列表没有可以添加的");
+            //}
 
             //邀请入群消息
             StringBuilder tips = new StringBuilder();
@@ -245,11 +249,11 @@ public class GroupUserServiceImpl extends ServiceImpl<GroupUserMapper, GroupUser
         //判断群组是否存在
         Group group = groupMapper.selectOne(new QueryWrapper<Group>().eq("group_id", groupUserAddDTO.getGroupId()).eq("is_dissolve", 0));
         if (group == null || group.getGroupId() == null) {
-            throw new Exception("当前群组不存在或已解散");
+            throw new GroupNotFoundException("当前群组不存在或已解散");
         }
 
         if (!group.getLeaderUserId().equals(LoginUserContext.getUser().getUserId())) {
-            throw new Exception("仅群主可移除群成员");
+            throw new GroupPermissionDeniedException("仅群主可移除群成员");
         }
 
         if (groupUserAddDTO.getMembers() != null) {
@@ -299,16 +303,17 @@ public class GroupUserServiceImpl extends ServiceImpl<GroupUserMapper, GroupUser
         //判断群组是否存在
         Group group = groupMapper.selectOne(new QueryWrapper<Group>().eq("group_id", groupId).eq("is_dissolve", 0));
         if (group == null || group.getGroupId() == null) {
-            throw new Exception("当前群组不存在或已解散");
+            throw new GroupNotFoundException("当前群组不存在或已解散");
         }
+
         //判断是否是群主
         if (group.getLeaderUserId().equals(LoginUserContext.getUser().getUserId())) {
-            throw new Exception("群主无法退出自己的群");
+            throw new GroupOnlyDissolveException("群主无法退出自己的群");
         }
 
         boolean isGroupUser = groupUserMapper.exists(new QueryWrapper<GroupUser>().eq("group_id", groupId).eq("user_id", LoginUserContext.getUser().getUserId()));
         if (!isGroupUser) {
-            throw new Exception("非群成员，无法执行退出操作");
+            throw new NoGroupUserException("非群成员，无法执行退出操作");
         }
 
         MessageSaveDTO message = new MessageSaveDTO();
@@ -333,22 +338,22 @@ public class GroupUserServiceImpl extends ServiceImpl<GroupUserMapper, GroupUser
         //判断群组是否存在
         Group group = groupMapper.selectOne(new QueryWrapper<Group>().eq("group_id", groupId).eq("is_dissolve", 0));
         if (group == null || group.getGroupId() == null) {
-            throw new Exception("当前群组不存在或已解散");
+            throw new GroupNotFoundException("当前群组不存在或已解散");
         }
         //判断是否是群主
         if (!group.getLeaderUserId().equals(LoginUserContext.getUser().getUserId())) {
-            throw new Exception("无权限操作");
+            throw new GroupPermissionDeniedException("无权限操作");
         }
         //判断此用户是否在群内，不在群内无法设置为管理员
         //查询用户是否存在，不存在则执行下一个用户
         User isUserExist = userMapper.selectOne(new QueryWrapper<User>().eq("user_id", userId));
         if (isUserExist == null || isUserExist.getUserId() == null) {
-            throw new Exception("用户不存在");
+            throw new UserNotFoundException("用户不存在");
         }
 
         boolean isGroupUser = groupUserMapper.exists(new QueryWrapper<GroupUser>().eq("group_id", groupId).eq("user_id", userId));
         if (!isGroupUser) {
-            throw new Exception("此用户不在当前群组，无法设置为管理员");
+            throw new NoGroupUserException("此用户不在当前群组，无法设置为管理员");
         }
 
         String tips = "";
@@ -384,18 +389,18 @@ public class GroupUserServiceImpl extends ServiceImpl<GroupUserMapper, GroupUser
         //判断群组是否存在
         Group group = groupMapper.selectOne(new QueryWrapper<Group>().eq("group_id", groupId).eq("is_dissolve", 0));
         if (group == null || group.getGroupId() == null) {
-            throw new Exception("当前群组不存在或已解散");
+            throw new GroupNotFoundException("当前群组不存在或已解散");
         }
 
         //查询用户是否存在
         User isUserExist = userMapper.selectOne(new QueryWrapper<User>().eq("user_id", userId));
         if (isUserExist == null || isUserExist.getUserId() == null) {
-            throw new Exception("当前禁言用户不存在");
+            throw new UserNotFoundException("当前禁言用户不存在");
         }
 
         GroupUser setGroupUser = groupUserMapper.selectOne(new QueryWrapper<GroupUser>().eq("group_id", groupId).eq("user_id", userId));
         if (setGroupUser == null) {
-            throw new Exception("当前禁言用户不在群内，无法操作");
+            throw new NoGroupUserException("当前禁言用户不在群内，无法操作");
         }
 
         boolean isAllowHandle = false;
@@ -411,7 +416,7 @@ public class GroupUserServiceImpl extends ServiceImpl<GroupUserMapper, GroupUser
         }
 
         if (!isAllowHandle) {
-            throw new Exception("无权限操作");
+            throw new GroupPermissionDeniedException("无权限操作");
         }
         long muteEndTime = 0L;
         long nowTime = System.currentTimeMillis();
@@ -451,7 +456,7 @@ public class GroupUserServiceImpl extends ServiceImpl<GroupUserMapper, GroupUser
 
         GroupApply groupApply = groupApplyMapper.selectOne(new QueryWrapper<GroupApply>().eq("id", ApplyId));
         if (groupApply == null) {
-            throw new Exception("申请ID错误");
+            throw new IdException("申请ID错误");
         }
 
         if (!groupApply.getStatus().equals(GroupApplyStatus.PENDING)) {
@@ -465,18 +470,18 @@ public class GroupUserServiceImpl extends ServiceImpl<GroupUserMapper, GroupUser
 
         Group group = groupMapper.selectOne(new QueryWrapper<Group>().eq("group_id", groupApply.getGroupId()).eq("is_dissolve", 0));
         if (group == null || group.getGroupId() == null) {
-            throw new Exception("当前群组不存在或已解散");
+            throw new GroupNotFoundException("当前群组不存在或已解散");
         }
 
         GroupUser operatorGroupUser = groupUserMapper.selectOne(new QueryWrapper<GroupUser>().eq("group_id", group.getGroupId()).eq("user_id", LoginUserContext.getUser().getUserId()));
         if (operatorGroupUser == null || operatorGroupUser.getUserId() == null) {
-            throw new Exception("非群成员无法执行此操作");
+            throw new NoGroupUserException("非群成员无法执行此操作");
         }
 
         //查询用户是否存在，不存在则执行下一个用户
         User isUserExist = userMapper.selectOne(new QueryWrapper<User>().eq("user_id", groupApply.getUserId()));
         if (isUserExist == null || isUserExist.getUserId() == null) {
-            throw new Exception("申请人用户不存在");
+            throw new UserNotFoundException("申请人用户不存在");
         }
 
         GroupUser isGroupUserExist = groupUserMapper.selectOne(new QueryWrapper<GroupUser>().eq("group_id", group.getGroupId()).eq("user_id", groupApply.getUserId()));
@@ -502,7 +507,7 @@ public class GroupUserServiceImpl extends ServiceImpl<GroupUserMapper, GroupUser
             }
 
             if (!isAllowHandle) {
-                throw new Exception("无权限操作");
+                throw new GroupPermissionDeniedException("无权限操作");
             }
 
             //开始处理
@@ -556,12 +561,12 @@ public class GroupUserServiceImpl extends ServiceImpl<GroupUserMapper, GroupUser
 
         Group group = groupMapper.selectOne(new QueryWrapper<Group>().eq("group_id", groupId).eq("is_dissolve", 0));
         if (group == null || group.getGroupId() == null) {
-            throw new Exception("当前群组不存在或已解散");
+            throw new GroupNotFoundException("当前群组不存在或已解散");
         }
 
         GroupUser operatorGroupUser = groupUserMapper.selectOne(new QueryWrapper<GroupUser>().eq("group_id", group.getGroupId()).eq("user_id", LoginUserContext.getUser().getUserId()));
         if (operatorGroupUser == null || operatorGroupUser.getUserId() == null) {
-            throw new Exception("非群成员无法执行此操作");
+            throw new NoGroupUserException("非群成员无法执行此操作");
         }
 
         return groupUserMapper.getGroupUserList(groupId);
@@ -576,10 +581,10 @@ public class GroupUserServiceImpl extends ServiceImpl<GroupUserMapper, GroupUser
         Group group = groupMapper.selectOne(new QueryWrapper<Group>().eq("group_id", groupId).eq("is_dissolve", 0));
         if (group != null) {
             //通知群主
-            WebSocket.sendMessage(group.getLeaderUserId(), Result.info(SocketStatusCode.GROUP_APPLY_RECEIVE.getCode(), SocketStatusCode.GROUP_APPLY_RECEIVE.getDesc(), groupApplies).toJSONString());
+            WebSocket.sendMessage(group.getLeaderUserId(), Result.info(StatusCode.GROUP_APPLY_RECEIVE.getCode(), StatusCode.GROUP_APPLY_RECEIVE.getDesc(), groupApplies).toJSONString());
             List<GroupUser> groupAdminList = groupUserMapper.selectList(new QueryWrapper<GroupUser>().eq("group_id", groupId).eq("is_admin", 1));
             groupAdminList.forEach(groupUser -> {
-                WebSocket.sendMessage(groupUser.getUserId(), Result.info(SocketStatusCode.GROUP_APPLY_RECEIVE.getCode(), SocketStatusCode.GROUP_APPLY_RECEIVE.getDesc(), groupApplies).toJSONString());
+                WebSocket.sendMessage(groupUser.getUserId(), Result.info(StatusCode.GROUP_APPLY_RECEIVE.getCode(), StatusCode.GROUP_APPLY_RECEIVE.getDesc(), groupApplies).toJSONString());
             });
         }
     }

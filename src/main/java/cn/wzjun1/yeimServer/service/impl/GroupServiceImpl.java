@@ -6,6 +6,11 @@ import cn.wzjun1.yeimServer.domain.User;
 import cn.wzjun1.yeimServer.dto.group.GroupCreateDTO;
 import cn.wzjun1.yeimServer.dto.group.GroupEditDTO;
 import cn.wzjun1.yeimServer.dto.message.MessageSaveDTO;
+import cn.wzjun1.yeimServer.exception.group.GroupDuplicateException;
+import cn.wzjun1.yeimServer.exception.group.GroupNotFoundException;
+import cn.wzjun1.yeimServer.exception.group.GroupPermissionDeniedException;
+import cn.wzjun1.yeimServer.exception.group.NoGroupUserException;
+import cn.wzjun1.yeimServer.exception.user.UserNotFoundException;
 import cn.wzjun1.yeimServer.interceptor.LoginUserContext;
 import cn.wzjun1.yeimServer.mapper.GroupUserMapper;
 import cn.wzjun1.yeimServer.mapper.UserMapper;
@@ -72,7 +77,7 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group>
 
             boolean exist = groupMapper.exists(new QueryWrapper<Group>().eq("group_id", groupId));
             if (exist) {
-                throw new Exception("群ID重复");
+                throw new GroupDuplicateException("群ID重复");
             }
 
             int joinMode = JoinGroupMode.FREE;
@@ -152,7 +157,11 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group>
             groupMessageService.insertGroupMessage(LoginUserContext.getUser(), message);
 
         } catch (Exception e) {
-            throw new Exception(e.getMessage());
+            if (e instanceof GroupDuplicateException){
+                throw new GroupDuplicateException(e.getMessage());
+            }{
+                throw new Exception(e.getMessage());
+            }
         }
     }
 
@@ -163,11 +172,11 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group>
         //判断群组是否存在
         Group isExistGroup = groupMapper.selectOne(new QueryWrapper<Group>().eq("group_id", groupId).eq("is_dissolve", 0));
         if (isExistGroup == null) {
-            throw new Exception("当前群组不存在或已解散");
+            throw new GroupNotFoundException("当前群组不存在或已解散");
         }
 
         if (!isExistGroup.getLeaderUserId().equals(LoginUserContext.getUser().getUserId())) {
-            throw new Exception("仅群主可解散该群");
+            throw new GroupPermissionDeniedException("仅群主可解散该群");
         }
 
         MessageSaveDTO message = new MessageSaveDTO();
@@ -194,12 +203,12 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group>
 
         Group group = groupMapper.selectOne(new QueryWrapper<Group>().eq("group_id", params.getGroupId()).eq("is_dissolve", 0));
         if (group == null || group.getGroupId() == null) {
-            throw new Exception("当前群组不存在或已解散");
+            throw new GroupNotFoundException("当前群组不存在或已解散");
         }
 
         GroupUser operatorGroupUser = groupUserMapper.selectOne(new QueryWrapper<GroupUser>().eq("group_id", params.getGroupId()).eq("user_id", LoginUserContext.getUser().getUserId()));
         if (operatorGroupUser == null || operatorGroupUser.getUserId() == null) {
-            throw new Exception("非群成员无法执行此操作");
+            throw new NoGroupUserException("非群成员无法执行此操作");
         }
 
         boolean isAllowHandle = false;
@@ -214,7 +223,7 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group>
         }
 
         if (!isAllowHandle) {
-            throw new Exception("无权限操作");
+            throw new GroupPermissionDeniedException("无权限操作");
         }
         Group update = new Group();
         if (params.getName() != null) {
@@ -271,22 +280,22 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group>
 
         Group group = groupMapper.selectOne(new QueryWrapper<Group>().eq("group_id", groupId).eq("is_dissolve", 0));
         if (group == null || group.getGroupId() == null) {
-            throw new Exception("当前群组不存在或已解散");
+            throw new GroupNotFoundException("当前群组不存在或已解散");
         }
         //仅群主可操作转让
         if (!group.getLeaderUserId().equals(LoginUserContext.getUser().getUserId())) {
-            throw new Exception("无权限操作");
+            throw new GroupPermissionDeniedException("无权限操作");
         }
 
         //查询用户是否存在
         User isUserExist = userMapper.selectOne(new QueryWrapper<User>().eq("user_id", userId));
         if (isUserExist == null || isUserExist.getUserId() == null) {
-            throw new Exception("此用户不存在");
+            throw new UserNotFoundException("此用户不存在");
         }
 
         GroupUser isGroupUser = groupUserMapper.selectOne(new QueryWrapper<GroupUser>().eq("group_id", groupId).eq("user_id", userId));
         if (isGroupUser == null || isGroupUser.getUserId() == null) {
-            throw new Exception("转让的用户不在当前群组，无法转让");
+            throw new NoGroupUserException("转让的用户不在当前群组，无法转让");
         }
 
         Group update = new Group();

@@ -1,9 +1,13 @@
 package cn.wzjun1.yeimServer.controller;
 
 import cn.wzjun1.yeimServer.annotation.UserAuthorization;
+import cn.wzjun1.yeimServer.constant.StatusCode;
 import cn.wzjun1.yeimServer.domain.Group;
 import cn.wzjun1.yeimServer.domain.GroupUser;
 import cn.wzjun1.yeimServer.dto.group.GroupUserAddDTO;
+import cn.wzjun1.yeimServer.exception.group.*;
+import cn.wzjun1.yeimServer.exception.message.IdException;
+import cn.wzjun1.yeimServer.exception.user.UserNotFoundException;
 import cn.wzjun1.yeimServer.interceptor.LoginUserContext;
 import cn.wzjun1.yeimServer.mapper.GroupApplyMapper;
 import cn.wzjun1.yeimServer.result.vo.AddUserToGroupResultVO;
@@ -16,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -49,7 +52,15 @@ public class GroupUserController {
             AddUserToGroupResultVO resultVO = groupUserService.addUserToGroup(params);
             return Result.success(resultVO);
         } catch (Exception e) {
-            return Result.error(e.getMessage());
+            if (e instanceof GroupUserInsertLimitException) {
+                return Result.error(StatusCode.GROUP_USER_INSERT_LIMIT);
+            } else if (e instanceof GroupNotFoundException) {
+                return Result.error(StatusCode.GROUP_NOT_FOUND);
+            } else if (e instanceof GroupNoEntryException) {
+                return Result.error(StatusCode.GROUP_NO_ENTRY);
+            } else {
+                return Result.error(e.getMessage());
+            }
         }
     }
 
@@ -66,12 +77,18 @@ public class GroupUserController {
             groupUserService.deleteUserFromGroup(params);
             return Result.success();
         } catch (Exception e) {
+            if (e instanceof GroupNotFoundException) {
+                return Result.error(StatusCode.GROUP_NOT_FOUND);
+            }else if (e instanceof GroupPermissionDeniedException) {
+                return Result.error(StatusCode.GROUP_PERMISSION_DENIED.getCode(), e.getMessage());
+            }
             return Result.error(e.getMessage());
         }
     }
 
     /**
      * 退出群組
+     *
      * @param groupId
      * @return
      */
@@ -82,6 +99,13 @@ public class GroupUserController {
             groupUserService.leaveGroup(groupId);
             return Result.success();
         } catch (Exception e) {
+            if (e instanceof GroupNotFoundException) {
+                return Result.error(StatusCode.GROUP_NOT_FOUND);
+            }else if (e instanceof GroupOnlyDissolveException) {
+                return Result.error(StatusCode.GROUP_ONLY_DISSOLVE);
+            }else if (e instanceof NoGroupUserException){
+                return Result.error(StatusCode.NO_GROUP_USER);
+            }
             return Result.error(e.getMessage());
         }
     }
@@ -128,6 +152,15 @@ public class GroupUserController {
             }
             return Result.success(groupUserService.applyHandle(id, status));
         } catch (Exception e) {
+            if (e instanceof IdException) {
+                return Result.error(StatusCode.ID_ERROR.getCode(), e.getMessage());
+            }else if (e instanceof NoGroupUserException){
+                return Result.error(StatusCode.NO_GROUP_USER);
+            }else if (e instanceof GroupPermissionDeniedException){
+                return Result.error(StatusCode.GROUP_PERMISSION_DENIED);
+            }else if (e instanceof UserNotFoundException){
+                return Result.error(StatusCode.USER_NOT_FOUND.getCode(),e.getMessage());
+            }
             return Result.error(e.getMessage());
         }
     }
@@ -148,17 +181,27 @@ public class GroupUserController {
             groupUserService.setAdminstrator(groupId, userId, isAdmin);
             return Result.success();
         } catch (Exception e) {
+            if (e instanceof GroupNotFoundException) {
+                return Result.error(StatusCode.GROUP_NOT_FOUND);
+            }else if (e instanceof NoGroupUserException){
+                return Result.error(StatusCode.NO_GROUP_USER);
+            }else if (e instanceof GroupPermissionDeniedException){
+                return Result.error(StatusCode.GROUP_PERMISSION_DENIED);
+            }else if (e instanceof UserNotFoundException){
+                return Result.error(StatusCode.USER_NOT_FOUND);
+            }
             return Result.error(e.getMessage());
         }
     }
 
     /**
      * 设置用户禁言
-     *
+     * <p>
      * 每次设置均从操作时间开始计算禁言的具体到期时间
+     *
      * @param groupId
      * @param userId
-     * @param time 分钟数，0表示取消禁言
+     * @param time    分钟数，0表示取消禁言
      * @return
      */
     @GetMapping(path = "/group/user/set/mute")
@@ -168,6 +211,15 @@ public class GroupUserController {
             groupUserService.setMute(groupId, userId, time);
             return Result.success();
         } catch (Exception e) {
+            if (e instanceof GroupNotFoundException) {
+                return Result.error(StatusCode.GROUP_NOT_FOUND);
+            }else if (e instanceof NoGroupUserException){
+                return Result.error(StatusCode.NO_GROUP_USER);
+            }else if (e instanceof GroupPermissionDeniedException){
+                return Result.error(StatusCode.GROUP_PERMISSION_DENIED);
+            }else if (e instanceof UserNotFoundException){
+                return Result.error(StatusCode.USER_NOT_FOUND);
+            }
             return Result.error(e.getMessage());
         }
     }
@@ -184,6 +236,11 @@ public class GroupUserController {
         try {
             return Result.success(groupUserService.getGroupUserList(groupId));
         } catch (Exception e) {
+            if (e instanceof GroupNotFoundException) {
+                return Result.error(StatusCode.GROUP_NOT_FOUND);
+            }else if (e instanceof NoGroupUserException){
+                return Result.error(StatusCode.NO_GROUP_USER);
+            }
             return Result.error(e.getMessage());
         }
     }

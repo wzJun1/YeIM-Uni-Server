@@ -2,6 +2,7 @@ package cn.wzjun1.yeimServer.interceptor;
 
 import cn.wzjun1.yeimServer.annotation.UserAuthorization;
 import cn.wzjun1.yeimServer.domain.User;
+import cn.wzjun1.yeimServer.exception.LoginExpireException;
 import cn.wzjun1.yeimServer.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.method.HandlerMethod;
@@ -49,7 +50,7 @@ public class UserAuthorizationInterceptor extends HandlerInterceptorAdapter {
          * 如果验证token失败，并且方法或类注明了Authorization,返回错误
          */
         if (method.getAnnotation(UserAuthorization.class) != null || handlerMethod.getBeanType().getAnnotation(UserAuthorization.class) != null) {
-            throw new Exception("用户权限验证错误");
+            throw new LoginExpireException();
         }
         return true;
     }

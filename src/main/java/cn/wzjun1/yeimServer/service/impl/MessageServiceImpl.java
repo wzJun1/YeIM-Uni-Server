@@ -1,7 +1,9 @@
 package cn.wzjun1.yeimServer.service.impl;
 
-import cn.wzjun1.yeimServer.constant.MessageType;
 import cn.wzjun1.yeimServer.domain.*;
+import cn.wzjun1.yeimServer.exception.message.IdException;
+import cn.wzjun1.yeimServer.exception.message.MessageRejectedException;
+import cn.wzjun1.yeimServer.exception.message.ToUserIdNotFoundException;
 import cn.wzjun1.yeimServer.interceptor.LoginUserContext;
 import cn.wzjun1.yeimServer.mapper.*;
 import cn.wzjun1.yeimServer.dto.message.MessageSaveDTO;
@@ -9,15 +11,13 @@ import cn.wzjun1.yeimServer.pojo.YeIMPushConfig;
 import cn.wzjun1.yeimServer.service.*;
 import cn.wzjun1.yeimServer.socket.WebSocket;
 import cn.wzjun1.yeimServer.constant.MessageStatus;
-import cn.wzjun1.yeimServer.constant.SocketStatusCode;
+import cn.wzjun1.yeimServer.constant.StatusCode;
 import cn.wzjun1.yeimServer.result.Result;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.yitter.idgen.YitIdHelper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -76,13 +76,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
             //判断接收者是否存在
             User toUser = userMapper.selectOne(new QueryWrapper<User>().eq("user_id", message.getTo()));
             if (toUser == null || toUser.getUserId() == null) {
-                throw new Exception("接收者ID错误");
+                throw new ToUserIdNotFoundException("接收者ID错误");
             }
 
             //判断发送方是否在接收方的黑名单中
             boolean isBlack = userBlackListMapper.exists(new QueryWrapper<UserBlackList>().eq("cover_user_id", message.getFrom()).eq("user_id", message.getTo()));
             if (isBlack) {
-                throw new Exception("您已被当前用户拉黑，无法向他发送消息");
+                throw new MessageRejectedException("您已被当前用户拉黑，无法向他发送消息");
             }
 
             //1.插入消息到数据库
@@ -183,7 +183,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
                 throw new Exception("insertMessage error");
             }
         } catch (Exception e) {
-            throw new Exception(e.getMessage());
+            if (e instanceof ToUserIdNotFoundException){
+                throw new ToUserIdNotFoundException(e.getMessage());
+            }else if (e instanceof MessageRejectedException){
+                throw new MessageRejectedException(e.getMessage());
+            }else{
+                throw new Exception(e.getMessage());
+            }
         }
     }
 
@@ -276,7 +282,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
                 groupMessageMapper.update(update, new QueryWrapper<GroupMessage>().eq("message_id", messageId).eq("from", userId));
                 emitJSSDKGroupMessageRevoked(groupMessageMapper.selectOne(new QueryWrapper<GroupMessage>().eq("message_id", messageId).eq("from", userId)));
             } else {
-                throw new Exception("messageId 错误");
+                throw new IdException("messageId 错误");
             }
         }
     }
@@ -313,7 +319,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
      * @param conversation
      */
     private void emitJSSDKConversationUpdated(Conversation conversation) {
-        WebSocket.sendMessage(conversation.getUserId(), Result.info(SocketStatusCode.CONVERSATION_CHANGED.getCode(), SocketStatusCode.CONVERSATION_CHANGED.getDesc(), conversationService.getConversation(conversation.getConversationId(), conversation.getUserId())).toJSONString());
+        WebSocket.sendMessage(conversation.getUserId(), Result.info(StatusCode.CONVERSATION_CHANGED.getCode(), StatusCode.CONVERSATION_CHANGED.getDesc(), conversationService.getConversation(conversation.getConversationId(), conversation.getUserId())).toJSONString());
     }
 
     /**

@@ -1,10 +1,18 @@
 package cn.wzjun1.yeimServer.controller;
 
 import cn.wzjun1.yeimServer.annotation.UserAuthorization;
+import cn.wzjun1.yeimServer.constant.StatusCode;
 import cn.wzjun1.yeimServer.domain.ConversationV0;
 import cn.wzjun1.yeimServer.domain.GroupMessage;
 import cn.wzjun1.yeimServer.domain.Message;
 import cn.wzjun1.yeimServer.domain.User;
+import cn.wzjun1.yeimServer.exception.group.GroupAllMuteException;
+import cn.wzjun1.yeimServer.exception.group.GroupMuteException;
+import cn.wzjun1.yeimServer.exception.group.GroupNotFoundException;
+import cn.wzjun1.yeimServer.exception.group.NoGroupUserException;
+import cn.wzjun1.yeimServer.exception.message.IdException;
+import cn.wzjun1.yeimServer.exception.message.MessageRejectedException;
+import cn.wzjun1.yeimServer.exception.message.ToUserIdNotFoundException;
 import cn.wzjun1.yeimServer.interceptor.LoginUserContext;
 import cn.wzjun1.yeimServer.dto.message.MessageSaveDTO;
 import cn.wzjun1.yeimServer.service.ConversationService;
@@ -49,7 +57,7 @@ public class MessageController {
         try {
             User user = LoginUserContext.getUser();
             if (!user.getUserId().equals(params.getFrom()) || user.getUserId().equals(params.getTo())) {
-                throw new Exception("发送者/接收者ID错误");
+                throw new IdException("发送者/接收者ID错误");
             }
             if (params.getConversationType().equals(ConversationType.PRIVATE)) {
                 Message message = messageService.insertMessage(user, params);
@@ -65,7 +73,23 @@ public class MessageController {
                 return Result.success(message);
             }
         } catch (Exception e) {
-            return Result.error(e.getMessage());
+            if (e instanceof ToUserIdNotFoundException) {
+                return Result.error(StatusCode.TOUSER_ID_NOT_FOUND);
+            } else if (e instanceof MessageRejectedException) {
+                return Result.error(StatusCode.MESSAGE_REJECTED);
+            } else if (e instanceof IdException) {
+                return Result.error(StatusCode.ID_ERROR.getCode(), e.getMessage());
+            } else if (e instanceof GroupAllMuteException) {
+                return Result.error(StatusCode.GROUP_ALL_MUTE);
+            } else if (e instanceof GroupMuteException) {
+                return Result.error(StatusCode.GROUP_MUTE);
+            } else if (e instanceof NoGroupUserException) {
+                return Result.error(StatusCode.NO_GROUP_USER);
+            } else if (e instanceof GroupNotFoundException) {
+                return Result.error(StatusCode.GROUP_NOT_FOUND);
+            } else {
+                return Result.error(e.getMessage());
+            }
         }
     }
 
@@ -106,13 +130,10 @@ public class MessageController {
     }
 
     /**
-     * @deprecated
-     *
-     * 获取历史消息
-     *
      * @param page           页码
      * @param conversationId 会话ID
      * @return IPage<Message>
+     * @deprecated 获取历史消息
      */
     @UserAuthorization
     @GetMapping(path = "/message/list")

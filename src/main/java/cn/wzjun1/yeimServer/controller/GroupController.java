@@ -1,8 +1,14 @@
 package cn.wzjun1.yeimServer.controller;
 
 import cn.wzjun1.yeimServer.annotation.UserAuthorization;
+import cn.wzjun1.yeimServer.constant.StatusCode;
 import cn.wzjun1.yeimServer.dto.group.GroupCreateDTO;
 import cn.wzjun1.yeimServer.dto.group.GroupEditDTO;
+import cn.wzjun1.yeimServer.exception.group.GroupDuplicateException;
+import cn.wzjun1.yeimServer.exception.group.GroupNotFoundException;
+import cn.wzjun1.yeimServer.exception.group.GroupPermissionDeniedException;
+import cn.wzjun1.yeimServer.exception.group.NoGroupUserException;
+import cn.wzjun1.yeimServer.exception.user.UserNotFoundException;
 import cn.wzjun1.yeimServer.interceptor.LoginUserContext;
 import cn.wzjun1.yeimServer.mapper.GroupMapper;
 import cn.wzjun1.yeimServer.mapper.GroupUserMapper;
@@ -43,6 +49,9 @@ public class GroupController {
             groupService.createGroup(params);
             return Result.success();
         } catch (Exception e) {
+            if (e instanceof GroupDuplicateException){
+                return Result.error(StatusCode.GROUP_DUPLICATE);
+            }
             return Result.error(e.getMessage());
         }
     }
@@ -60,6 +69,11 @@ public class GroupController {
             groupService.dissolveGroup(groupId);
             return Result.success();
         } catch (Exception e) {
+            if (e instanceof GroupNotFoundException){
+                return Result.error(StatusCode.GROUP_NOT_FOUND);
+            } else if (e instanceof GroupPermissionDeniedException){
+                return Result.error(StatusCode.GROUP_PERMISSION_DENIED);
+            }
             return Result.error(e.getMessage());
         }
     }
@@ -91,6 +105,13 @@ public class GroupController {
             groupService.updateGroup(params);
             return Result.success();
         } catch (Exception e) {
+            if (e instanceof GroupNotFoundException){
+                return Result.error(StatusCode.GROUP_NOT_FOUND);
+            } else if (e instanceof GroupPermissionDeniedException){
+                return Result.error(StatusCode.GROUP_PERMISSION_DENIED);
+            } else if (e instanceof NoGroupUserException){
+                return Result.error(StatusCode.NO_GROUP_USER);
+            }
             return Result.error(e.getMessage());
         }
     }
@@ -109,6 +130,15 @@ public class GroupController {
             groupService.transferLeader(groupId, userId);
             return Result.success();
         } catch (Exception e) {
+            if (e instanceof GroupNotFoundException){
+                return Result.error(StatusCode.GROUP_NOT_FOUND);
+            } else if (e instanceof GroupPermissionDeniedException){
+                return Result.error(StatusCode.GROUP_PERMISSION_DENIED);
+            } else if (e instanceof NoGroupUserException){
+                return Result.error(StatusCode.NO_GROUP_USER);
+            } else if (e instanceof UserNotFoundException){
+                return Result.error(StatusCode.USER_NOT_FOUND);
+            }
             return Result.error(e.getMessage());
         }
     }
