@@ -17,6 +17,6 @@ import java.util.List;
 public interface GroupMessageService extends IService<GroupMessage> {
     GroupMessage insertGroupMessage(User user, MessageSaveDTO message) throws Exception;
     IPage<GroupMessage> listMessage(IPage<GroupMessage> page, String conversationId) throws Exception;
-    List<GroupMessage> listMessage(String conversationId, String nextMessageId, Integer limit) throws Exception ;
+    List<GroupMessage> listMessage(String conversationId, String nextMessageId, Integer limit);
 
 }

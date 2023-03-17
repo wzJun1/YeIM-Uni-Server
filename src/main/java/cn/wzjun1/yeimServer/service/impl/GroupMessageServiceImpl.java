@@ -163,7 +163,7 @@ public class GroupMessageServiceImpl extends ServiceImpl<GroupMessageMapper, Gro
     }
 
     @Override
-    public List<GroupMessage> listMessage(String conversationId, String nextMessageId, Integer limit) throws Exception {
+    public List<GroupMessage> listMessage(String conversationId, String nextMessageId, Integer limit){
 
         //判断群组是否存在
         Group group = groupMapper.selectOne(new QueryWrapper<Group>().eq("group_id", conversationId).eq("is_dissolve", 0));

@@ -6,6 +6,7 @@ import cn.wzjun1.yeimServer.domain.ConversationV0;
 import cn.wzjun1.yeimServer.domain.GroupMessage;
 import cn.wzjun1.yeimServer.domain.Message;
 import cn.wzjun1.yeimServer.domain.User;
+import cn.wzjun1.yeimServer.exception.conversation.ConversationNotFoundException;
 import cn.wzjun1.yeimServer.exception.group.GroupAllMuteException;
 import cn.wzjun1.yeimServer.exception.group.GroupMuteException;
 import cn.wzjun1.yeimServer.exception.group.GroupNotFoundException;
@@ -142,7 +143,7 @@ public class MessageController {
         try {
             ConversationV0 conversationV0 = conversationService.getConversation(conversationId, LoginUserContext.getUser().getUserId());
             if (conversationV0 == null) {
-                throw new Exception("会话不存在");
+                throw new ConversationNotFoundException("会话不存在");
             }
             if (conversationV0.getType().equals(ConversationType.PRIVATE)) {
                 //私聊消息
@@ -166,7 +167,7 @@ public class MessageController {
         try {
             ConversationV0 conversationV0 = conversationService.getConversation(conversationId, LoginUserContext.getUser().getUserId());
             if (conversationV0 == null) {
-                throw new Exception("会话不存在");
+                throw new ConversationNotFoundException("会话不存在");
             }
             if (conversationV0.getType().equals(ConversationType.PRIVATE)) {
                 //私聊消息
@@ -188,6 +189,13 @@ public class MessageController {
                 }});
             }
         } catch (Exception e) {
+            if (e instanceof ConversationNotFoundException) {
+                return Result.error(StatusCode.CONVERSATION_NOT_FOUND);
+            } else if (e instanceof GroupNotFoundException) {
+                return Result.error(StatusCode.GROUP_NOT_FOUND);
+            } else if (e instanceof NoGroupUserException) {
+                return Result.error(StatusCode.NO_GROUP_USER);
+            }
             return Result.error(e.getMessage());
         }
     }
