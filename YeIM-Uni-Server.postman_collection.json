@@ -2332,7 +2332,7 @@
 			"name": "Message(消息相关)",
 			"item": [
 				{
-					"name": "获取历史消息",
+					"name": "获取历史消息（弃用）",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -2817,6 +2817,43 @@
 							"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": {\n        \"url\": \"/1.jpg\"\n    }\n}"
 						}
 					]
+				},
+				{
+					"name": "获取历史消息",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "conversationId",
+									"value": "group1",
+									"type": "text"
+								},
+								{
+									"key": "nextMessageId",
+									"value": "382046920233029-1675409575885",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v117/message/list",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v117",
+								"message",
+								"list"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}

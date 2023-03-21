@@ -68,6 +68,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
     @Autowired
     AsyncService asyncService;
 
+    @Autowired
+    OnlineChannel onlineChannel;
+
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     @Override
     public Message insertMessage(User user, MessageSaveDTO message) throws Exception {
@@ -183,11 +186,11 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
                 throw new Exception("insertMessage error");
             }
         } catch (Exception e) {
-            if (e instanceof ToUserIdNotFoundException){
+            if (e instanceof ToUserIdNotFoundException) {
                 throw new ToUserIdNotFoundException(e.getMessage());
-            }else if (e instanceof MessageRejectedException){
+            } else if (e instanceof MessageRejectedException) {
                 throw new MessageRejectedException(e.getMessage());
-            }else{
+            } else {
                 throw new Exception(e.getMessage());
             }
         }
@@ -290,8 +293,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
     /**
      * 分页获取历史消息记录
      *
-     * @param page 页码
-     * @param userId 当前用户ID
+     * @param page           页码
+     * @param userId         当前用户ID
      * @param conversationId 会话ID
      * @return IPage<Message>
      */
@@ -304,8 +307,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
      * 根据nextMesssageId获取下一批历史消息记录
      *
      * @param conversationId 会话ID
-     * @param nextMessageId 最后一条消息的ID，用以获取下一批消息
-     * @param limit 获取数量
+     * @param nextMessageId  最后一条消息的ID，用以获取下一批消息
+     * @param limit          获取数量
      * @return List<Message>
      */
     @Override
@@ -319,7 +322,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
      * @param conversation
      */
     private void emitJSSDKConversationUpdated(Conversation conversation) {
-        WebSocket.sendMessage(conversation.getUserId(), Result.info(StatusCode.CONVERSATION_CHANGED.getCode(), StatusCode.CONVERSATION_CHANGED.getDesc(), conversationService.getConversation(conversation.getConversationId(), conversation.getUserId())).toJSONString());
+        onlineChannel.send(conversation.getUserId(), Result.info(StatusCode.CONVERSATION_CHANGED.getCode(), StatusCode.CONVERSATION_CHANGED.getDesc(), conversationService.getConversation(conversation.getConversationId(), conversation.getUserId())).toJSONString());
     }
 
     /**

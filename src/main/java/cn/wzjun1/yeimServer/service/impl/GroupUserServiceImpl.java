@@ -12,15 +12,12 @@ import cn.wzjun1.yeimServer.mapper.GroupApplyMapper;
 import cn.wzjun1.yeimServer.mapper.GroupMapper;
 import cn.wzjun1.yeimServer.mapper.UserMapper;
 import cn.wzjun1.yeimServer.result.vo.AddUserToGroupResultVO;
-import cn.wzjun1.yeimServer.service.ConversationService;
-import cn.wzjun1.yeimServer.service.GroupApplyService;
-import cn.wzjun1.yeimServer.service.GroupMessageService;
+import cn.wzjun1.yeimServer.service.*;
 import cn.wzjun1.yeimServer.socket.WebSocket;
 import cn.wzjun1.yeimServer.result.Result;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import cn.wzjun1.yeimServer.service.GroupUserService;
 import cn.wzjun1.yeimServer.mapper.GroupUserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,6 +57,9 @@ public class GroupUserServiceImpl extends ServiceImpl<GroupUserMapper, GroupUser
 
     @Autowired
     GroupApplyService groupApplyService;
+
+    @Autowired
+    OnlineChannel onlineChannel;
 
     @Override
     public AddUserToGroupResultVO addUserToGroup(GroupUserAddDTO groupUserAddDTO) throws Exception {
@@ -581,10 +581,10 @@ public class GroupUserServiceImpl extends ServiceImpl<GroupUserMapper, GroupUser
         Group group = groupMapper.selectOne(new QueryWrapper<Group>().eq("group_id", groupId).eq("is_dissolve", 0));
         if (group != null) {
             //通知群主
-            WebSocket.sendMessage(group.getLeaderUserId(), Result.info(StatusCode.GROUP_APPLY_RECEIVE.getCode(), StatusCode.GROUP_APPLY_RECEIVE.getDesc(), groupApplies).toJSONString());
+            onlineChannel.send(group.getLeaderUserId(), Result.info(StatusCode.GROUP_APPLY_RECEIVE.getCode(), StatusCode.GROUP_APPLY_RECEIVE.getDesc(), groupApplies).toJSONString());
             List<GroupUser> groupAdminList = groupUserMapper.selectList(new QueryWrapper<GroupUser>().eq("group_id", groupId).eq("is_admin", 1));
             groupAdminList.forEach(groupUser -> {
-                WebSocket.sendMessage(groupUser.getUserId(), Result.info(StatusCode.GROUP_APPLY_RECEIVE.getCode(), StatusCode.GROUP_APPLY_RECEIVE.getDesc(), groupApplies).toJSONString());
+                onlineChannel.send(groupUser.getUserId(), Result.info(StatusCode.GROUP_APPLY_RECEIVE.getCode(), StatusCode.GROUP_APPLY_RECEIVE.getDesc(), groupApplies).toJSONString());
             });
         }
     }

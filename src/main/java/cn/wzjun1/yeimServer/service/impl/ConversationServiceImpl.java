@@ -5,6 +5,7 @@ import cn.wzjun1.yeimServer.domain.Message;
 import cn.wzjun1.yeimServer.exception.conversation.ConversationNotFoundException;
 import cn.wzjun1.yeimServer.interceptor.LoginUserContext;
 import cn.wzjun1.yeimServer.mapper.MessageMapper;
+import cn.wzjun1.yeimServer.service.OnlineChannel;
 import cn.wzjun1.yeimServer.socket.WebSocket;
 import cn.wzjun1.yeimServer.constant.ConversationType;
 import cn.wzjun1.yeimServer.constant.StatusCode;
@@ -34,6 +35,9 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
     @Autowired
     MessageMapper messageMapper;
 
+    @Autowired
+    OnlineChannel onlineChannel;
+
     @Override
     public ConversationV0 getConversation(String conversationId, String userId) {
         return conversationMapper.getConversationV0(conversationId, userId);
@@ -57,7 +61,7 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
             //更新当前会话对方的发件箱消息已读状态
             messageMapper.update(updateMessage, new QueryWrapper<Message>().eq("user_id", conversationId).eq("conversation_id", LoginUserContext.getUser().getUserId()).eq("direction", "out"));
             //如果会话接收方在线，发送PRIVATE_READ_RECEIPT事件
-            WebSocket.sendMessage(conversationId, Result.info(StatusCode.PRIVATE_READ_RECEIPT.getCode(), StatusCode.PRIVATE_READ_RECEIPT.getDesc(), new HashMap<String, Object>() {{
+            onlineChannel.send(conversationId, Result.info(StatusCode.PRIVATE_READ_RECEIPT.getCode(), StatusCode.PRIVATE_READ_RECEIPT.getDesc(), new HashMap<String, Object>() {{
                 put("conversationId", LoginUserContext.getUser().getUserId());
             }}).toJSONString());
         }

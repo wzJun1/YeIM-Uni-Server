@@ -51,7 +51,7 @@ public class WebSocket implements WebSocketHandler {
 
         sendMessage(session, Result.info(StatusCode.LOGIN_SUCCESS.getCode(), StatusCode.LOGIN_SUCCESS.getDesc(), new HashMap<String, Object>() {{
             put("user", user);
-            put("pushConfig",yeIMPushConfig);
+            put("pushConfig", yeIMPushConfig);
         }}).toJSONString());
         log.info("【YeIMUniServer】有新用户：" + user.getNickname() + "(userId：" + user.getUserId() + ")" + "的连接，现存总数为:" + webSockets.size());
     }
@@ -173,6 +173,12 @@ public class WebSocket implements WebSocketHandler {
         }
     }
 
+    /**
+     * 保存用户ID
+     *
+     * @param sessionId
+     * @return
+     */
     private void setUserId(String sessionId, String userId) {
         String exist = userPool.get(sessionId);
         if (exist != null) {
@@ -181,6 +187,12 @@ public class WebSocket implements WebSocketHandler {
         userPool.put(sessionId, userId);
     }
 
+    /**
+     * 根据sessionID获取用户ID
+     *
+     * @param sessionId
+     * @return
+     */
     private String getUserId(String sessionId) {
         if (userPool != null) {
             String userId = userPool.get(sessionId);
