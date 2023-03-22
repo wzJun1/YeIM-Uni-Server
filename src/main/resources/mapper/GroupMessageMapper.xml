@@ -84,7 +84,7 @@
                                                          WHERE `group_message_deleted`.`group_id` = #{conversationId}
                                                            AND `group_message_deleted`.`user_id` = #{userId})) as m
                  LEFT JOIN `user` as u ON u.`user_id` = m.`from`
-        WHERE m.`conversation_id` = #{conversationId}
+        WHERE m.`conversation_id` = #{conversationId} AND (m.`to` = #{conversationId} or m.`to` = #{userId})
         ORDER BY m.`sequence` desc
     </select>
 
@@ -119,7 +119,7 @@
         <if test="nextMessageId != null and nextMessageId != ''">
             AND m.`sequence` &lt; (SELECT `sequence` FROM `group_message` WHERE `message_id` = #{nextMessageId})
         </if>
-        AND m.`conversation_id` = #{conversationId}
+        AND m.`conversation_id` = #{conversationId} AND (m.`to` = #{conversationId} or m.`to` = #{userId})
         ORDER BY m.`sequence` desc
     </select>
 

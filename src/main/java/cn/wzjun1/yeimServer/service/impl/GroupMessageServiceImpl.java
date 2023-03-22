@@ -1,5 +1,7 @@
 package cn.wzjun1.yeimServer.service.impl;
 
+import cn.wzjun1.yeimServer.constant.ConversationType;
+import cn.wzjun1.yeimServer.constant.StatusCode;
 import cn.wzjun1.yeimServer.domain.*;
 import cn.wzjun1.yeimServer.dto.message.MessageSaveDTO;
 import cn.wzjun1.yeimServer.exception.group.GroupAllMuteException;
@@ -12,10 +14,13 @@ import cn.wzjun1.yeimServer.interceptor.LoginUserContext;
 import cn.wzjun1.yeimServer.mapper.ConversationMapper;
 import cn.wzjun1.yeimServer.mapper.GroupMapper;
 import cn.wzjun1.yeimServer.mapper.GroupUserMapper;
+import cn.wzjun1.yeimServer.result.Result;
 import cn.wzjun1.yeimServer.service.AsyncService;
 import cn.wzjun1.yeimServer.service.ConversationService;
 import cn.wzjun1.yeimServer.constant.MessageStatus;
+import cn.wzjun1.yeimServer.service.OnlineChannel;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import cn.wzjun1.yeimServer.service.GroupMessageService;
@@ -50,6 +55,9 @@ public class GroupMessageServiceImpl extends ServiceImpl<GroupMessageMapper, Gro
 
     @Autowired
     ConversationService conversationService;
+
+    @Autowired
+    OnlineChannel onlineChannel;
 
     @Autowired
     AsyncService asyncService;
@@ -144,6 +152,116 @@ public class GroupMessageServiceImpl extends ServiceImpl<GroupMessageMapper, Gro
         }
     }
 
+    /**
+     * 系统消息
+     *
+     * 发送群消息给指定接收者
+     *
+     * @param user 当前操作者
+     * @param message 消息
+     * @param receiveUserId 指定接收者用户ID
+     * @return
+     * @throws Exception
+     */
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    @Override
+    public GroupMessage insertGroupMessageToOne(User user, MessageSaveDTO message, String receiveUserId) throws Exception {
+        try {
+
+            //判断群组是否存在
+            Group isExistGroup = groupMapper.selectOne(new QueryWrapper<Group>().eq("group_id", message.getTo()).eq("is_dissolve", 0));
+            if (isExistGroup == null || isExistGroup.getGroupId() == null) {
+                throw new GroupNotFoundException("当前群组不存在或已解散");
+            }
+
+            GroupUser isGroupUser = groupUserMapper.selectOne(new QueryWrapper<GroupUser>().eq("group_id", message.getTo()).eq("user_id", receiveUserId));
+            if (isGroupUser == null || isGroupUser.getUserId() == null) {
+                throw new NoGroupUserException("指定接收者非群成员");
+            }
+
+            //1.插入消息到数据库
+
+            //消息入库数据
+            long time = System.currentTimeMillis();
+            //统一消息ID
+            String messageId = YitIdHelper.nextId() + "-" + time;
+            //群消息的direction只有out
+
+            //1.1 保存消息到数据库
+            GroupMessage out = new GroupMessage();
+            out.setMessageId(messageId);
+            out.setUserId("");
+            out.setConversationId(message.getTo());
+            out.setDirection("out");
+            out.setType(message.getType());
+            out.setFrom(message.getFrom());
+            out.setTo(receiveUserId);
+            out.setIsRead(0);
+            out.setIsRevoke(0);
+            out.setStatus(MessageStatus.SUCCESS);
+            out.setTime(time);
+            out.setBody(message.getBody());
+            out.setExtra(message.getExtra());
+            boolean messageResult = this.save(out);
+            GroupMessage outResultMessage = groupMessageMapper.getMessageById(messageId, message.getTo());
+
+            if (messageResult) {
+                //更新接收者会话
+                //asyncService.updateGroupConversationSendEvent(message.getTo(), outResultMessage);
+                Conversation conversation = conversationMapper.selectOne(new QueryWrapper<Conversation>().eq("conversation_id ", message.getTo()).eq("type", "group").eq("user_id", receiveUserId));
+
+                if (conversation != null){
+                    Conversation updateConversation = conversation;
+                    updateConversation.setLastMessageId(outResultMessage.getMessageId());
+                    updateConversation.setUpdatedAt(time);
+                    updateConversation.setUnread(0); //系统消息不更新未读数
+                    conversationMapper.update(updateConversation, new UpdateWrapper<Conversation>().eq("id", updateConversation.getId()));
+                }else{
+                    //会话不存在就新增
+                    Conversation insertConversation = new Conversation();
+                    insertConversation.setConversationId(message.getTo());
+                    insertConversation.setType(ConversationType.GROUP);
+                    insertConversation.setUserId(receiveUserId);
+                    insertConversation.setUnread(0); //系统消息不更新未读数
+                    insertConversation.setLastMessageId(outResultMessage.getMessageId());
+                    if (insertConversation.getCreatedAt() == null || insertConversation.getCreatedAt() == 0) {
+                        insertConversation.setCreatedAt(System.currentTimeMillis());
+                    } else {
+                        insertConversation.setUpdatedAt(System.currentTimeMillis());
+                    }
+                    conversationMapper.insert(insertConversation);
+                }
+
+                //socket转发会话更新事件
+                onlineChannel.send(receiveUserId, Result.info(StatusCode.CONVERSATION_CHANGED.getCode(), StatusCode.CONVERSATION_CHANGED.getDesc(), conversationService.getConversation(message.getTo(), receiveUserId)).toJSONString());
+
+                onlineChannel.send(receiveUserId, Result.info(StatusCode.MESSAGE_RECEIVE.getCode(), "", outResultMessage).toJSONString());
+
+                return outResultMessage;
+            } else {
+                throw new Exception("insertMessage error");
+            }
+        } catch (Exception e) {
+            if (e instanceof GroupAllMuteException){
+                throw new GroupAllMuteException(e.getMessage());
+            }else if (e instanceof GroupMuteException){
+                throw new GroupMuteException(e.getMessage());
+            }else if (e instanceof NoGroupUserException){
+                throw new NoGroupUserException(e.getMessage());
+            }else{
+                throw new Exception(e.getMessage());
+            }
+        }
+    }
+
+
+    /**
+     * @deprecated
+     * @param page
+     * @param conversationId
+     * @return
+     * @throws Exception
+     */
     @Override
     public IPage<GroupMessage> listMessage(IPage<GroupMessage> page, String conversationId) throws Exception {
 
@@ -171,10 +289,18 @@ public class GroupMessageServiceImpl extends ServiceImpl<GroupMessageMapper, Gro
             throw new GroupNotFoundException("当前群组不存在或已解散");
         }
 
+
+
         //判断是否有权限
         boolean isGroupUser = groupUserMapper.exists(new QueryWrapper<GroupUser>().eq("group_id", conversationId).eq("user_id", LoginUserContext.getUser().getUserId()));
-        if (!isGroupUser) {
+        //判断当前用户是否存在群聊的会话，如果存在，则从会话的last_message_id开始取历史记录
+        ConversationV0 conversation = conversationService.getConversation(conversationId, LoginUserContext.getUser().getUserId());
+        //不是群成员，且没有当前群聊的会话（曾经是群成员）
+        if (!isGroupUser && conversation == null) {
             throw new NoGroupUserException("非群成员无法获取群聊天记录");
+        }else if (!isGroupUser && nextMessageId.equals("")){
+            //不是群成员，但有当前群聊的会话，仍然允许获取退群之前的聊天记录
+            nextMessageId = conversation.getLastMessage().getMessageId();
         }
 
         return groupMessageMapper.listMessageByNextMessageId(LoginUserContext.getUser().getUserId(), conversationId, nextMessageId, limit);

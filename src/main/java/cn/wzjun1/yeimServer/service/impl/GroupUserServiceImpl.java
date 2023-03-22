@@ -61,6 +61,13 @@ public class GroupUserServiceImpl extends ServiceImpl<GroupUserMapper, GroupUser
     @Autowired
     OnlineChannel onlineChannel;
 
+    /**
+     * 添加群成员
+     *
+     * @param groupUserAddDTO
+     * @return
+     * @throws Exception
+     */
     @Override
     public AddUserToGroupResultVO addUserToGroup(GroupUserAddDTO groupUserAddDTO) throws Exception {
 
@@ -108,6 +115,7 @@ public class GroupUserServiceImpl extends ServiceImpl<GroupUserMapper, GroupUser
             //需要申请，保存申请记录，发送给群主、管理员申请事件
             List<GroupApply> groupApplies = new ArrayList<>();
             groupUserAddDTO.getMembers().forEach(userId -> {
+
                 //查询用户是否存在，不存在则执行下一个用户
                 User isUserExist = userMapper.selectOne(new QueryWrapper<User>().eq("user_id", userId));
                 if (isUserExist == null || isUserExist.getUserId() == null) {
@@ -137,6 +145,7 @@ public class GroupUserServiceImpl extends ServiceImpl<GroupUserMapper, GroupUser
                 } catch (Exception e) {
                     failList.add(userId);
                 }
+
             });
             //通知群管理入群申请事件
             emitJSSDKGroupUserApply(group.getGroupId(), groupApplies);
@@ -244,19 +253,29 @@ public class GroupUserServiceImpl extends ServiceImpl<GroupUserMapper, GroupUser
         return addUserToGroupResultVO;
     }
 
+    /**
+     * 移除群成员
+     *
+     * @param groupUserAddDTO
+     * @throws Exception
+     */
     @Override
     public void deleteUserFromGroup(GroupUserAddDTO groupUserAddDTO) throws Exception {
+
         //判断群组是否存在
         Group group = groupMapper.selectOne(new QueryWrapper<Group>().eq("group_id", groupUserAddDTO.getGroupId()).eq("is_dissolve", 0));
         if (group == null || group.getGroupId() == null) {
             throw new GroupNotFoundException("当前群组不存在或已解散");
         }
 
+        //校验权限
         if (!group.getLeaderUserId().equals(LoginUserContext.getUser().getUserId())) {
             throw new GroupPermissionDeniedException("仅群主可移除群成员");
         }
 
         if (groupUserAddDTO.getMembers() != null) {
+
+            //遍历需要移出的群成员
             groupUserAddDTO.getMembers().forEach(userId -> {
                 //群主不能移除
                 if (userId.equals(group.getLeaderUserId())) {
@@ -272,6 +291,7 @@ public class GroupUserServiceImpl extends ServiceImpl<GroupUserMapper, GroupUser
                 if (isGroupUser == null) {
                     return;
                 }
+
                 MessageSaveDTO message = new MessageSaveDTO();
                 message.setType(MessageType.GROUP_SYS_NOTICE);
                 message.setConversationType(ConversationType.GROUP);
@@ -279,22 +299,22 @@ public class GroupUserServiceImpl extends ServiceImpl<GroupUserMapper, GroupUser
                 message.setFrom("0");
                 message.setTo(group.getGroupId());
                 message.setBody(new JSONObject(new HashMap<String, Object>() {{
-                    put("tips", "群主移除了" + isUserExist.getNickname());
+                    put("tips", "你已被踢出了群聊");
                 }}));
                 message.setExtra("");
                 message.setTime(System.currentTimeMillis());
                 try {
-                    groupMessageService.insertGroupMessage(LoginUserContext.getUser(), message);
+                    //给指定群成员发送系统消息
+                    groupMessageService.insertGroupMessageToOne(LoginUserContext.getUser(), message, isGroupUser.getUserId());
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    e.printStackTrace();
                 }
 
                 //移除群成员与群的关联
                 groupUserMapper.deleteById(isGroupUser.getId());
-
             });
-        }
 
+        }
     }
 
     @Override

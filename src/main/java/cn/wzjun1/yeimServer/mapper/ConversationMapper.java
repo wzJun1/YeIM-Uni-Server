@@ -21,7 +21,6 @@ public interface ConversationMapper extends BaseMapper<Conversation> {
 
     IPage<ConversationV0> listConversationV0(IPage<ConversationV0> page, @Param("userId") String userId);
 
-
     @Select("update `conversation` set `unread` = `unread` + 1, `last_message_id` = #{messageId},`updated_at` = #{time} where `conversation_id` = #{groupId} and user_id = #{userId} and type = 'group'")
     void updateGroupConversation(@Param("messageId") String messageId, @Param("time") long time, @Param("groupId") String groupId, @Param("userId") String userId);
 
