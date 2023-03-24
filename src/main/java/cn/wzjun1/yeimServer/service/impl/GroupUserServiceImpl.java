@@ -371,9 +371,14 @@ public class GroupUserServiceImpl extends ServiceImpl<GroupUserMapper, GroupUser
             throw new UserNotFoundException("用户不存在");
         }
 
-        boolean isGroupUser = groupUserMapper.exists(new QueryWrapper<GroupUser>().eq("group_id", groupId).eq("user_id", userId));
-        if (!isGroupUser) {
+        GroupUser groupUser = groupUserMapper.selectOne(new QueryWrapper<GroupUser>().eq("group_id", groupId).eq("user_id", userId));
+        if (groupUser == null || groupUser.getId() == 0) {
             throw new NoGroupUserException("此用户不在当前群组，无法设置为管理员");
+        }
+
+        //相同结果不再设置
+        if (groupUser.getIsAdmin().equals(isAdmin)){
+            return;
         }
 
         String tips = "";
@@ -547,15 +552,21 @@ public class GroupUserServiceImpl extends ServiceImpl<GroupUserMapper, GroupUser
                 groupUser.setCreatedAt(System.currentTimeMillis());
                 groupUserMapper.insert(groupUser);
                 //会话
-                Conversation conversation = new Conversation();
-                conversation.setUnread(0);
-                conversation.setConversationId(group.getGroupId());
-                conversation.setType(ConversationType.GROUP);
-                conversation.setUserId(groupApply.getUserId());
-                conversation.setLastMessageId("");
-                conversation.setUpdatedAt(System.currentTimeMillis());
-                conversation.setCreatedAt(System.currentTimeMillis());
-                conversationService.save(conversation);
+                Conversation conversation = conversationService.getOne(new QueryWrapper<Conversation>().eq("user_id", groupApply.getUserId()).eq("conversation_id", group.getGroupId()));
+                if(conversation == null){
+                    conversation = new Conversation();
+                    conversation.setUnread(0);
+                    conversation.setConversationId(group.getGroupId());
+                    conversation.setType(ConversationType.GROUP);
+                    conversation.setUserId(groupApply.getUserId());
+                    conversation.setLastMessageId("");
+                    conversation.setUpdatedAt(System.currentTimeMillis());
+                    conversation.setCreatedAt(System.currentTimeMillis());
+                }else{
+                    conversation.setUpdatedAt(System.currentTimeMillis());
+                }
+                conversationService.saveOrUpdate(conversation);
+
                 result = groupApplyMapper.getApply(ApplyId);
                 //发送邀请入群消息
                 String tips = isUserExist.getNickname() + "加入了群组";
