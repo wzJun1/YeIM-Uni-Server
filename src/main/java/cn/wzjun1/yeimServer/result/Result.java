@@ -43,6 +43,15 @@ public class Result<T> implements Serializable {
     }
 
     /**
+     * 成功，无返回数据
+     *
+     * @param <T>
+     */
+    public static <T> Result<T> success(String message) {
+        return new Result<>(SUCCESS_CODE, message, null);
+    }
+
+    /**
      * 成功，无返回消息，返回数据
      *
      * @param data 返回数据
@@ -75,8 +84,8 @@ public class Result<T> implements Serializable {
      * 失败，返回消息，无返回数据
      *
      * @param statusCode
-     * @return
      * @param <T>
+     * @return
      */
     public static <T> Result<T> error(StatusCode statusCode) {
         return new Result<>(statusCode.getCode(), statusCode.getDesc(), null);

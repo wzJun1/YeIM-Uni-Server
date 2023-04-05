@@ -98,60 +98,18 @@ public class AsyncServiceImpl implements AsyncService {
     @Async
     public void updateGroupConversationSendEvent(String groupId, GroupMessage message) {
 
-        //TODO 后面看情况用队列改一下
-
-        long time = System.currentTimeMillis();
-
-        //查出群组全部用户的会话
-        List<Conversation> conversations = conversationMapper.selectList(new QueryWrapper<Conversation>().eq("conversation_id ", groupId).eq("type", "group"));
-
         Group group = groupMapper.selectOne(new QueryWrapper<Group>().eq("group_id", groupId).eq("is_dissolve", 0));
 
         //查出群组内所有的用户，并更新群成员的会话。
-//        List<GroupUser> groupUsers = groupUserMapper.selectList(new QueryWrapper<GroupUser>().eq("group_id", groupId));
         List<GroupUser> groupUsers = groupUserMapper.getGroupUserList(groupId);
         groupUsers.forEach(groupUser -> {
             try {
-                int exist = -1;
-                for (int i = 0; i < conversations.size(); i++) {
-                    if (groupUser.getUserId().equals(conversations.get(i).getUserId())) {
-                        //此用户已有会话
-                        exist = i;
-                    }
+                //更新群成员会话，并发送会话更新事件（已删除的成会话仍在，但非群成员则会话和消息均不更新）
+                int unread = 0;
+                if (!message.getFrom().equals(groupUser.getUserId())) {
+                    unread = 1;
                 }
-                //会话存在则更新
-                if (exist != -1) {
-                    Conversation conversation = conversations.get(exist);
-                    conversation.setLastMessageId(message.getMessageId());
-                    conversation.setUpdatedAt(time);
-                    if (message.getFrom().equals(groupUser.getUserId())) {
-                        conversation.setUnread(conversation.getUnread());
-                    } else {
-                        conversation.setUnread(conversation.getUnread() + 1);
-                    }
-                    conversationMapper.updateGroupConversation(message.getMessageId(), time, groupId, groupUser.getUserId());
-                } else {
-                    //会话不存在就新增
-                    Conversation conversation = new Conversation();
-                    conversation.setConversationId(groupId);
-                    conversation.setType(ConversationType.GROUP);
-                    conversation.setUserId(groupUser.getUserId());
-                    conversation.setUnread(1);
-                    if (message.getFrom().equals(groupUser.getUserId())) {
-                        conversation.setUnread(0);
-                    } else {
-                        conversation.setUnread(1);
-                    }
-                    conversation.setLastMessageId(message.getMessageId());
-                    if (conversation.getCreatedAt() == null || conversation.getCreatedAt() == 0) {
-                        conversation.setCreatedAt(System.currentTimeMillis());
-                    } else {
-                        conversation.setUpdatedAt(System.currentTimeMillis());
-                    }
-                    conversationMapper.insert(conversation);
-                }
-                //socket转发会话更新事件，非群成员不发送（已删除的成员，会话仍在，消息不更新）
-                onlineChannel.send(groupUser.getUserId(), Result.info(StatusCode.CONVERSATION_CHANGED.getCode(), StatusCode.CONVERSATION_CHANGED.getDesc(), conversationService.getConversation(groupUser.getGroupId(), groupUser.getUserId())).toJSONString());
+                conversationService.updateConversation(groupUser.getUserId(), groupId, ConversationType.GROUP, message.getMessageId(), unread, true);
 
                 //给群成员发送在线消息（发送者除外）
                 if (!message.getFrom().equals(groupUser.getUserId())) {
@@ -181,6 +139,7 @@ public class AsyncServiceImpl implements AsyncService {
                 log.error(e.getMessage());
             }
         });
+
     }
 
     /**
@@ -223,8 +182,6 @@ public class AsyncServiceImpl implements AsyncService {
     @Async
     public void groupMessageRevokedSendEvent(String groupId, GroupMessage message) {
 
-        //TODO 后面看情况用队列改一下
-
         long time = System.currentTimeMillis();
 
         //查出群组全部用户的会话
@@ -236,30 +193,9 @@ public class AsyncServiceImpl implements AsyncService {
         List<GroupUser> groupUsers = groupUserMapper.getGroupUserList(groupId);
         groupUsers.forEach(groupUser -> {
             try {
-                int exist = -1;
-                for (int i = 0; i < conversations.size(); i++) {
-                    if (groupUser.getUserId().equals(conversations.get(i).getUserId())) {
-                        //此用户已有会话
-                        exist = i;
-                    }
-                }
+                //更新群成员会话，并发送会话更新事件（已删除的成会话仍在，但非群成员则会话和消息均不更新）
+                conversationService.updateConversation(groupUser.getUserId(), groupId, ConversationType.GROUP, message.getMessageId(), 0, true);
 
-                //如果会话存在，并且会话最新消息是当前撤回的消息，则更新会话
-                if (exist != -1) {
-                    Conversation conversation = conversations.get(exist);
-                    if (conversation.getLastMessageId().equals(message.getMessageId())){
-                        conversation.setLastMessageId(message.getMessageId());
-                        conversation.setUpdatedAt(time);
-                        if (message.getFrom().equals(groupUser.getUserId())) {
-                            conversation.setUnread(conversation.getUnread());
-                        } else {
-                            conversation.setUnread(conversation.getUnread() + 1);
-                        }
-                        conversationMapper.updateGroupConversation(message.getMessageId(), time, groupId, groupUser.getUserId());
-                        //socket转发会话更新事件，非群成员不发送（已删除的成员，会话仍在，消息不更新）
-                        onlineChannel.send(groupUser.getUserId(), Result.info(StatusCode.CONVERSATION_CHANGED.getCode(), StatusCode.CONVERSATION_CHANGED.getDesc(), conversationService.getConversation(groupUser.getGroupId(), groupUser.getUserId())).toJSONString());
-                    }
-                }
                 //给群成员发送撤回事件
                 if (!message.getFrom().equals(groupUser.getUserId())) {
                     onlineChannel.send(groupUser.getUserId(), Result.info(StatusCode.MESSAGE_REVOKED.getCode(), StatusCode.MESSAGE_REVOKED.getDesc(), message).toJSONString());

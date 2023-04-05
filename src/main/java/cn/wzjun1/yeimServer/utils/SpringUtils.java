@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 /**
  * SpringUtils
  */
-@Component
 public final class SpringUtils implements BeanFactoryPostProcessor {
 
     private static ConfigurableListableBeanFactory beanFactory;

@@ -140,13 +140,13 @@ public class GroupMessageServiceImpl extends ServiceImpl<GroupMessageMapper, Gro
                 throw new Exception("insertMessage error");
             }
         } catch (Exception e) {
-            if (e instanceof GroupAllMuteException){
+            if (e instanceof GroupAllMuteException) {
                 throw new GroupAllMuteException(e.getMessage());
-            }else if (e instanceof GroupMuteException){
+            } else if (e instanceof GroupMuteException) {
                 throw new GroupMuteException(e.getMessage());
-            }else if (e instanceof NoGroupUserException){
+            } else if (e instanceof NoGroupUserException) {
                 throw new NoGroupUserException(e.getMessage());
-            }else{
+            } else {
                 throw new Exception(e.getMessage());
             }
         }
@@ -154,11 +154,11 @@ public class GroupMessageServiceImpl extends ServiceImpl<GroupMessageMapper, Gro
 
     /**
      * 系统消息
-     *
+     * <p>
      * 发送群消息给指定接收者
      *
-     * @param user 当前操作者
-     * @param message 消息
+     * @param user          当前操作者
+     * @param message       消息
      * @param receiveUserId 指定接收者用户ID
      * @return
      * @throws Exception
@@ -207,34 +207,9 @@ public class GroupMessageServiceImpl extends ServiceImpl<GroupMessageMapper, Gro
 
             if (messageResult) {
                 //更新接收者会话
-                //asyncService.updateGroupConversationSendEvent(message.getTo(), outResultMessage);
-                Conversation conversation = conversationMapper.selectOne(new QueryWrapper<Conversation>().eq("conversation_id ", message.getTo()).eq("type", "group").eq("user_id", receiveUserId));
+                conversationService.updateConversation(receiveUserId, message.getTo(), ConversationType.GROUP, outResultMessage.getMessageId(), 0, true);
 
-                if (conversation != null){
-                    Conversation updateConversation = conversation;
-                    updateConversation.setLastMessageId(outResultMessage.getMessageId());
-                    updateConversation.setUpdatedAt(time);
-                    updateConversation.setUnread(0); //系统消息不更新未读数
-                    conversationMapper.update(updateConversation, new UpdateWrapper<Conversation>().eq("id", updateConversation.getId()));
-                }else{
-                    //会话不存在就新增
-                    Conversation insertConversation = new Conversation();
-                    insertConversation.setConversationId(message.getTo());
-                    insertConversation.setType(ConversationType.GROUP);
-                    insertConversation.setUserId(receiveUserId);
-                    insertConversation.setUnread(0); //系统消息不更新未读数
-                    insertConversation.setLastMessageId(outResultMessage.getMessageId());
-                    if (insertConversation.getCreatedAt() == null || insertConversation.getCreatedAt() == 0) {
-                        insertConversation.setCreatedAt(System.currentTimeMillis());
-                    } else {
-                        insertConversation.setUpdatedAt(System.currentTimeMillis());
-                    }
-                    conversationMapper.insert(insertConversation);
-                }
-
-                //socket转发会话更新事件
-                onlineChannel.send(receiveUserId, Result.info(StatusCode.CONVERSATION_CHANGED.getCode(), StatusCode.CONVERSATION_CHANGED.getDesc(), conversationService.getConversation(message.getTo(), receiveUserId)).toJSONString());
-
+                //发送消息事件
                 onlineChannel.send(receiveUserId, Result.info(StatusCode.MESSAGE_RECEIVE.getCode(), "", outResultMessage).toJSONString());
 
                 return outResultMessage;
@@ -242,13 +217,13 @@ public class GroupMessageServiceImpl extends ServiceImpl<GroupMessageMapper, Gro
                 throw new Exception("insertMessage error");
             }
         } catch (Exception e) {
-            if (e instanceof GroupAllMuteException){
+            if (e instanceof GroupAllMuteException) {
                 throw new GroupAllMuteException(e.getMessage());
-            }else if (e instanceof GroupMuteException){
+            } else if (e instanceof GroupMuteException) {
                 throw new GroupMuteException(e.getMessage());
-            }else if (e instanceof NoGroupUserException){
+            } else if (e instanceof NoGroupUserException) {
                 throw new NoGroupUserException(e.getMessage());
-            }else{
+            } else {
                 throw new Exception(e.getMessage());
             }
         }
@@ -256,11 +231,11 @@ public class GroupMessageServiceImpl extends ServiceImpl<GroupMessageMapper, Gro
 
 
     /**
-     * @deprecated
      * @param page
      * @param conversationId
      * @return
      * @throws Exception
+     * @deprecated
      */
     @Override
     public IPage<GroupMessage> listMessage(IPage<GroupMessage> page, String conversationId) throws Exception {
@@ -281,15 +256,13 @@ public class GroupMessageServiceImpl extends ServiceImpl<GroupMessageMapper, Gro
     }
 
     @Override
-    public List<GroupMessage> listMessage(String conversationId, String nextMessageId, Integer limit){
+    public List<GroupMessage> listMessage(String conversationId, String nextMessageId, Integer limit) {
 
         //判断群组是否存在
         Group group = groupMapper.selectOne(new QueryWrapper<Group>().eq("group_id", conversationId).eq("is_dissolve", 0));
         if (group == null || group.getGroupId() == null) {
             throw new GroupNotFoundException("当前群组不存在或已解散");
         }
-
-
 
         //判断是否有权限
         boolean isGroupUser = groupUserMapper.exists(new QueryWrapper<GroupUser>().eq("group_id", conversationId).eq("user_id", LoginUserContext.getUser().getUserId()));
@@ -298,7 +271,7 @@ public class GroupMessageServiceImpl extends ServiceImpl<GroupMessageMapper, Gro
         //不是群成员，且没有当前群聊的会话（曾经是群成员）
         if (!isGroupUser && conversation == null) {
             throw new NoGroupUserException("非群成员无法获取群聊天记录");
-        }else if (!isGroupUser && nextMessageId.equals("")){
+        } else if (!isGroupUser && nextMessageId.equals("")) {
             //不是群成员，但有当前群聊的会话，仍然允许获取退群之前的聊天记录
             nextMessageId = conversation.getLastMessage().getMessageId();
         }

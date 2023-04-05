@@ -7,6 +7,7 @@ import cn.wzjun1.yeimServer.domain.GroupMessage;
 import cn.wzjun1.yeimServer.domain.Message;
 import cn.wzjun1.yeimServer.domain.User;
 import cn.wzjun1.yeimServer.exception.conversation.ConversationNotFoundException;
+import cn.wzjun1.yeimServer.exception.friend.FriendNotFoundException;
 import cn.wzjun1.yeimServer.exception.group.GroupAllMuteException;
 import cn.wzjun1.yeimServer.exception.group.GroupMuteException;
 import cn.wzjun1.yeimServer.exception.group.GroupNotFoundException;
@@ -88,6 +89,8 @@ public class MessageController {
                 return Result.error(StatusCode.NO_GROUP_USER);
             } else if (e instanceof GroupNotFoundException) {
                 return Result.error(StatusCode.GROUP_NOT_FOUND);
+            } else if (e instanceof FriendNotFoundException) {
+                return Result.error(StatusCode.FRIEND_NOT_FOUND.getCode(), e.getMessage());
             } else {
                 return Result.error(e.getMessage());
             }

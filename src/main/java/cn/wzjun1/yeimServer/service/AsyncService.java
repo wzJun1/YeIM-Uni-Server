@@ -12,5 +12,4 @@ public interface AsyncService {
 
     void messageRevokedSendEvent(Message message);
 
-
 }

@@ -5,6 +5,7 @@ import cn.wzjun1.yeimServer.constant.StatusCode;
 import cn.wzjun1.yeimServer.domain.User;
 import cn.wzjun1.yeimServer.dto.group.GroupUserAddDTO;
 import cn.wzjun1.yeimServer.dto.user.UserBlackListAddDTO;
+import cn.wzjun1.yeimServer.exception.ParamsException;
 import cn.wzjun1.yeimServer.exception.message.MessageRejectedException;
 import cn.wzjun1.yeimServer.exception.message.ToUserIdNotFoundException;
 import cn.wzjun1.yeimServer.exception.user.ExpireException;
@@ -131,6 +132,9 @@ public class UserController {
         try {
             userService.updateUser(LoginUserContext.getUser().getUserId(), user);
         } catch (Exception e) {
+            if (e instanceof ParamsException) {
+                return Result.error(StatusCode.PARAMS_ERROR.getCode(), e.getMessage());
+            }
             return Result.error(e.getMessage());
         }
         return Result.success();

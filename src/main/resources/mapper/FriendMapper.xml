@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.wzjun1.yeimServer.mapper.FriendMapper">
+
+    <resultMap id="BaseResultMap" type="cn.wzjun1.yeimServer.domain.Friend">
+            <result property="id" column="id" jdbcType="BIGINT"/>
+            <result property="userId" column="user_id" jdbcType="VARCHAR"/>
+            <result property="friendUserId" column="friend_user_id" jdbcType="VARCHAR"/>
+            <result property="remark" column="remark" jdbcType="VARCHAR"/>
+            <result property="createdAt" column="created_at" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <resultMap id="FriendV0" type="cn.wzjun1.yeimServer.domain.FriendV0">
+        <result property="id" column="id" jdbcType="BIGINT"/>
+        <result property="userId" column="user_id" jdbcType="VARCHAR"/>
+        <result property="friendUserId" column="friend_user_id" jdbcType="VARCHAR"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="createdAt" column="created_at" jdbcType="BIGINT"/>
+        <association property="friendInfo" javaType="cn.wzjun1.yeimServer.domain.User">
+            <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+            <result property="avatarUrl" column="avatar_url" jdbcType="VARCHAR"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="FriendV01" type="cn.wzjun1.yeimServer.domain.FriendV0">
+        <result property="id" column="id" jdbcType="BIGINT"/>
+        <result property="userId" column="user_id" jdbcType="VARCHAR"/>
+        <result property="friendUserId" column="friend_user_id" jdbcType="VARCHAR"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="extend" column="extend" jdbcType="VARCHAR"/>
+        <result property="createdAt" column="created_at" jdbcType="BIGINT"/>
+        <association property="friendInfo" javaType="cn.wzjun1.yeimServer.domain.User">
+            <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+            <result property="avatarUrl" column="avatar_url" jdbcType="VARCHAR"/>
+            <result property="gender" column="gender" jdbcType="INTEGER"/>
+            <result property="mobile" column="mobile" jdbcType="BIGINT"/>
+            <result property="email" column="email" jdbcType="VARCHAR"/>
+            <result property="birthday" column="birthday" jdbcType="VARCHAR"/>
+            <result property="motto" column="motto" jdbcType="VARCHAR"/>
+            <result property="extend" column="user_extend" jdbcType="VARCHAR"/>
+        </association>
+    </resultMap>
+
+    <select id="getFriendList" resultMap="FriendV0">
+        select f.*, u.nickname, u.avatar_url
+        from `friend` as f
+                 left join `user` as u on u.user_id = f.friend_user_id
+        where f.user_id = #{userId}
+        order by f.created_at asc
+    </select>
+
+    <select id="getFriendProfileList" resultMap="FriendV01">
+        select f.*, u.nickname, u.avatar_url, u.gender, u.mobile, u.email, u.birthday, u.motto, u.extend as user_extend
+        from `friend` as f
+                 left join `user` as u on u.user_id = f.friend_user_id
+        where f.user_id = #{userId}
+        order by f.created_at asc
+    </select>
+
+</mapper>

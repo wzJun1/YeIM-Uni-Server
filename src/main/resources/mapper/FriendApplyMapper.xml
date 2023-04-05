@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.wzjun1.yeimServer.mapper.FriendApplyMapper">
+
+    <resultMap id="BaseResultMap" type="cn.wzjun1.yeimServer.domain.FriendApply">
+            <result property="id" column="id" jdbcType="BIGINT"/>
+            <result property="applyUserId" column="apply_user_id" jdbcType="VARCHAR"/>
+            <result property="userId" column="user_id" jdbcType="VARCHAR"/>
+            <result property="remark" column="remark" jdbcType="VARCHAR"/>
+            <result property="extraMessage" column="extra_message" jdbcType="VARCHAR"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+            <result property="transformTime" column="transform_time" jdbcType="BIGINT"/>
+            <result property="createdAt" column="created_at" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <resultMap id="FriendApplyV0" type="cn.wzjun1.yeimServer.domain.FriendApplyV0">
+        <result property="id" column="id" jdbcType="BIGINT"/>
+        <result property="applyUserId" column="apply_user_id" jdbcType="VARCHAR"/>
+        <result property="userId" column="user_id" jdbcType="VARCHAR"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="extraMessage" column="extra_message" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="transformTime" column="transform_time" jdbcType="BIGINT"/>
+        <result property="createdAt" column="created_at" jdbcType="BIGINT"/>
+
+        <association property="userInfo" javaType="cn.wzjun1.yeimServer.domain.User">
+            <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+            <result property="avatarUrl" column="avatar_url" jdbcType="VARCHAR"/>
+        </association>
+    </resultMap>
+
+    <select id="getApplyList" resultMap="FriendApplyV0">
+        select fa.*, u.nickname, u.avatar_url
+        from `friend_apply` as fa
+                 left join `user` as u on u.user_id = fa.apply_user_id
+        where fa.user_id = #{userId}
+        order by fa.created_at desc
+    </select>
+
+    <select id="getRequestList" resultMap="FriendApplyV0">
+        select fa.*, u.nickname, u.avatar_url
+        from `friend_apply` as fa
+                 left join `user` as u on u.user_id = fa.user_id
+        where fa.apply_user_id = #{userId}
+        order by fa.created_at desc
+    </select>
+
+    <select id="fetchApplyById" resultMap="FriendApplyV0">
+        select fa.*, u.nickname, u.avatar_url
+        from `friend_apply` as fa
+                 left join `user` as u on u.user_id = fa.user_id
+        where fa.id = #{id} limit 1
+    </select>
+
+
+</mapper>

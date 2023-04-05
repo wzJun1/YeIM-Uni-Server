@@ -1,6 +1,7 @@
 package cn.wzjun1.yeimServer.service.impl;
 
 import cn.wzjun1.yeimServer.domain.*;
+import cn.wzjun1.yeimServer.exception.friend.FriendNotFoundException;
 import cn.wzjun1.yeimServer.exception.message.IdException;
 import cn.wzjun1.yeimServer.exception.message.MessageRejectedException;
 import cn.wzjun1.yeimServer.exception.message.ToUserIdNotFoundException;
@@ -18,6 +19,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.yitter.idgen.YitIdHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +33,9 @@ import java.util.List;
 @Service
 public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
         implements MessageService {
+
+    @Value("${yeim.friend.enable}")
+    boolean friendCheck;
 
     @Autowired
     UserMapper userMapper;
@@ -60,6 +65,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
     UserBlackListMapper userBlackListMapper;
 
     @Autowired
+    FriendMapper friendMapper;
+
+    @Autowired
     YeIMPushConfig yeIMPushConfig;
 
     @Autowired
@@ -86,6 +94,15 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
             boolean isBlack = userBlackListMapper.exists(new QueryWrapper<UserBlackList>().eq("cover_user_id", message.getFrom()).eq("user_id", message.getTo()));
             if (isBlack) {
                 throw new MessageRejectedException("您已被当前用户拉黑，无法向他发送消息");
+            }
+
+            //检查好友关系
+            if (friendCheck) {
+                boolean rela1 = friendMapper.exists(new QueryWrapper<Friend>().eq("user_id", message.getFrom()).eq("friend_user_id", message.getTo()));
+                boolean rela2 = friendMapper.exists(new QueryWrapper<Friend>().eq("friend_user_id", message.getFrom()).eq("user_id", message.getTo()));
+                if (!rela1 || !rela2) {
+                    throw new FriendNotFoundException("非好友关系，无法发送消息");
+                }
             }
 
             //1.插入消息到数据库
@@ -138,49 +155,16 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
             Message inResultMessage = messageMapper.getMessageById(inMessageId, message.getTo());
             //2.更新多端会话
 
-            //2.1 更新发送者会话
-            Conversation conversation1 = conversationService.getOne(new QueryWrapper<Conversation>().eq("user_id", user.getUserId()).eq("conversation_id", message.getTo()));
-            if (conversation1 == null) {
-                conversation1 = new Conversation();
-                conversation1.setUnread(0);
-            }
-            conversation1.setConversationId(message.getTo());
-            conversation1.setType(message.getConversationType());
-            conversation1.setUserId(user.getUserId());
-            conversation1.setLastMessageId(outMessageId);
-            if (conversation1.getCreatedAt() == null || conversation1.getCreatedAt() == 0) {
-                conversation1.setCreatedAt(System.currentTimeMillis());
-            } else {
-                conversation1.setUpdatedAt(System.currentTimeMillis());
-            }
-
-            boolean conversation1Result = conversationService.saveOrUpdate(conversation1);
-            // 2.1.1 推送给发送者会话更新消息
-            this.emitJSSDKConversationUpdated(conversation1);
+            //2.1 更新发送者会话,并推送给发送者会话更新时间
+            boolean conversation1Result = conversationService.updateConversation(user.getUserId(), message.getTo(), message.getConversationType(), outMessageId, 0, true);
 
             //2.2 更新接收者会话
-            Conversation conversation2 = conversationService.getOne(new QueryWrapper<Conversation>().eq("user_id", message.getTo()).eq("conversation_id", message.getFrom()));
-            if (conversation2 == null) {
-                conversation2 = new Conversation();
-                conversation2.setUnread(0);
-            }
-            conversation2.setConversationId(message.getFrom());
-            conversation2.setType(message.getConversationType());
-            conversation2.setUserId(message.getTo());
-            conversation2.setUnread(conversation2.getUnread() + 1);
-            conversation2.setLastMessageId(inMessageId);
-            if (conversation2.getCreatedAt() == null || conversation2.getCreatedAt() == 0) {
-                conversation2.setCreatedAt(System.currentTimeMillis());
-            } else {
-                conversation2.setUpdatedAt(System.currentTimeMillis());
-            }
-            boolean conversation2Result = conversationService.saveOrUpdate(conversation2);
-            // 2.2.1 推送给接收者会话更新消息
-            this.emitJSSDKConversationUpdated(conversation2);
-            // 2.2.2 异步推送给接收者socket消息，如果在线的话
-            asyncService.emitJSSDKMessageReceive(inResultMessage);
+            boolean conversation2Result = conversationService.updateConversation(message.getTo(), message.getFrom(), message.getConversationType(), inMessageId, 1, true);
 
             if (messageResult && conversation1Result && conversation2Result) {
+                //给接收方推送在线消息[Socket Message]
+                asyncService.emitJSSDKMessageReceive(inResultMessage);
+                //返回消息
                 return outResultMessage;
             } else {
                 throw new Exception("insertMessage error");
@@ -190,7 +174,10 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
                 throw new ToUserIdNotFoundException(e.getMessage());
             } else if (e instanceof MessageRejectedException) {
                 throw new MessageRejectedException(e.getMessage());
-            } else {
+            } else if (e instanceof FriendNotFoundException){
+                throw new FriendNotFoundException(e.getMessage());
+            }
+            else {
                 throw new Exception(e.getMessage());
             }
         }
@@ -314,15 +301,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
     @Override
     public List<Message> listMessage(String conversationId, String nextMessageId, Integer limit) {
         return messageMapper.listMessageByNextMessageId(LoginUserContext.getUser().getUserId(), conversationId, nextMessageId, limit);
-    }
-
-    /**
-     * 会话更新事件
-     *
-     * @param conversation
-     */
-    private void emitJSSDKConversationUpdated(Conversation conversation) {
-        onlineChannel.send(conversation.getUserId(), Result.info(StatusCode.CONVERSATION_CHANGED.getCode(), StatusCode.CONVERSATION_CHANGED.getDesc(), conversationService.getConversation(conversation.getConversationId(), conversation.getUserId())).toJSONString());
     }
 
     /**

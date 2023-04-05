@@ -109,7 +109,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"userId\":\"user1\", //用户ID\r\n    \"timestamp\":1702174620000, //到期时间戳\r\n    \"sign\":\"c5d5d9c4a73525194bbb382969270731\" //签名：md5(userId+timestamp+yeim.secret.key)\r\n}",
+							"raw": "{\r\n    \"userId\":\"user666\", //用户ID\r\n    \"timestamp\":1702174620000, //到期时间戳\r\n    \"sign\":\"57506f7ead8fd0d0477e7797a660b4f2\" //签名：md5(userId+timestamp+yeim.secret.key)\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -304,7 +304,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"nickname\": \"暗黑守护者\",\r\n    \"avatarUrl\": \"https://api.multiavatar.com/Starcrasher.png\"\r\n}",
+							"raw": "{\r\n    \"mobile\": 13100000000\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -407,7 +407,65 @@
 							]
 						}
 					},
-					"response": []
+					"response": [
+						{
+							"name": "获取黑名单列表",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/user/black/list",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"user",
+										"black",
+										"list"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 04 Apr 2023 11:16:25 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": []\n}"
+						}
+					]
 				},
 				{
 					"name": "添加黑名单",
@@ -2444,6 +2502,116 @@
 					]
 				},
 				{
+					"name": "获取历史消息",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "conversationId",
+									"value": "group1",
+									"type": "text"
+								},
+								{
+									"key": "nextMessageId",
+									"value": "382046920233029-1675409575885",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v117/message/list",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v117",
+								"message",
+								"list"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "获取历史消息",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "conversationId",
+											"value": "group1",
+											"type": "text"
+										},
+										{
+											"key": "nextMessageId",
+											"value": "382046920233029-1675409575885",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v117/message/list",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v117",
+										"message",
+										"list"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 04 Apr 2023 11:16:10 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": {\n        \"nextMessageId\": \"381083440009285-1675174351221\",\n        \"records\": [\n            {\n                \"sequence\": 1,\n                \"messageId\": \"381083440009285-1675174351221\",\n                \"userId\": \"\",\n                \"conversationId\": \"group1\",\n                \"conversationType\": \"group\",\n                \"direction\": \"out\",\n                \"from\": \"0\",\n                \"fromUserInfo\": null,\n                \"to\": \"group1\",\n                \"type\": \"group_sys_notice\",\n                \"body\": {\n                    \"tips\": \"没有毛病创建了群组：测试聊天群1\"\n                },\n                \"extra\": \"\",\n                \"isRead\": 0,\n                \"isRevoke\": 0,\n                \"isDeleted\": 0,\n                \"status\": \"success\",\n                \"receive\": 0,\n                \"time\": 1675174351221\n            }\n        ]\n    }\n}"
+						}
+					]
+				},
+				{
 					"name": "发送消息",
 					"request": {
 						"method": "POST",
@@ -2817,39 +2985,368 @@
 							"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": {\n        \"url\": \"/1.jpg\"\n    }\n}"
 						}
 					]
-				},
+				}
+			]
+		},
+		{
+			"name": "Friend(好友相关)",
+			"item": [
 				{
-					"name": "获取历史消息",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
+					"name": "获取好友列表",
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "conversationId",
-									"value": "group1",
-									"type": "text"
-								},
-								{
-									"key": "nextMessageId",
-									"value": "382046920233029-1675409575885",
-									"type": "text"
-								}
-							]
-						},
 						"url": {
-							"raw": "{{baseUrl}}/v117/message/list",
+							"raw": "{{baseUrl}}/friend/list?page=1&limit=20&profile=1",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"v117",
-								"message",
+								"friend",
 								"list"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								},
+								{
+									"key": "profile",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "获取好友列表",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/friend/list?page=1&limit=20&profile=1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"friend",
+										"list"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"description": "页码"
+										},
+										{
+											"key": "limit",
+											"value": "20",
+											"description": "每页数量"
+										},
+										{
+											"key": "profile",
+											"value": "1",
+											"description": "0=简略资料，1=详细资料"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 04 Apr 2023 11:15:48 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": {\n        \"records\": [\n            {\n                \"id\": 3,\n                \"userId\": \"user1\",\n                \"friendUserId\": \"user2\",\n                \"createdAt\": 1680592627950,\n                \"friendInfo\": {\n                    \"nickname\": \"脑壳疼\",\n                    \"avatarUrl\": \"https://api.multiavatar.com/99520.png\"\n                }\n            },\n            {\n                \"id\": 9,\n                \"userId\": \"user1\",\n                \"friendUserId\": \"user3\",\n                \"remark\": \"小火山\",\n                \"createdAt\": 1680601024309,\n                \"friendInfo\": {\n                    \"nickname\": \"贝贝\",\n                    \"avatarUrl\": \"https://api.multiavatar.com/632056.png\",\n                    \"mobile\": 13100020000,\n                    \"motto\": \"我是你爹\"\n                }\n            }\n        ],\n        \"total\": 2,\n        \"size\": 20,\n        \"current\": 1,\n        \"orders\": [],\n        \"optimizeCountSql\": true,\n        \"searchCount\": true,\n        \"countId\": null,\n        \"maxLimit\": null,\n        \"pages\": 1\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "添加好友",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\":\"user3\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/friend/add",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"friend",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "删除好友",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"members\": [\n        \"user3\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/friend/delete",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"friend",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "更新好友资料",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": \"user2\",\n    \"remark\": \"小白\",\n    \"extend\": \"自定义字段\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/friend/update",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"friend",
+								"update"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "更新好友资料",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"userId\": \"user2\",\n    \"remark\": \"小白\",\n    \"extend\": \"自定义字段\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/friend/update",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"friend",
+										"update"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 04 Apr 2023 12:02:17 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": null\n}"
+						}
+					]
+				},
+				{
+					"name": "获取好友申请列表",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/friend/apply/list?type=0&page=1&limit=20",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"friend",
+								"apply",
+								"list"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "0",
+									"description": "0=发给我申请，1=我发出去的申请"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "同意好友申请",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/friend/apply/accept?id=3&remark=小火山",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"friend",
+								"apply",
+								"accept"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "3"
+								},
+								{
+									"key": "remark",
+									"value": "小火山"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "拒绝好友申请",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/friend/apply/refuse?id=3",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"friend",
+								"apply",
+								"refuse"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "设置好友申请列表已读状态",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/friend/apply/set/read",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"friend",
+								"apply",
+								"set",
+								"read"
 							]
 						}
 					},

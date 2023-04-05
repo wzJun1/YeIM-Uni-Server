@@ -61,6 +61,28 @@ public enum StatusCode {
     //过期时间设置错误
     EXPIRE_ERROR(10020, "过期时间设置错误"),
 
+    //对方拒绝添加好友
+    USER_FRIEND_DENY_FOUND(10021, "对方拒绝添加好友"),
+
+    //好友重复
+    USER_FRIEND_DUPLICATE(10022, "好友重复"),
+
+    //频率限制
+    FREQUENCY_LIMIT(10023, "频率限制"),
+
+
+    //未找到此好友
+    FRIEND_NOT_FOUND(10025, "未找到此好友"),
+
+    //未找到此好友申请
+    FRIEND_APPLY_NOT_FOUND(10026, "未找到此好友申请"),
+
+    //重复操作
+    DUPLICATE_ERROR(10027, "重复操作"),
+
+    //好友申请：已发送申请，请等待对方处理
+    APPLY_NEED(20020, "已发送申请，请等待对方处理"),
+
     //当前群组不存在或已解散
     GROUP_NOT_FOUND(10201, "当前群组不存在或已解散"),
 
@@ -70,14 +92,13 @@ public enum StatusCode {
     //群用户单次添加数量超过限制
     GROUP_USER_INSERT_LIMIT(10203, "群用户单次添加数量不能超过500"),
 
-
     //登陆成功
     LOGIN_SUCCESS(201, "登陆成功"),
 
     //心跳
     HEART(202, ""),
 
-    //会话列表更新
+    //会话更新
     CONVERSATION_CHANGED(203, "会话更新"),
 
     //会话列表更新
@@ -91,6 +112,15 @@ public enum StatusCode {
 
     //消息撤回事件
     MESSAGE_REVOKED(207, "消息撤回"),
+
+    //好友列表更新事件
+    FRIEND_LIST_CHANGED(208, "好友列表更新"),
+
+    //好友申请列表更新事件
+    FRIEND_APPLY_LIST_CHANGED(209, "好友申请列表更新"),
+
+    //好友申请被拒绝
+    FRIEND_APPLY_REFUSE(210, "好友申请被拒绝"),
 
     //推送新消息
     MESSAGE_RECEIVE(200, "");
