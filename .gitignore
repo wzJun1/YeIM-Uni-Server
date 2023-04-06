@@ -1,7 +1,6 @@
 # ignore
 *.idea
-target
-storage.properties
+target 
 .DS_Store
 .gitattributes
 src/main/java/cn/wzjun1/yeimServer/.DS_Store
