@@ -399,6 +399,9 @@ public class FriendApplyServiceImpl extends ServiceImpl<FriendApplyMapper, Frien
 
         //发送申请被拒绝事件
         onlineChannel.send(exist.getApplyUserId(), Result.info(StatusCode.FRIEND_APPLY_REFUSE.getCode(), StatusCode.FRIEND_APPLY_REFUSE.getDesc(), friendApplyMapper.fetchApplyById(exist.getId())).toJSONString());
+
+        //给申请方发送申请列表更新事件
+        onlineChannel.send(exist.getApplyUserId(), Result.info(StatusCode.FRIEND_APPLY_LIST_CHANGED.getCode(), StatusCode.FRIEND_APPLY_LIST_CHANGED.getDesc(), null).toJSONString());
     }
 
 

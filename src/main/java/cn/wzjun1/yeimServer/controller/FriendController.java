@@ -21,6 +21,7 @@ import cn.wzjun1.yeimServer.mapper.FriendMapper;
 import cn.wzjun1.yeimServer.result.Result;
 import cn.wzjun1.yeimServer.service.FriendApplyService;
 import cn.wzjun1.yeimServer.service.FriendService;
+import cn.wzjun1.yeimServer.service.OnlineChannel;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -48,6 +49,9 @@ public class FriendController {
 
     @Autowired
     FriendApplyMapper friendApplyMapper;
+
+    @Autowired
+    OnlineChannel onlineChannel;
 
     /**
      * 获取用户好友列表
@@ -154,6 +158,8 @@ public class FriendController {
         FriendApply friendApply = new FriendApply();
         friendApply.setIsRead(1);
         friendApplyService.update(friendApply, new QueryWrapper<FriendApply>().eq("user_id", LoginUserContext.getUser().getUserId()));
+        //给操作方发送申请列表更新事件
+        onlineChannel.send(LoginUserContext.getUser().getUserId(), Result.info(StatusCode.FRIEND_APPLY_LIST_CHANGED.getCode(), StatusCode.FRIEND_APPLY_LIST_CHANGED.getDesc(), null).toJSONString());
         return Result.success();
     }
 
