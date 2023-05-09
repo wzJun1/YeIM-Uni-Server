@@ -4,11 +4,13 @@ import cn.wzjun1.yeimServer.domain.Group;
 import cn.wzjun1.yeimServer.domain.User;
 import cn.wzjun1.yeimServer.exception.ParamsException;
 import cn.wzjun1.yeimServer.exception.user.UserDuplicateException;
+import cn.wzjun1.yeimServer.interceptor.LoginUserContext;
 import cn.wzjun1.yeimServer.mapper.UserMapper;
 import cn.wzjun1.yeimServer.dto.user.UserRegisterDTO;
 import cn.wzjun1.yeimServer.dto.user.UserUpdateDTO;
 import cn.wzjun1.yeimServer.service.UserService;
 import cn.wzjun1.yeimServer.utils.Common;
+import cn.wzjun1.yeimServer.utils.RedisUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     @Autowired
     UserMapper userMapper;
+
+    @Autowired
+    RedisUtil redisUtil;
 
     @Override
     public User getUserById(String userId) {
@@ -108,10 +113,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         if (!Common.isNotEmptyBean(entity)) {
             throw new ParamsException("请至少选择一个属性进行更新");
         }
+
+        //更新数据库
         int result = userMapper.update(entity, new QueryWrapper<User>().eq("user_id", userId));
         if (result <= 0) {
             throw new Exception("更新用户资料异常，请稍后重试");
         }
+
+        //更新redis缓存中用户信息
+        String tokenKey = "token:" + LoginUserContext.getToken();
+        if (redisUtil.hasKey(tokenKey)) {
+            long expire = redisUtil.getExpire(tokenKey);
+            User update = this.getUserById(userId);
+            redisUtil.setWithExpire(tokenKey, update, expire);
+        }
+
     }
 }
 

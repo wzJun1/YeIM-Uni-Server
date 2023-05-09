@@ -43,6 +43,7 @@ public class UserAuthorizationInterceptor extends HandlerInterceptorAdapter {
             if (redisUtil.hasKey(key)) {
                 User user = (User) redisUtil.get(key);
                 LoginUserContext.setUser(user);
+                LoginUserContext.setToken(token);
                 return true;
             }
         }
