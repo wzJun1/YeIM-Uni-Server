@@ -168,6 +168,10 @@ public class MessageController {
     @Validated
     public Result list(@RequestParam @NotEmpty String conversationId, @RequestParam(defaultValue = "") String nextMessageId, @RequestParam(defaultValue = "20") Integer limit) {
         try {
+            //修复因js端空值导致获取消息异常
+            if (nextMessageId.equals("null")){
+                nextMessageId = "";
+            }
             ConversationV0 conversationV0 = conversationService.getConversation(conversationId, LoginUserContext.getUser().getUserId());
             if (conversationV0 == null) {
                 throw new ConversationNotFoundException("会话不存在");
