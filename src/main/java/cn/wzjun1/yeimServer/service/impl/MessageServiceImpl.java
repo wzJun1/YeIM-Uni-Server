@@ -264,13 +264,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
             //发送事件
             emitJSSDKPrivateMessageRevoked(messageMapper.getMessageById(messageId, userId));
         } else {
-            boolean isGroupMessage = groupMessageMapper.exists(new QueryWrapper<GroupMessage>().eq("message_id", messageId).eq("from", userId));
+            boolean isGroupMessage = groupMessageMapper.exists(new QueryWrapper<GroupMessage>().eq("message_id", messageId).eq("`from`", userId));
             if (isGroupMessage) {
                 GroupMessage update = new GroupMessage();
                 update.setIsRevoke(1);
                 //更新群消息
-                groupMessageMapper.update(update, new QueryWrapper<GroupMessage>().eq("message_id", messageId).eq("from", userId));
-                emitJSSDKGroupMessageRevoked(groupMessageMapper.selectOne(new QueryWrapper<GroupMessage>().eq("message_id", messageId).eq("from", userId)));
+                groupMessageMapper.update(update, new QueryWrapper<GroupMessage>().eq("message_id", messageId).eq("`from`", userId));
+                emitJSSDKGroupMessageRevoked(groupMessageMapper.selectOne(new QueryWrapper<GroupMessage>().eq("message_id", messageId).eq("`from`", userId)));
             } else {
                 throw new IdException("messageId 错误");
             }
