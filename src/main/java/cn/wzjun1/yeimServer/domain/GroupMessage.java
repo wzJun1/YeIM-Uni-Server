@@ -51,7 +51,10 @@ public class GroupMessage implements Serializable {
     @TableField(value = "`from`")
     private String from;
 
-
+    /**
+     * 消息发送方用户信息
+     */
+    @TableField(exist = false)
     private User fromUserInfo;
 
     /**
