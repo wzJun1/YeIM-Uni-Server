@@ -97,7 +97,7 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group>
             group.setLeaderUserId(LoginUserContext.getUser().getUserId());
             group.setJoinMode(joinMode);
             group.setIntroduction(params.getIntroduction());
-            group.setNotification(params.getIntroduction());
+            group.setNotification(params.getNotification());
             group.setCreatedAt(System.currentTimeMillis());
             this.save(group);
 
