@@ -52,7 +52,10 @@ public class Message implements Serializable {
     @TableField(value = "`from`")
     private String from;
 
-
+    /**
+     * 发送方资料
+     */
+    @TableField(exist = false)
     private User fromUserInfo;
 
     /**
