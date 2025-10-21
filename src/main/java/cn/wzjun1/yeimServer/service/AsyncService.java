@@ -10,6 +10,5 @@ public interface AsyncService {
 
     void groupMessageRevokedSendEvent(String groupId, GroupMessage message);
 
-    void messageRevokedSendEvent(Message message);
-
+    void messageRevokedSendEvent(Message outMessage, Message inMessage); 
 }
