@@ -150,13 +150,20 @@ public class AsyncServiceImpl implements AsyncService {
      */
     @Async
     public void messageRevokedSendEvent(Message message) {
-        //消息撤回事件
+        //给自己发送会话更新事件
+        ConversationV0 conversationV1 = conversationService.getConversation(message.getTo(), message.getFrom());
+        if (conversationV1 != null && conversationV1.getLastMessage().getMessageId().equals(message.getMessageId())) {
+            onlineChannel.send(message.getFrom(), Result.info(StatusCode.CONVERSATION_CHANGED.getCode(), StatusCode.CONVERSATION_CHANGED.getDesc(), conversationV1).toJSONString());
+        }
+
+        //给对方发送消息撤回事件
         onlineChannel.send(message.getTo(), Result.info(StatusCode.MESSAGE_REVOKED.getCode(), StatusCode.MESSAGE_REVOKED.getDesc(), message).toJSONString());
         //如果会话最新消息是撤回的消息，则会话更新
-        ConversationV0 conversation = conversationService.getConversation(message.getFrom(), message.getTo());
-        if (conversation != null && conversation.getLastMessage().getMessageId().equals(message.getMessageId())) {
-            onlineChannel.send(message.getTo(), Result.info(StatusCode.CONVERSATION_CHANGED.getCode(), StatusCode.CONVERSATION_CHANGED.getDesc(), conversation).toJSONString());
+        ConversationV0 conversationV2 = conversationService.getConversation(message.getFrom(), message.getTo());
+        if (conversationV2 != null && conversationV2.getLastMessage().getMessageId().equals(message.getMessageId())) {
+            onlineChannel.send(message.getTo(), Result.info(StatusCode.CONVERSATION_CHANGED.getCode(), StatusCode.CONVERSATION_CHANGED.getDesc(), conversationV2).toJSONString());
         }
+
         //第三方通知消息推送。在线透传，离线通知
         try {
             if (yeIMPushConfig.isEnable()) {
@@ -220,10 +227,4 @@ public class AsyncServiceImpl implements AsyncService {
             }
         });
     }
-
-
 }
-
-
-
-
