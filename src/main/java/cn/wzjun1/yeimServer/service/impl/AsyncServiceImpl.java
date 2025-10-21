@@ -146,28 +146,30 @@ public class AsyncServiceImpl implements AsyncService {
      * 异步
      * 发送私聊消息撤回事件
      *
-     * @param message 群消息
+     * @param outMessage 发送者端
+     * @param inMessage 接收者端
      */
     @Async
-    public void messageRevokedSendEvent(Message message) {
+    public void messageRevokedSendEvent(Message outMessage, Message inMessage) {
+
         //给自己发送会话更新事件
-        ConversationV0 conversationV1 = conversationService.getConversation(message.getTo(), message.getFrom());
-        if (conversationV1 != null && conversationV1.getLastMessage().getMessageId().equals(message.getMessageId())) {
-            onlineChannel.send(message.getFrom(), Result.info(StatusCode.CONVERSATION_CHANGED.getCode(), StatusCode.CONVERSATION_CHANGED.getDesc(), conversationV1).toJSONString());
+        ConversationV0 conversationV1 = conversationService.getConversation(outMessage.getTo(), outMessage.getFrom());
+        if (conversationV1 != null && conversationV1.getLastMessage().getMessageId().equals(outMessage.getMessageId())) {
+            onlineChannel.send(outMessage.getFrom(), Result.info(StatusCode.CONVERSATION_CHANGED.getCode(), StatusCode.CONVERSATION_CHANGED.getDesc(), conversationV1).toJSONString());
         }
 
         //给对方发送消息撤回事件
-        onlineChannel.send(message.getTo(), Result.info(StatusCode.MESSAGE_REVOKED.getCode(), StatusCode.MESSAGE_REVOKED.getDesc(), message).toJSONString());
+        onlineChannel.send(inMessage.getTo(), Result.info(StatusCode.MESSAGE_REVOKED.getCode(), StatusCode.MESSAGE_REVOKED.getDesc(), inMessage).toJSONString());
         //如果会话最新消息是撤回的消息，则会话更新
-        ConversationV0 conversationV2 = conversationService.getConversation(message.getFrom(), message.getTo());
-        if (conversationV2 != null && conversationV2.getLastMessage().getMessageId().equals(message.getMessageId())) {
-            onlineChannel.send(message.getTo(), Result.info(StatusCode.CONVERSATION_CHANGED.getCode(), StatusCode.CONVERSATION_CHANGED.getDesc(), conversationV2).toJSONString());
+        ConversationV0 conversationV2 = conversationService.getConversation(inMessage.getFrom(), inMessage.getTo());
+        if (conversationV2 != null && conversationV2.getLastMessage().getMessageId().equals(inMessage.getMessageId())) {
+            onlineChannel.send(inMessage.getTo(), Result.info(StatusCode.CONVERSATION_CHANGED.getCode(), StatusCode.CONVERSATION_CHANGED.getDesc(), conversationV2).toJSONString());
         }
 
         //第三方通知消息推送。在线透传，离线通知
         try {
             if (yeIMPushConfig.isEnable()) {
-                User user = userMapper.findByUserId(message.getTo());
+                User user = userMapper.findByUserId(inMessage.getTo());
                 if (user.getMobileDeviceId() != null) {
                     String pushTitle = user.getNickname();
                     String pushContent = "[对方撤回了一条消息]";
@@ -227,4 +229,10 @@ public class AsyncServiceImpl implements AsyncService {
             }
         });
     }
+
+
 }
+
+
+
+
