@@ -52,7 +52,7 @@ public class GroupMessage implements Serializable {
     private String from;
 
     /**
-     * 消息发送方用户信息
+     * 发送方资料
      */
     @TableField(exist = false)
     private User fromUserInfo;
