@@ -174,10 +174,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
                 throw new ToUserIdNotFoundException(e.getMessage());
             } else if (e instanceof MessageRejectedException) {
                 throw new MessageRejectedException(e.getMessage());
-            } else if (e instanceof FriendNotFoundException){
+            } else if (e instanceof FriendNotFoundException) {
                 throw new FriendNotFoundException(e.getMessage());
-            }
-            else {
+            } else {
                 throw new Exception(e.getMessage());
             }
         }
@@ -252,17 +251,23 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
      */
     @Override
     public void revokeMessage(String userId, String messageId) throws Exception {
-        boolean isPrivateMessage = messageMapper.exists(new QueryWrapper<Message>().eq("message_id", messageId));
-        if (isPrivateMessage) {
+        Message isPrivateMessage = messageMapper.selectOne(new QueryWrapper<Message>().eq("message_id", messageId));
+        if (isPrivateMessage != null) {
+            if (!isPrivateMessage.getFrom().equals(userId)) {
+                return;
+            }
             Message update = new Message();
             update.setIsRevoke(1);
             String prefix = messageId.substring(0, messageId.length() - 1);
-            //更新接收者消息
-            this.update(update, new QueryWrapper<Message>().eq("message_id", prefix + "1"));
             //更新发送者消息
+            this.update(update, new QueryWrapper<Message>().eq("message_id", prefix + "1"));
+            //更新接收者消息
             this.update(update, new QueryWrapper<Message>().eq("message_id", prefix + "2"));
-            //发送事件
-            emitJSSDKPrivateMessageRevoked(messageMapper.getMessageById(messageId, userId));
+            //发送撤回及更新会话事件
+            emitJSSDKPrivateMessageRevoked(
+                    messageMapper.getMessageById(prefix + "1", isPrivateMessage.getFrom()),
+                    messageMapper.getMessageById(prefix + "2", isPrivateMessage.getTo())
+            );
         } else {
             boolean isGroupMessage = groupMessageMapper.exists(new QueryWrapper<GroupMessage>().eq("message_id", messageId).eq("`from`", userId));
             if (isGroupMessage) {
@@ -306,10 +311,11 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
     /**
      * 私聊消息撤回事件
      *
-     * @param message
+     * @param outMessage
+     * @param inMessage
      */
-    private void emitJSSDKPrivateMessageRevoked(Message message) {
-        asyncService.messageRevokedSendEvent(message);
+    private void emitJSSDKPrivateMessageRevoked(Message outMessage, Message inMessage) {
+        asyncService.messageRevokedSendEvent(outMessage, inMessage);
     }
 
     /**
